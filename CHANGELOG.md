@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Initial release of Colour Journey System
+- Initial release of Color Journey System
 - OKLab-based perceptually uniform color space operations
 - Fast cube root optimization (~3-5x speedup)
 - Single and multi-anchor color journeys
@@ -35,5 +35,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Example code and usage patterns
 - Performance optimizations for real-time color generation
 
-[Unreleased]: https://github.com/yourusername/ColourJourney/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/yourusername/ColourJourney/releases/tag/v1.0.0
+[Unreleased]: https://github.com/yourusername/ColorJourney/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/yourusername/ColorJourney/releases/tag/v1.0.0
