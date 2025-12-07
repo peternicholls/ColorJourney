@@ -525,7 +525,7 @@ For detailed implementation specifics, see:
 
 ## License
 
-Copyright © 2024 Peter Nicholls
+Copyright © 2025 Peter Nicholls
 This project is licensed under the MIT License - see LICENSE file for details.
 
 Some parts based on OKLab by copyright © Björn Ottosson, used under the MIT License.
