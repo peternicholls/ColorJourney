@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "ColourJourney",
+    name: "ColorJourney",
     platforms: [
         .iOS(.v13),
         .macOS(.v10_15),
@@ -15,15 +15,15 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "ColourJourney",
-            targets: ["ColourJourney"]
+            name: "ColorJourney",
+            targets: ["ColorJourney"]
         )
     ],
     targets: [
         .target(
-            name: "CColourJourney",
-            path: "Sources/CColourJourney",
-            sources: ["colour_journey.c"],
+            name: "CColorJourney",
+            path: "Sources/CColorJourney",
+            sources: ["ColorJourney.c"],
             publicHeadersPath: "include",
             cSettings: [
                 .define("_GNU_SOURCE"),
@@ -31,16 +31,16 @@ let package = Package(
             ]
         ),
         .target(
-            name: "ColourJourney",
-            dependencies: ["CColourJourney"],
-            path: "Sources/ColourJourney",
+            name: "ColorJourney",
+            dependencies: ["CColorJourney"],
+            path: "Sources/ColorJourney",
             swiftSettings: [
                 .enableUpcomingFeature("BareSlashRegexLiterals")
             ]
         ),
         .testTarget(
-            name: "ColourJourneyTests",
-            dependencies: ["ColourJourney"]
+            name: "ColorJourneyTests",
+            dependencies: ["ColorJourney"]
         )
     ]
 )

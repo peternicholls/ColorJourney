@@ -1,5 +1,5 @@
 /*
- * Colour Journey - Example Usage & Tests
+ * Color Journey - Example Usage & Tests
  * Demonstrates various journey configurations
  */
 
@@ -12,9 +12,9 @@ func basicExamples() {
     
     // Example 1: Single anchor, balanced style
     print("1. Single Anchor - Balanced")
-    let journey1 = ColourJourney(
+    let journey1 = ColorJourney(
         config: .singleAnchor(
-            ColourJourneyRGB(r: 0.3, g: 0.5, b: 0.8),
+            ColorJourneyRGB(r: 0.3, g: 0.5, b: 0.8),
             style: .balanced
         )
     )
@@ -26,11 +26,11 @@ func basicExamples() {
     
     // Example 2: Multi-anchor closed loop
     print("\n2. Multi-Anchor - Closed Loop")
-    let journey2 = ColourJourney(config: ColourJourneyConfig(
+    let journey2 = ColorJourney(config: ColorJourneyConfig(
         anchors: [
-            ColourJourneyRGB(r: 1.0, g: 0.2, b: 0.2),
-            ColourJourneyRGB(r: 0.2, g: 1.0, b: 0.2),
-            ColourJourneyRGB(r: 0.2, g: 0.2, b: 1.0)
+            ColorJourneyRGB(r: 1.0, g: 0.2, b: 0.2),
+            ColorJourneyRGB(r: 0.2, g: 1.0, b: 0.2),
+            ColorJourneyRGB(r: 0.2, g: 0.2, b: 1.0)
         ],
         loopMode: .closed
     ))
@@ -46,7 +46,7 @@ func basicExamples() {
 func stylePresetExamples() {
     print("\n=== Style Preset Examples ===\n")
     
-    let baseColor = ColourJourneyRGB(r: 0.4, g: 0.6, b: 0.8)
+    let baseColor = ColorJourneyRGB(r: 0.4, g: 0.6, b: 0.8)
     
     let styles: [(String, JourneyStyle)] = [
         ("Balanced", .balanced),
@@ -59,7 +59,7 @@ func stylePresetExamples() {
     
     for (name, style) in styles {
         print("\(name):")
-        let journey = ColourJourney(
+        let journey = ColorJourney(
             config: .singleAnchor(baseColor, style: style)
         )
         
@@ -75,11 +75,11 @@ func stylePresetExamples() {
 func variationExamples() {
     print("\n=== Variation Examples ===\n")
     
-    let baseColor = ColourJourneyRGB(r: 0.5, g: 0.3, b: 0.7)
+    let baseColor = ColorJourneyRGB(r: 0.5, g: 0.3, b: 0.7)
     
     // No variation
     print("1. No Variation (Deterministic):")
-    let journey1 = ColourJourney(config: ColourJourneyConfig(
+    let journey1 = ColorJourney(config: ColorJourneyConfig(
         anchors: [baseColor],
         variation: .off
     ))
@@ -91,7 +91,7 @@ func variationExamples() {
     
     // Subtle hue variation
     print("\n2. Subtle Hue Variation (Seeded):")
-    let journey2 = ColourJourney(config: ColourJourneyConfig(
+    let journey2 = ColorJourney(config: ColorJourneyConfig(
         anchors: [baseColor],
         variation: .subtle(dimensions: [.hue], seed: 12345)
     ))
@@ -100,7 +100,7 @@ func variationExamples() {
     
     // Multi-dimensional variation
     print("\n3. All Dimensions - Noticeable:")
-    let journey3 = ColourJourney(config: ColourJourneyConfig(
+    let journey3 = ColorJourney(config: ColorJourneyConfig(
         anchors: [baseColor],
         variation: VariationConfig(
             enabled: true,
@@ -118,9 +118,9 @@ func variationExamples() {
 func continuousSamplingExample() {
     print("\n=== Continuous Sampling ===\n")
     
-    let journey = ColourJourney(
+    let journey = ColorJourney(
         config: .singleAnchor(
-            ColourJourneyRGB(r: 0.8, g: 0.3, b: 0.5),
+            ColorJourneyRGB(r: 0.8, g: 0.3, b: 0.5),
             style: .vividLoop
         )
     )
@@ -138,10 +138,10 @@ func continuousSamplingExample() {
 func advancedConfigExample() {
     print("\n=== Advanced Configuration ===\n")
     
-    let config = ColourJourneyConfig(
+    let config = ColorJourneyConfig(
         anchors: [
-            ColourJourneyRGB(r: 0.9, g: 0.2, b: 0.3),
-            ColourJourneyRGB(r: 0.2, g: 0.8, b: 0.4)
+            ColorJourneyRGB(r: 0.9, g: 0.2, b: 0.3),
+            ColorJourneyRGB(r: 0.2, g: 0.8, b: 0.4)
         ],
         lightness: .custom(weight: 0.2),      // Slightly lighter
         chroma: .custom(multiplier: 1.3),     // More saturated
@@ -157,7 +157,7 @@ func advancedConfigExample() {
         )
     )
     
-    let journey = ColourJourney(config: config)
+    let journey = ColorJourney(config: config)
     let palette = journey.discrete(count: 8)
     
     print("Custom configured palette (8 colors):")
@@ -171,9 +171,9 @@ func advancedConfigExample() {
 func performanceTest() {
     print("\n=== Performance Test ===\n")
     
-    let journey = ColourJourney(
+    let journey = ColorJourney(
         config: .singleAnchor(
-            ColourJourneyRGB(r: 0.5, g: 0.5, b: 0.5),
+            ColorJourneyRGB(r: 0.5, g: 0.5, b: 0.5),
             style: .balanced
         )
     )
@@ -207,9 +207,9 @@ func uiUseCaseExample() {
     
     // Timeline tracks
     print("1. Timeline Tracks (12 colors):")
-    let trackJourney = ColourJourney(
+    let trackJourney = ColorJourney(
         config: .singleAnchor(
-            ColourJourneyRGB(r: 0.4, g: 0.5, b: 0.9),
+            ColorJourneyRGB(r: 0.4, g: 0.5, b: 0.9),
             style: .balanced
         )
     )
@@ -218,10 +218,10 @@ func uiUseCaseExample() {
     
     // Label system
     print("\n2. Label System (8 categories):")
-    let labelJourney = ColourJourney(config: ColourJourneyConfig(
+    let labelJourney = ColorJourney(config: ColorJourneyConfig(
         anchors: [
-            ColourJourneyRGB(r: 0.8, g: 0.3, b: 0.3),
-            ColourJourneyRGB(r: 0.3, g: 0.8, b: 0.8)
+            ColorJourneyRGB(r: 0.8, g: 0.3, b: 0.3),
+            ColorJourneyRGB(r: 0.3, g: 0.8, b: 0.8)
         ],
         contrast: .high,
         loopMode: .closed
@@ -231,8 +231,8 @@ func uiUseCaseExample() {
     
     // Segment markers
     print("\n3. Segment Markers with Variation:")
-    let segmentJourney = ColourJourney(config: ColourJourneyConfig(
-        anchors: [ColourJourneyRGB(r: 0.6, g: 0.4, b: 0.7)],
+    let segmentJourney = ColorJourney(config: ColorJourneyConfig(
+        anchors: [ColorJourneyRGB(r: 0.6, g: 0.4, b: 0.7)],
         variation: .subtle(dimensions: [.hue, .lightness])
     ))
     let segmentColors = segmentJourney.discrete(count: 20)
@@ -241,7 +241,7 @@ func uiUseCaseExample() {
 
 // MARK: - Helper Functions
 
-func formatPalette(_ colors: [ColourJourneyRGB]) -> String {
+func formatPalette(_ colors: [ColorJourneyRGB]) -> String {
     colors.map { "(\(String(format: "%.2f", $0.r)), \(String(format: "%.2f", $0.g)), \(String(format: "%.2f", $0.b)))" }
         .joined(separator: ", ")
 }
@@ -250,7 +250,7 @@ func formatPalette(_ colors: [ColourJourneyRGB]) -> String {
 
 func runAllExamples() {
     print("╔════════════════════════════════════════════╗")
-    print("║   Colour Journey System - Examples        ║")
+    print("║   Color Journey System - Examples        ║")
     print("╚════════════════════════════════════════════╝\n")
     
     basicExamples()

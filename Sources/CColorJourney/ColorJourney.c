@@ -1,9 +1,9 @@
 /*
- * Colour Journey System - Core Implementation
+ * ColorJourney System - Core Implementation
  * OKLab-based perceptually uniform color journeys
  */
 
-#include "colour_journey.h"
+#include "ColorJourney.h"
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -148,16 +148,12 @@ CJ_Lab cj_enforce_contrast(CJ_Lab color, CJ_Lab reference, float min_delta_e) {
     return cj_lch_to_oklab(lch);
 }
 
+
 /* ========================================================================
  * Journey Internal Structure
  * ======================================================================== */
 
-typedef struct {
-    CJ_LCh anchor;
-    float weight;  /* Influence at this waypoint */
-} CJ_Waypoint;
-
-struct CJ_Journey_Impl {
+typedef struct CJ_Journey_Impl {
     CJ_Config config;
     
     /* Precomputed OKLab anchors */
@@ -165,7 +161,10 @@ struct CJ_Journey_Impl {
     int anchor_count;
     
     /* Designed waypoints for hue/chroma/lightness shaping */
-    CJ_Waypoint waypoints[16];
+    struct {
+        CJ_LCh anchor;
+        float weight;  /* Influence at this waypoint */
+    } waypoints[16];
     int waypoint_count;
     
     /* Precomputed discrete palette (if requested) */
@@ -174,7 +173,7 @@ struct CJ_Journey_Impl {
     
     /* Variation state */
     uint64_t rng_state;
-};
+} CJ_Journey_Impl;
 
 /* ========================================================================
  * Pseudo-random number generation (xoshiro128+)

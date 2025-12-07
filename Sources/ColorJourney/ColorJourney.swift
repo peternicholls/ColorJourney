@@ -1,9 +1,10 @@
 /*
- * Colour Journey System - Swift Interface
+ * ColorJourney System - Swift Interface
  * High-level Swift API wrapping high-performance C core
  */
 
 import Foundation
+import CColorJourney
 
 #if canImport(SwiftUI)
 import SwiftUI
@@ -11,7 +12,7 @@ import SwiftUI
 
 // MARK: - Swift Types
 
-public struct ColourJourneyRGB: Hashable {
+public struct ColorJourneyRGB: Hashable {
     public var r: Float
     public var g: Float
     public var b: Float
@@ -130,8 +131,8 @@ public enum VariationStrength {
 
 // MARK: - Journey Configuration
 
-public struct ColourJourneyConfig {
-    public var anchors: [ColourJourneyRGB]
+public struct ColorJourneyConfig {
+    public var anchors: [ColorJourneyRGB]
     public var lightness: LightnessBias
     public var chroma: ChromaBias
     public var contrast: ContrastLevel
@@ -141,7 +142,7 @@ public struct ColourJourneyConfig {
     public var variation: VariationConfig
     
     public init(
-        anchors: [ColourJourneyRGB],
+        anchors: [ColorJourneyRGB],
         lightness: LightnessBias = .neutral,
         chroma: ChromaBias = .neutral,
         contrast: ContrastLevel = .medium,
@@ -163,17 +164,17 @@ public struct ColourJourneyConfig {
     // MARK: Preset Builders
     
     public static func singleAnchor(
-        _ color: ColourJourneyRGB,
+        _ color: ColorJourneyRGB,
         style: JourneyStyle = .balanced
-    ) -> ColourJourneyConfig {
-        style.apply(to: ColourJourneyConfig(anchors: [color]))
+    ) -> ColorJourneyConfig {
+        style.apply(to: ColorJourneyConfig(anchors: [color]))
     }
     
     public static func multiAnchor(
-        _ colors: [ColourJourneyRGB],
+        _ colors: [ColorJourneyRGB],
         style: JourneyStyle = .balanced
-    ) -> ColourJourneyConfig {
-        style.apply(to: ColourJourneyConfig(anchors: colors))
+    ) -> ColorJourneyConfig {
+        style.apply(to: ColorJourneyConfig(anchors: colors))
     }
 }
 
@@ -193,7 +194,7 @@ public enum JourneyStyle {
         temperature: TemperatureBias
     )
     
-    func apply(to config: ColourJourneyConfig) -> ColourJourneyConfig {
+    func apply(to config: ColorJourneyConfig) -> ColorJourneyConfig {
         var result = config
         
         switch self {
@@ -244,18 +245,24 @@ public enum JourneyStyle {
 
 // MARK: - Journey
 
-public final class ColourJourney {
+public final class ColorJourney {
     private var handle: OpaquePointer?
     
-    public init(config: ColourJourneyConfig) {
+    public init(config: ColorJourneyConfig) {
         var cConfig = CJ_Config()
         cj_config_init(&cConfig)
         
         // Anchors
         cConfig.anchor_count = Int32(min(config.anchors.count, 8))
+        var anchors = [CJ_RGB](repeating: CJ_RGB(r: 0, g: 0, b: 0), count: 8)
         for (i, anchor) in config.anchors.prefix(8).enumerated() {
-            cConfig.anchors.i = CJ_RGB(r: anchor.r, g: anchor.g, b: anchor.b)
+            anchors[i] = CJ_RGB(r: anchor.r, g: anchor.g, b: anchor.b)
         }
+        // Copy to C struct (tuple in Swift)
+        cConfig.anchors = (
+            anchors[0], anchors[1], anchors[2], anchors[3],
+            anchors[4], anchors[5], anchors[6], anchors[7]
+        )
         
         // Lightness
         switch config.lightness {
@@ -342,17 +349,17 @@ public final class ColourJourney {
     }
     
     /// Sample the journey at parameter t ∈ [0, 1]
-    public func sample(at t: Float) -> ColourJourneyRGB {
+    public func sample(at t: Float) -> ColorJourneyRGB {
         guard let handle = handle else {
-            return ColourJourneyRGB(r: 0, g: 0, b: 0)
+            return ColorJourneyRGB(r: 0, g: 0, b: 0)
         }
         
         let rgb = cj_journey_sample(handle, t)
-        return ColourJourneyRGB(r: rgb.r, g: rgb.g, b: rgb.b)
+        return ColorJourneyRGB(r: rgb.r, g: rgb.g, b: rgb.b)
     }
     
     /// Generate N discrete, perceptually distinct colors
-    public func discrete(count: Int) -> [ColourJourneyRGB] {
+    public func discrete(count: Int) -> [ColorJourneyRGB] {
         guard let handle = handle, count > 0 else {
             return []
         }
@@ -362,14 +369,14 @@ public final class ColourJourney {
             cj_journey_discrete(handle, Int32(count), buffer.baseAddress!)
         }
         
-        return colors.map { ColourJourneyRGB(r: $0.r, g: $0.g, b: $0.b) }
+        return colors.map { ColorJourneyRGB(r: $0.r, g: $0.g, b: $0.b) }
     }
 }
 
 // MARK: - Convenience Extensions
 
 #if canImport(SwiftUI)
-extension ColourJourney {
+extension ColorJourney {
     /// Create a SwiftUI gradient from the journey
     public func gradient(stops: Int = 10) -> Gradient {
         let colors = (0..<stops).map { i in
@@ -395,7 +402,7 @@ extension ColourJourney {
 // MARK: - Color Utilities for SwiftUI
 
 extension Color {
-    public init(journeyRGB: ColourJourneyRGB) {
+    public init(journeyRGB: ColorJourneyRGB) {
         self = journeyRGB.color
     }
 }
@@ -407,9 +414,9 @@ extension Color {
  EXAMPLE USAGE:
  
  // Simple single-anchor journey
- let journey = ColourJourney(
+ let journey = ColorJourney(
      config: .singleAnchor(
-         ColourJourneyRGB(r: 0.3, g: 0.5, b: 0.8),
+         ColorJourneyRGB(r: 0.3, g: 0.5, b: 0.8),
          style: .balanced
      )
  )
@@ -421,16 +428,16 @@ extension Color {
  let palette = journey.discrete(count: 10)
  
  // Multi-anchor with variation
- let config = ColourJourneyConfig(
+ let config = ColorJourneyConfig(
      anchors: [
-         ColourJourneyRGB(r: 1.0, g: 0.3, b: 0.3),
-         ColourJourneyRGB(r: 0.3, g: 1.0, b: 0.3),
-         ColourJourneyRGB(r: 0.3, g: 0.3, b: 1.0)
+         ColorJourneyRGB(r: 1.0, g: 0.3, b: 0.3),
+         ColorJourneyRGB(r: 0.3, g: 1.0, b: 0.3),
+         ColorJourneyRGB(r: 0.3, g: 0.3, b: 1.0)
      ],
      loopMode: .closed,
      variation: .subtle(dimensions: [.hue, .lightness])
  )
- let journey2 = ColourJourney(config: config)
+ let journey2 = ColorJourney(config: config)
  
  // SwiftUI gradient
  #if canImport(SwiftUI)

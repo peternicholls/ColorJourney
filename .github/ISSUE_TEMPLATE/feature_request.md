@@ -18,7 +18,7 @@ A clear and concise description of any alternative solutions or features you've 
 ## Example usage
 ```swift
 // How would you like to use this feature?
-let journey = ColourJourney(...)
+let journey = ColorJourney(...)
 // Your proposed API
 ```
 

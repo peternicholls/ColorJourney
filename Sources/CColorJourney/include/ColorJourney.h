@@ -1,11 +1,11 @@
 /*
- * Colour Journey System - Core C Library
+ * ColorJourney System - Core C Library
  * High-performance OKLab-based color journey generation
  * Designed for Swift integration but fully portable C
  */
 
-#ifndef COLOUR_JOURNEY_H
-#define COLOUR_JOURNEY_H
+#ifndef COLORJOURNEY_H
+#define COLORJOURNEY_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -168,4 +168,4 @@ CJ_Lab cj_enforce_contrast(CJ_Lab color, CJ_Lab reference, float min_delta_e);
 }
 #endif
 
-#endif /* COLOUR_JOURNEY_H */
+#endif /* COLORJOURNEY_H */

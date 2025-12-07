@@ -18,7 +18,7 @@ Steps to reproduce the behavior:
 ## Code Sample
 ```swift
 // Minimal code that reproduces the issue
-let journey = ColourJourney(...)
+let journey = ColorJourney(...)
 let color = journey.sample(at: 0.5)
 // Bug occurs here
 ```
@@ -36,7 +36,7 @@ If applicable, add screenshots to help explain your problem.
 - OS: [e.g. iOS 17.0, macOS 14.0]
 - Xcode version: [e.g. 15.2]
 - Swift version: [e.g. 5.9]
-- ColourJourney version: [e.g. 1.0.0]
+- ColorJourney version: [e.g. 1.0.0]
 - Device: [e.g. iPhone 15, MacBook Pro M1]
 
 ## Additional context

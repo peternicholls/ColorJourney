@@ -1,4 +1,4 @@
-# Contributing to Colour Journey
+# Contributing to Color Journey
 
 Thank you for your interest in contributing! This document provides guidelines and instructions for contributing to the project.
 
@@ -65,8 +65,8 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/ColourJourney.git
-cd ColourJourney
+git clone https://github.com/yourusername/ColorJourney.git
+cd ColorJourney
 
 # Build with Swift Package Manager
 swift build
@@ -81,14 +81,14 @@ open Package.swift
 ### Project Structure
 
 ```
-ColourJourney/
+ColorJourney/
 ├── Sources/
-│   ├── CColourJourney/          # C core library
+│   ├── CColorJourney/          # C core library
 │   │   ├── include/
-│   │   │   └── colour_journey.h  # Public C API
-│   │   └── colour_journey.c      # Implementation
-│   └── ColourJourney/           # Swift wrapper
-│       └── ColourJourney.swift   # Swift API
+│   │   │   └── ColorJourney.h  # Public C API
+│   │   └── ColorJourney.c      # Implementation
+│   └── ColorJourney/           # Swift wrapper
+│       └── ColorJourney.swift   # Swift API
 ├── Examples/                     # Usage examples
 └── Tests/                        # Test suite
 ```
@@ -128,13 +128,13 @@ float cj_delta_e(CJ_Lab a, CJ_Lab b) {
 
 ```swift
 // Good example
-public func sample(at t: Float) -> ColourJourneyRGB {
+public func sample(at t: Float) -> ColorJourneyRGB {
     guard let handle = handle else {
-        return ColourJourneyRGB(r: 0, g: 0, b: 0)
+        return ColorJourneyRGB(r: 0, g: 0, b: 0)
     }
     
     let rgb = cj_journey_sample(handle, t)
-    return ColourJourneyRGB(r: rgb.r, g: rgb.g, b: rgb.b)
+    return ColorJourneyRGB(r: rgb.r, g: rgb.g, b: rgb.b)
 }
 ```
 
@@ -223,9 +223,9 @@ swift test
 Example:
 ```swift
 func testSingleAnchorJourney() {
-    let journey = ColourJourney(
+    let journey = ColorJourney(
         config: .singleAnchor(
-            ColourJourneyRGB(r: 0.5, g: 0.5, b: 0.5),
+            ColorJourneyRGB(r: 0.5, g: 0.5, b: 0.5),
             style: .balanced
         )
     )
@@ -258,4 +258,4 @@ Contributors will be recognized in:
 - README.md contributors section (if significant)
 - Release notes
 
-Thank you for contributing to Colour Journey! 🎨
+Thank you for contributing to Color Journey! 🎨
