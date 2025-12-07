@@ -41,12 +41,6 @@ static inline float smoothstep(float t) {
     return t * t * (3.0f - 2.0f * t);
 }
 
-/* Enhanced smoothstep for more designer-like curves */
-static inline float smootherstep(float t) {
-    t = clampf(t, 0.0f, 1.0f);
-    return t * t * t * (t * (t * 6.0f - 15.0f) + 10.0f);
-}
-
 /* ========================================================================
  * OKLab Color Space (Optimized)
  * ======================================================================== */
@@ -225,16 +219,14 @@ static void build_waypoints(CJ_Journey journey) {
         CJ_LCh base = j->anchor_lch[0];
         
         /* Create waypoints with non-linear hue distribution */
-        /* Use golden ratio and fibonacci-like spacing for natural feel */
-        const float phi = 1.618033988749f;
         const int num_waypoints = 8;
         
         j->waypoint_count = num_waypoints;
         for (int i = 0; i < num_waypoints; i++) {
             float t = (float)i / (float)(num_waypoints - 1);
             
-            /* Non-linear hue progression using smootherstep */
-            float hue_t = smootherstep(t);
+            /* Non-linear hue progression using smoothstep */
+            float hue_t = smoothstep(t);
             
             j->waypoints[i].anchor.h = base.h + hue_t * 2.0f * M_PI;
             
@@ -326,7 +318,7 @@ static CJ_LCh interpolate_waypoints(CJ_Journey_Impl* j, float t) {
     if (segment >= j->waypoint_count - 1) segment = j->waypoint_count - 2;
     
     float local_t = (t - segment * segment_size) / segment_size;
-    local_t = smootherstep(local_t);  /* Apply easing */
+    local_t = smoothstep(local_t);  /* Apply easing */
     
     CJ_LCh a = j->waypoints[segment].anchor;
     CJ_LCh b = j->waypoints[segment + 1].anchor;

@@ -294,8 +294,31 @@ let package = Package(
 )
 ```
 
-### Standalone C Library
+### Make (C users)
 
+```bash
+# Build static library with gcc/clang
+make lib
+
+# Then link in your project
+gcc -std=c99 -I Sources/CColorJourney/include \
+    myapp.c .build/gcc/libcolorjourney.a -lm -o myapp
+
+# Build and run the sample C program
+make example
+./.build/gcc/example
+
+# Build and run C core tests
+make test-c
+```
+
+Artifacts land in `.build/gcc/`:
+- `.build/gcc/libcolorjourney.a` – static library
+- `.build/gcc/ColorJourney.o` – object file
+
+Include `Sources/CColorJourney/include` on your header search path to use `ColorJourney.h` in C or Objective-C projects.
+
+### Standalone C Library
 ```bash
 # Compile C library
 gcc -O3 -ffast-math -march=native -c ColorJourney.c -o ColorJourney.o
@@ -395,7 +418,7 @@ Optimized for real-time color generation in tight loops.
 
 ## Testing
 
-Comprehensively tested with **49 unit tests** (100% pass rate):
+Comprehensively tested with **49 unit tests** (100% pass rate) plus C core checks:
 - Single and multi-anchor journey generation
 - All perceptual dynamics (lightness, chroma, contrast, temperature, vibrancy)
 - All loop modes (open, closed, ping-pong)
@@ -404,6 +427,10 @@ Comprehensively tested with **49 unit tests** (100% pass rate):
 - Edge cases and boundary conditions
 - SwiftUI integration
 - Performance benchmarks
+
+Test layout:
+- Swift API tests: Tests/ColorJourneyTests
+- C core tests: Tests/CColorJourneyTests (run with `make test-c`)
 
 Run tests with: `swift test`
 
@@ -455,7 +482,7 @@ static inline float fast_cbrt(float x) {
 ### Journey Design
 Journeys are not simple linear interpolations. They use:
 - **Designed waypoints** with non-uniform hue distribution (not naive uniform steps)
-- **Easing curves** (smootherstep) for natural, non-mechanical pacing
+- **Easing curves** (smoothstep) for natural, non-mechanical pacing
 - **Chroma envelopes** that follow parametric curves to avoid flat saturation
 - **Lightness waves** for visual interest and perceptual balance
 - **Mid-journey boosts** controlled by vibrancy parameter to prevent muddy midpoints

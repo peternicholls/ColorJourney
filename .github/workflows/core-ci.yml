@@ -1,4 +1,4 @@
-name: Swift CI
+name: Core CI
 
 on:
   push:
@@ -58,3 +58,14 @@ jobs:
 
       - name: Lint
         run: swiftlint
+
+  c-core:
+    name: C core (ubuntu)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4.1.7
+
+      - name: Build and test C core
+        run: |
+          make test-c
