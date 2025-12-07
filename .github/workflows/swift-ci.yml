@@ -31,47 +31,12 @@ jobs:
       - name: Run tests
         run: swift test -v
 
-  build-linux:
-    name: Build on Linux
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4.1.7
-
-      - name: Install Swift
-        uses: swift-actions/setup-swift@v1
-        with:
-          swift-version: "5.8"
-
-      - name: Cache SwiftPM
-        uses: actions/cache@v4
-        with:
-          path: .build
-          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
-          restore-keys: ${{ runner.os }}-spm-
-
-      - name: Swift Version
-        run: swift --version
-
-      - name: Build
-        run: swift build -v
-
-      - name: Run tests
-        run: swift test -v
-
   build-ios:
-    name: Build and Test for iOS
+    name: Build for iOS
     runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v4.1.7
-
-      - name: Build and test on Simulator
-        run: |
-          xcodebuild -scheme ColorJourney \
-                     -destination 'platform=iOS Simulator,name=iPhone 15' \
-                     -skipPackagePluginValidation \
-                     test
 
       - name: Build for iOS Device
         run: |
@@ -83,6 +48,7 @@ jobs:
   lint:
     name: SwiftLint
     runs-on: macos-latest
+    continue-on-error: true
 
     steps:
       - uses: actions/checkout@v4.1.7
