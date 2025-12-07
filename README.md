@@ -80,14 +80,22 @@ The Swift wrapper provides ergonomics and type safety, while the C core ensures 
 
 ## Features
 
-✅ **Perceptually Uniform** - Built on OKLab for consistent lightness, chroma, and hue
-✅ **Designer-Quality** - Non-linear journeys with shaped curves, not mechanical gradients  
-✅ **Flexible Configuration** - Single or multi-anchor, open/closed/ping-pong modes
-✅ **High-Level Controls** - Lightness, chroma, contrast, temperature, vibrancy biases
-✅ **Variation Layer** - Optional subtle, structured micro-variation
-✅ **Deterministic** - Repeatable output with optional seeded variation
-✅ **Fast** - Optimized C core processes 10,000+ colors/second
-✅ **Portable** - Core C library works anywhere (iOS, macOS, Linux, Windows)
+- **Perceptually Uniform** - Built on OKLab for consistent lightness, chroma, and hue
+
+- **Designer-Quality** - Non-linear journeys with shaped curves, not mechanical gradients  
+
+- **Flexible Configuration** - Single or multi-anchor, open/closed/ping-pong modes
+
+- **High-Level Controls** - Lightness, chroma, contrast, temperature, vibrancy biases
+
+- **Variation Layer** - Optional subtle, structured micro-variation
+
+- **Deterministic** - Repeatable output with optional seeded variation
+
+- **Fast** - Optimized C core processes 10,000+ colors/second
+
+- **Portable** - Core C library works anywhere (iOS, macOS, Linux, Windows)
+
 
 ## Quick Start
 
@@ -443,6 +451,9 @@ For detailed implementation specifics, see:
 
 ## License
 
-MIT License - see LICENSE file
+Copyright © 2024 Peter Nicholls
+This project is licensed under the MIT License - see LICENSE file for details.
+
+Some parts based on OKLab by copyright © Björn Ottosson, used under the MIT License.
 
 **Questions?** Check the example code in `Examples/ExampleUsage.swift`, review `DevDocs/IMPLEMENTATION_STATUS.md`, or open an issue.

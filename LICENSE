@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2025 Peter Nicholls
+Copyright © 2025 Peter Nicholls
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ SOFTWARE.
 This software uses color space conversion formulas from:
 
 **OKLab Color Space**
-Copyright (c) 2020 Björn Ottosson
+Copyright © 2020 Björn Ottosson
 https://bottosson.github.io/posts/oklab/
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
