@@ -6,6 +6,27 @@
 
 ---
 
+## Executive Summary
+
+This specification addresses the use case where an application needs to generate color swatches incrementally (get 1, then get 2, then get 3, etc.) without knowing the final count upfront. The current ColorJourney API requires specifying the total count in advance, which doesn't work well for dynamic UIs, progressive data loading, or interactive design workflows.
+
+**Recommended Solution:** Hybrid approach combining stateless index-based access with optional lazy sequences:
+- **C API:** Add `cj_journey_discrete_at(journey, index)` and `cj_journey_discrete_range(journey, start, count, out_colors)`
+- **Swift API:** Add subscript access `journey[index]`, `discrete(at:)`, and `discreteColors` lazy sequence
+- **Backward Compatible:** All existing APIs remain unchanged
+- **Implementation:** Internal lazy cache ensures consistency and performance
+
+**Key Benefits:**
+- ✅ Simplicity - `journey[i]` is as simple as array access
+- ✅ Consistency - Same index always returns same color
+- ✅ Performance - Internal caching avoids redundant computation
+- ✅ Flexibility - Supports index, range, sequence, and batch access patterns
+
+**Read Time:** 30-40 minutes for full specification  
+**Quick Start:** Jump to [Recommended Solution](#recommended-solution) for API details
+
+---
+
 ## Problem Statement
 
 The current ColorJourney API requires users to specify the exact number of colors needed upfront:
