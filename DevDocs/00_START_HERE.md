@@ -39,6 +39,12 @@ I analyzed the project and restructured all documentation to emphasize this core
 |----------|---------|-----------|----------|
 | **[API_ARCHITECTURE_DIAGRAM.md](API_ARCHITECTURE_DIAGRAM.md)** | UML class diagram | 5 min | Architects |
 
+### 🔬 Specifications & Design Documents
+
+| Document | Purpose | Read Time | Audience |
+|----------|---------|-----------|----------|
+| **[INCREMENTAL_SWATCH_SPECIFICATION.md](INCREMENTAL_SWATCH_SPECIFICATION.md)** | Incremental color generation spec | 30-40 min | Architects, Engineers |
+
 ### 📖 Original Documentation (Provided)
 
 | Document | Purpose | Status |
@@ -193,7 +199,7 @@ The C99 core is **not accidental**—it's the fundamental design choice that ena
 | **PRD Fulfillment** | 19/19 (100%) | All core requirements met |
 | **Code Quality** | ✅ Excellent | Clean, idiomatic, tested |
 | **Performance** | 10,000+ colors/sec | Excellent for real-time use |
-| **Documentation** | 13 markdown files | Comprehensive coverage |
+| **Documentation** | 14 markdown files | Comprehensive coverage + new spec |
 | **Platform Support** | 6 Apple platforms | iOS, macOS, watchOS, tvOS, visionOS, Catalyst |
 | **C Core Stability** | ✅ Forever | Pure C99, no breaking changes |
 | **Minor Gaps** | 5 enhancements | None block production use |

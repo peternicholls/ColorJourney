@@ -76,6 +76,25 @@ The Swift wrapper provides ergonomics and modern API design, but the **universal
 
 ---
 
+## 🔬 Specifications & Design Documents
+
+### [INCREMENTAL_SWATCH_SPECIFICATION.md](INCREMENTAL_SWATCH_SPECIFICATION.md) ⭐ **NEW**
+- **Purpose:** Specification for generating color swatches incrementally when count is unknown
+- **Content:** Complete design exploration including:
+  - Problem statement and use cases
+  - 4 different API design approaches analyzed
+  - Recommended hybrid solution (index-based + iterator)
+  - Complete C and Swift API specifications
+  - Implementation details (caching, memory management, thread safety)
+  - Usage patterns for 5 common scenarios
+  - Performance considerations and benchmarks
+  - Testing strategy and migration guide
+- **Read time:** 30-40 minutes
+- **Key takeaway:** Comprehensive specification ready for implementation review
+- **Status:** ✅ Draft complete - ready for stakeholder review
+
+---
+
 ## 📚 Original Project Documentation
 
 ### [PRD.md](PRD.md)
