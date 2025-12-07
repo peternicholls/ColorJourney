@@ -265,7 +265,7 @@ func formatPalette(_ colors: [ColorJourneyRGB]) -> String {
 
 func runAllExamples() {
     print("╔════════════════════════════════════════════╗")
-    print("║   Color Journey System - Examples        ║")
+    print("║   Color Journey System - Examples          ║")
     print("╚════════════════════════════════════════════╝\n")
 
     basicExamples()
