@@ -21,7 +21,7 @@ print()
 let palette = journey1.discrete(count: 5)
 print("Discrete Palette (5 colors):")
 for (index, color) in palette.enumerated() {
-    print("  Color \(i + 1): RGB(\(String(format: "%.2f", color.red)), \(String(format: "%.2f", color.green)), \(String(format: "%.2f", color.blue)))")
+    print("  Color \(index + 1): RGB(\(String(format: "%.2f", color.red)), \(String(format: "%.2f", color.green)), \(String(format: "%.2f", color.blue)))")
 }
 print()
 
@@ -38,7 +38,7 @@ let journey2 = ColorJourney(config: multiConfig)
 let multiPalette = journey2.discrete(count: 7)
 print("Multi-Anchor Journey (Red → Green → Blue, Closed Loop):")
 for (index, color) in multiPalette.enumerated() {
-    print("  Color \(i + 1): RGB(\(String(format: "%.2f", color.red)), \(String(format: "%.2f", color.green)), \(String(format: "%.2f", color.blue)))")
+    print("  Color \(index + 1): RGB(\(String(format: "%.2f", color.red)), \(String(format: "%.2f", color.green)), \(String(format: "%.2f", color.blue)))")
 }
 print()
 

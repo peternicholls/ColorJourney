@@ -126,10 +126,10 @@ func continuousSamplingExample() {
     )
 
     print("Sampling at 10 points along journey:")
-    for i in 0..<10 {
-        let t = Float(i) / 9.0
-        let color = journey.sample(at: t)
-        print("  t=\(String(format: "%.2f", t)): RGB(\(String(format: "%.2f", color.red)), \(String(format: "%.2f", color.green)), \(String(format: "%.2f", color.blue)))")
+    for index in 0..<10 {
+        let parameterT = Float(index) / 9.0
+        let color = journey.sample(at: parameterT)
+        print("  t=\(String(format: "%.2f", parameterT)): RGB(\(String(format: "%.2f", color.red)), \(String(format: "%.2f", color.green)), \(String(format: "%.2f", color.blue)))")
     }
 }
 
@@ -181,9 +181,9 @@ func performanceTest() {
     let iterations = 10000
     let start = Date()
 
-    for i in 0..<iterations {
-        let t = Float(i) / Float(iterations)
-        _ = journey.sample(at: t)
+    for index in 0..<iterations {
+        let parameterT = Float(index) / Float(iterations)
+        _ = journey.sample(at: parameterT)
     }
 
     let elapsed = Date().timeIntervalSince(start)

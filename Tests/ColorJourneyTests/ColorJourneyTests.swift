@@ -126,9 +126,9 @@ final class ColorJourneyTests: XCTestCase {
         let journey = ColorJourney(config: config)
 
         // Sample at multiple points through the journey
-        for i in 0...10 {
-            let t = Float(i) / 10.0
-            let color = journey.sample(at: t)
+        for index in 0...10 {
+            let parameterT = Float(index) / 10.0
+            let color = journey.sample(at: parameterT)
             XCTAssertGreaterThanOrEqual(color.red, 0)
             XCTAssertLessThanOrEqual(color.red, 1)
             XCTAssertGreaterThanOrEqual(color.green, 0)
@@ -338,8 +338,8 @@ final class ColorJourneyTests: XCTestCase {
         let journey = ColorJourney(config: config)
 
         // Ping-pong should reverse direction at ends
-        let colors = (0...20).map { i in
-            journey.sample(at: Float(i) / 20.0)
+        let colors = (0...20).map { index in
+            journey.sample(at: Float(index) / 20.0)
         }
         XCTAssertEqual(colors.count, 21)
     }
@@ -423,10 +423,10 @@ final class ColorJourneyTests: XCTestCase {
         let palette1 = journey1.discrete(count: 5)
         let palette2 = journey2.discrete(count: 5)
 
-        for i in 0..<5 {
-            XCTAssertEqual(palette1[i].r, palette2[i].r, accuracy: 0.0001)
-            XCTAssertEqual(palette1[i].g, palette2[i].g, accuracy: 0.0001)
-            XCTAssertEqual(palette1[i].b, palette2[i].b, accuracy: 0.0001)
+        for index in 0..<5 {
+            XCTAssertEqual(palette1[index].red, palette2[index].red, accuracy: 0.0001)
+            XCTAssertEqual(palette1[index].green, palette2[index].green, accuracy: 0.0001)
+            XCTAssertEqual(palette1[index].blue, palette2[index].blue, accuracy: 0.0001)
         }
     }
 
@@ -601,8 +601,8 @@ final class ColorJourneyTests: XCTestCase {
         let journey = ColorJourney(config: config)
 
         measure {
-            for i in 0..<1000 {
-                let _ = journey.sample(at: Float(i) / 1000.0)
+            for index in 0..<1000 {
+                let _ = journey.sample(at: Float(index) / 1000.0)
             }
         }
     }
