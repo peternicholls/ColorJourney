@@ -1,85 +1,83 @@
-# macOS 
-.DS_Store 
-.AppleDouble 
-.LSOverride 
-._* 
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
 
-# Xcode 
-*.xcodeproj 
-!*.xcodeproj/project.pbxproj 
-!*.xcodeproj/xcshareddata/ 
-!*.xcworkspace/contents.xcworkspacedata 
-*.xccheckout 
-*.moved-aside 
-*.xcuserstate 
-*.xcscmblueprint 
-xcuserdata/ 
-DerivedData/ 
-*.hmap 
-*.ipa 
-*.dSYM.zip 
-*.dSYM 
+# Xcode
+*.xcodeproj
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcworkspace/contents.xcworkspacedata
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+*.xcscmblueprint
+xcuserdata/
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
 
-# Swift Package Manager 
-.build/ 
-.swiftpm/ 
-Packages/ 
-Package.resolved 
-*.swiftpm 
+# Swift Package Manager
+.build/
+.swiftpm/
+Packages/
+Package.resolved
+*.swiftpm
 
-# CocoaPods 
-Pods/ 
-*.podspec 
+# CocoaPods
+Pods/
+*.podspec
 
-# Carthage 
-Carthage/Build/ 
+# Carthage
+Carthage/Build/
 
-# fastlane 
-fastlane/report.xml 
-fastlane/Preview.html 
-fastlane/screenshots/**/*.png 
-fastlane/test_output 
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
 
-# Code coverage 
-*.gcno 
-*.gcda 
-*.profdata 
-*.coverage 
+# Code coverage
+*.gcno
+*.gcda
+*.profdata
+*.coverage
 
-# Playgrounds 
-timeline.xctimeline 
-playground.xcworkspace 
+# Playgrounds
+timeline.xctimeline
+playground.xcworkspace
 
-# Swift Intermediate Files 
-*.swiftdeps 
-*.swiftmodule 
-*.swiftdoc 
+# Swift Intermediate Files
+*.swiftdeps
+*.swiftmodule
+*.swiftdoc
 
-# Backup files 
-*~ 
-*.bak 
-*.swp 
-*.orig 
+# Backup files
+*~
+*.bak
+*.swp
+*.orig
 
-# IDE 
-.vscode/ 
-.idea/ 
+# IDE
+.vscode/
+.idea/
 
-# Build 
-artifacts 
-*.o 
-*.a 
-*.so 
-*.dylib 
-*.dll 
+# Build artifacts
+*.o
+*.a
+*.so
+*.dylib
+*.dll
 
-# Documentation 
-build 
-docs/_build/ 
-docs/.doctrees/ 
-.docs/ 
+# Documentation build
+docs/_build/
+docs/.doctrees/
+.docs/
 
-# Testing 
-.test/ 
+# Testing
+.test/
 *.test
 *.out

@@ -1,0 +1,439 @@
+/*
+ * Colour Journey System - Swift Interface
+ * High-level Swift API wrapping high-performance C core
+ */
+
+import Foundation
+
+#if canImport(SwiftUI)
+import SwiftUI
+#endif
+
+// MARK: - Swift Types
+
+public struct ColourJourneyRGB: Hashable {
+    public var r: Float
+    public var g: Float
+    public var b: Float
+    
+    public init(r: Float, g: Float, b: Float) {
+        self.r = r
+        self.g = g
+        self.b = b
+    }
+    
+    #if canImport(SwiftUI)
+    public var color: Color {
+        Color(red: Double(r), green: Double(g), blue: Double(b))
+    }
+    #endif
+    
+    #if canImport(AppKit)
+    public var nsColor: NSColor {
+        NSColor(red: CGFloat(r), green: CGFloat(g), blue: CGFloat(b), alpha: 1.0)
+    }
+    #endif
+    
+    #if canImport(UIKit)
+    public var uiColor: UIColor {
+        UIColor(red: CGFloat(r), green: CGFloat(g), blue: CGFloat(b), alpha: 1.0)
+    }
+    #endif
+}
+
+// MARK: - Configuration Enums
+
+public enum LightnessBias {
+    case neutral
+    case lighter
+    case darker
+    case custom(weight: Float) // [-1, 1]
+}
+
+public enum ChromaBias {
+    case neutral
+    case muted
+    case vivid
+    case custom(multiplier: Float) // [0.5, 2.0]
+}
+
+public enum ContrastLevel {
+    case low
+    case medium
+    case high
+    case custom(threshold: Float) // Minimum OKLab ΔE
+}
+
+public enum TemperatureBias {
+    case neutral
+    case warm
+    case cool
+}
+
+public enum LoopMode {
+    case open
+    case closed
+    case pingPong
+}
+
+public struct VariationConfig {
+    public var enabled: Bool
+    public var dimensions: VariationDimensions
+    public var strength: VariationStrength
+    public var seed: UInt64
+    
+    public init(
+        enabled: Bool = false,
+        dimensions: VariationDimensions = [],
+        strength: VariationStrength = .subtle,
+        seed: UInt64 = 0x123456789ABCDEF0
+    ) {
+        self.enabled = enabled
+        self.dimensions = dimensions
+        self.strength = strength
+        self.seed = seed
+    }
+    
+    public static var off: VariationConfig {
+        VariationConfig(enabled: false)
+    }
+    
+    public static func subtle(dimensions: VariationDimensions, seed: UInt64? = nil) -> VariationConfig {
+        VariationConfig(
+            enabled: true,
+            dimensions: dimensions,
+            strength: .subtle,
+            seed: seed ?? 0x123456789ABCDEF0
+        )
+    }
+}
+
+public struct VariationDimensions: OptionSet {
+    public let rawValue: UInt32
+    
+    public init(rawValue: UInt32) {
+        self.rawValue = rawValue
+    }
+    
+    public static let hue = VariationDimensions(rawValue: 1 << 0)
+    public static let lightness = VariationDimensions(rawValue: 1 << 1)
+    public static let chroma = VariationDimensions(rawValue: 1 << 2)
+    
+    public static let all: VariationDimensions = [.hue, .lightness, .chroma]
+}
+
+public enum VariationStrength {
+    case subtle
+    case noticeable
+    case custom(magnitude: Float)
+}
+
+// MARK: - Journey Configuration
+
+public struct ColourJourneyConfig {
+    public var anchors: [ColourJourneyRGB]
+    public var lightness: LightnessBias
+    public var chroma: ChromaBias
+    public var contrast: ContrastLevel
+    public var midJourneyVibrancy: Float // [0, 1]
+    public var temperature: TemperatureBias
+    public var loopMode: LoopMode
+    public var variation: VariationConfig
+    
+    public init(
+        anchors: [ColourJourneyRGB],
+        lightness: LightnessBias = .neutral,
+        chroma: ChromaBias = .neutral,
+        contrast: ContrastLevel = .medium,
+        midJourneyVibrancy: Float = 0.3,
+        temperature: TemperatureBias = .neutral,
+        loopMode: LoopMode = .open,
+        variation: VariationConfig = .off
+    ) {
+        self.anchors = anchors
+        self.lightness = lightness
+        self.chroma = chroma
+        self.contrast = contrast
+        self.midJourneyVibrancy = midJourneyVibrancy
+        self.temperature = temperature
+        self.loopMode = loopMode
+        self.variation = variation
+    }
+    
+    // MARK: Preset Builders
+    
+    public static func singleAnchor(
+        _ color: ColourJourneyRGB,
+        style: JourneyStyle = .balanced
+    ) -> ColourJourneyConfig {
+        style.apply(to: ColourJourneyConfig(anchors: [color]))
+    }
+    
+    public static func multiAnchor(
+        _ colors: [ColourJourneyRGB],
+        style: JourneyStyle = .balanced
+    ) -> ColourJourneyConfig {
+        style.apply(to: ColourJourneyConfig(anchors: colors))
+    }
+}
+
+// MARK: - Journey Styles (Presets)
+
+public enum JourneyStyle {
+    case balanced
+    case pastelDrift
+    case vividLoop
+    case nightMode
+    case warmEarth
+    case coolSky
+    case custom(
+        lightness: LightnessBias,
+        chroma: ChromaBias,
+        contrast: ContrastLevel,
+        temperature: TemperatureBias
+    )
+    
+    func apply(to config: ColourJourneyConfig) -> ColourJourneyConfig {
+        var result = config
+        
+        switch self {
+        case .balanced:
+            result.lightness = .neutral
+            result.chroma = .neutral
+            result.contrast = .medium
+            result.temperature = .neutral
+            
+        case .pastelDrift:
+            result.lightness = .lighter
+            result.chroma = .muted
+            result.contrast = .low
+            result.midJourneyVibrancy = 0.1
+            
+        case .vividLoop:
+            result.lightness = .neutral
+            result.chroma = .vivid
+            result.contrast = .high
+            result.loopMode = .closed
+            result.midJourneyVibrancy = 0.5
+            
+        case .nightMode:
+            result.lightness = .darker
+            result.chroma = .custom(multiplier: 0.8)
+            result.contrast = .medium
+            
+        case .warmEarth:
+            result.temperature = .warm
+            result.chroma = .custom(multiplier: 0.9)
+            result.lightness = .custom(weight: -0.1)
+            
+        case .coolSky:
+            result.temperature = .cool
+            result.lightness = .lighter
+            result.chroma = .neutral
+            
+        case .custom(let l, let c, let con, let t):
+            result.lightness = l
+            result.chroma = c
+            result.contrast = con
+            result.temperature = t
+        }
+        
+        return result
+    }
+}
+
+// MARK: - Journey
+
+public final class ColourJourney {
+    private var handle: OpaquePointer?
+    
+    public init(config: ColourJourneyConfig) {
+        var cConfig = CJ_Config()
+        cj_config_init(&cConfig)
+        
+        // Anchors
+        cConfig.anchor_count = Int32(min(config.anchors.count, 8))
+        for (i, anchor) in config.anchors.prefix(8).enumerated() {
+            cConfig.anchors.i = CJ_RGB(r: anchor.r, g: anchor.g, b: anchor.b)
+        }
+        
+        // Lightness
+        switch config.lightness {
+        case .neutral:
+            cConfig.lightness_bias = CJ_LIGHTNESS_NEUTRAL
+        case .lighter:
+            cConfig.lightness_bias = CJ_LIGHTNESS_LIGHTER
+        case .darker:
+            cConfig.lightness_bias = CJ_LIGHTNESS_DARKER
+        case .custom(let weight):
+            cConfig.lightness_bias = CJ_LIGHTNESS_CUSTOM
+            cConfig.lightness_custom_weight = weight
+        }
+        
+        // Chroma
+        switch config.chroma {
+        case .neutral:
+            cConfig.chroma_bias = CJ_CHROMA_NEUTRAL
+        case .muted:
+            cConfig.chroma_bias = CJ_CHROMA_MUTED
+        case .vivid:
+            cConfig.chroma_bias = CJ_CHROMA_VIVID
+        case .custom(let mult):
+            cConfig.chroma_bias = CJ_CHROMA_CUSTOM
+            cConfig.chroma_custom_multiplier = mult
+        }
+        
+        // Contrast
+        switch config.contrast {
+        case .low:
+            cConfig.contrast_level = CJ_CONTRAST_LOW
+        case .medium:
+            cConfig.contrast_level = CJ_CONTRAST_MEDIUM
+        case .high:
+            cConfig.contrast_level = CJ_CONTRAST_HIGH
+        case .custom(let threshold):
+            cConfig.contrast_level = CJ_CONTRAST_CUSTOM
+            cConfig.contrast_custom_threshold = threshold
+        }
+        
+        cConfig.mid_journey_vibrancy = config.midJourneyVibrancy
+        
+        // Temperature
+        switch config.temperature {
+        case .neutral:
+            cConfig.temperature_bias = CJ_TEMPERATURE_NEUTRAL
+        case .warm:
+            cConfig.temperature_bias = CJ_TEMPERATURE_WARM
+        case .cool:
+            cConfig.temperature_bias = CJ_TEMPERATURE_COOL
+        }
+        
+        // Loop mode
+        switch config.loopMode {
+        case .open:
+            cConfig.loop_mode = CJ_LOOP_OPEN
+        case .closed:
+            cConfig.loop_mode = CJ_LOOP_CLOSED
+        case .pingPong:
+            cConfig.loop_mode = CJ_LOOP_PINGPONG
+        }
+        
+        // Variation
+        cConfig.variation_enabled = config.variation.enabled
+        cConfig.variation_dimensions = config.variation.dimensions.rawValue
+        switch config.variation.strength {
+        case .subtle:
+            cConfig.variation_strength = CJ_VARIATION_SUBTLE
+        case .noticeable:
+            cConfig.variation_strength = CJ_VARIATION_NOTICEABLE
+        case .custom(let mag):
+            cConfig.variation_strength = CJ_VARIATION_CUSTOM
+            cConfig.variation_custom_magnitude = mag
+        }
+        cConfig.variation_seed = config.variation.seed
+        
+        handle = cj_journey_create(&cConfig)
+    }
+    
+    deinit {
+        if let handle = handle {
+            cj_journey_destroy(handle)
+        }
+    }
+    
+    /// Sample the journey at parameter t ∈ [0, 1]
+    public func sample(at t: Float) -> ColourJourneyRGB {
+        guard let handle = handle else {
+            return ColourJourneyRGB(r: 0, g: 0, b: 0)
+        }
+        
+        let rgb = cj_journey_sample(handle, t)
+        return ColourJourneyRGB(r: rgb.r, g: rgb.g, b: rgb.b)
+    }
+    
+    /// Generate N discrete, perceptually distinct colors
+    public func discrete(count: Int) -> [ColourJourneyRGB] {
+        guard let handle = handle, count > 0 else {
+            return []
+        }
+        
+        var colors = [CJ_RGB](repeating: CJ_RGB(r: 0, g: 0, b: 0), count: count)
+        colors.withUnsafeMutableBufferPointer { buffer in
+            cj_journey_discrete(handle, Int32(count), buffer.baseAddress!)
+        }
+        
+        return colors.map { ColourJourneyRGB(r: $0.r, g: $0.g, b: $0.b) }
+    }
+}
+
+// MARK: - Convenience Extensions
+
+#if canImport(SwiftUI)
+extension ColourJourney {
+    /// Create a SwiftUI gradient from the journey
+    public func gradient(stops: Int = 10) -> Gradient {
+        let colors = (0..<stops).map { i in
+            sample(at: Float(i) / Float(stops - 1)).color
+        }
+        return Gradient(colors: colors)
+    }
+    
+    /// Create a linear gradient
+    public func linearGradient(
+        stops: Int = 10,
+        startPoint: UnitPoint = .leading,
+        endPoint: UnitPoint = .trailing
+    ) -> LinearGradient {
+        LinearGradient(
+            gradient: gradient(stops: stops),
+            startPoint: startPoint,
+            endPoint: endPoint
+        )
+    }
+}
+
+// MARK: - Color Utilities for SwiftUI
+
+extension Color {
+    public init(journeyRGB: ColourJourneyRGB) {
+        self = journeyRGB.color
+    }
+}
+#endif
+
+// MARK: - Example Usage & Documentation
+
+/*
+ EXAMPLE USAGE:
+ 
+ // Simple single-anchor journey
+ let journey = ColourJourney(
+     config: .singleAnchor(
+         ColourJourneyRGB(r: 0.3, g: 0.5, b: 0.8),
+         style: .balanced
+     )
+ )
+ 
+ // Sample continuously
+ let color = journey.sample(at: 0.5)
+ 
+ // Get discrete palette
+ let palette = journey.discrete(count: 10)
+ 
+ // Multi-anchor with variation
+ let config = ColourJourneyConfig(
+     anchors: [
+         ColourJourneyRGB(r: 1.0, g: 0.3, b: 0.3),
+         ColourJourneyRGB(r: 0.3, g: 1.0, b: 0.3),
+         ColourJourneyRGB(r: 0.3, g: 0.3, b: 1.0)
+     ],
+     loopMode: .closed,
+     variation: .subtle(dimensions: [.hue, .lightness])
+ )
+ let journey2 = ColourJourney(config: config)
+ 
+ // SwiftUI gradient
+ #if canImport(SwiftUI)
+ let gradient = journey.linearGradient(stops: 20)
+ #endif
+ */
