@@ -1,8 +1,55 @@
-# Color Journey System
+# Color Journey
 
-A high-performance, perceptually-aware color journey generator based on OKLab color space. Generates designer-quality color sequences for timelines, tracks, labels, and UI accents.
+**Programmatically created graduated color palettes *that actually look good!***
 
-**Based on [OKLab](https://bottosson.github.io/posts/oklab/) by Björn Ottosson** - a perceptually uniform color space designed for image processing and computer graphics.
+## The Problem
+
+Let's say, you need 12 distinct colors for timeline tracks. Or 8 category labels. Or a smooth gradient that doesn't turn to mud in the middle.
+
+The usual approaches fail:
+- **Linear RGB interpolation** produces muddy, inconsistent colors that clash
+- **Naive hue rotation** loses perceptual contrast—some colors scream, others vanish
+- **Hand-picked palettes** can't scale, adapt, or port across platforms
+- **Generic color libraries** give you primitives, not design intelligence
+
+You end up tweaking hex values by hand, copy-pasting from design tools, or settling for "good enough."
+
+## The Solution
+
+*Color Journey* doesn't generate any old color pallet, it **takes you on a journey through them**.
+
+Think of it like this: you're standing at a viewpoint (your anchor color). You want to explore the landscape of color space, but not randomly—you want an intentional path. Maybe you head toward lighter territory, or veer into warmer climates. Maybe you loop back to where you started, or ping-pong between destinations.
+
+The system plans that route by using the **[OKLab](https://bottosson.github.io/posts/oklab/)** color space. OKLab is a color space that matches human perception. As you travel, it makes sure:
+- The path curves naturally (no mechanical straight lines)
+- Each stop is visibly distinct (enforced perceptual contrast)
+- The journey never gets muddy or washed out (chroma and lightness management)
+- Hue transitions take the shortest path (no accidental rainbow detours)
+- The midpoint has energy (controlled vibrancy boosts)
+
+You specify the high-level intent—*lighter*, *more vibrant*, *warmer*—and get back a sequence of colors that feel designed, not computed. Hand-crafted quality, generated in microseconds. Fast enough for real-time use, no need to store the pallet as it is really efficient to generate on demand: repeatable, predictable, and portable.
+
+
+
+### What You Get
+
+**Designer controls, not color math:**  
+Configure lightness, chroma, contrast, vibrancy, and temperature instead of wrestling with RGB values or HSL angles.
+
+**Graduated palettes with intention:**  
+Colors transition smoothly along designed curves with shaped pacing—not flat linear steps.
+
+**Perceptually uniform output:**  
+Built on OKLab, ensuring consistent brightness, saturation, and contrast as you move through the palette.
+
+**Flexible journey modes:**  
+Continuous sampling for gradients, discrete stops for UI elements, seamless loops, or ping-pong reversals.
+
+**Production-ready performance:**  
+Optimized C core generates 10,000+ colors per second with deterministic, cross-platform output.
+
+**True portability:**  
+C99 core works everywhere (iOS, macOS, Linux, Windows, embedded). Swift wrapper adds ergonomic API and SwiftUI integration.
 
 ## Contents
 
