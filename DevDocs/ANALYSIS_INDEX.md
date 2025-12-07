@@ -6,6 +6,12 @@ This document indexes all analysis materials created during the brownfield proje
 
 ## 📋 Executive Summaries
 
+### [UNIVERSAL_PORTABILITY.md](UNIVERSAL_PORTABILITY.md) ⭐ **CORE VISION**
+- **Purpose:** The fundamental design philosophy and long-term vision
+- **Covers:** Why C99 core, multi-language support, real-world examples, implementation roadmap
+- **Read time:** 15 minutes
+- **Key takeaway:** ColorJourney is designed for universal use—C core, language wrappers, forever stable
+
 ### [EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md) ⭐ **START HERE**
 - **Purpose:** High-level overview of the entire project
 - **Covers:** Status, fulfillment scorecard, verdict, recommendations
@@ -258,15 +264,23 @@ ColorJourney/
 
 ## 🎓 Learning Path
 
-**If you're new to the project:**
+**If you're new to the project and want to understand the vision:**
 
-1. Start with [EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md) – get the big picture (10 min)
-2. Skim [QUICK_REFERENCE.md](QUICK_REFERENCE.md) – see both API patterns (5 min)
-3. Deep dive [OUTPUT_PATTERNS.md](OUTPUT_PATTERNS.md) – real-world examples (15 min)
-4. Review [API_ARCHITECTURE_DIAGRAM.md](API_ARCHITECTURE_DIAGRAM.md) – understand structure (5 min)
-5. Check [USAGE_AND_FULFILLMENT_ANALYSIS.md](USAGE_AND_FULFILLMENT_ANALYSIS.md) for gaps (20 min)
+1. Start with [UNIVERSAL_PORTABILITY.md](UNIVERSAL_PORTABILITY.md) – the core design philosophy (15 min) ⭐
+2. Then [EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md) – how the project fulfills its goals (10 min)
+3. Skim [QUICK_REFERENCE.md](QUICK_REFERENCE.md) – see both API patterns (5 min)
+4. Deep dive [OUTPUT_PATTERNS.md](OUTPUT_PATTERNS.md) – real-world examples (15 min)
+5. Check [USAGE_AND_FULFILLMENT_ANALYSIS.md](USAGE_AND_FULFILLMENT_ANALYSIS.md) for any gaps (20 min)
 
-**Total: ~55 minutes** to fully understand the project.
+**Total: ~65 minutes** to fully understand the project's vision, design, and implementation.
+
+**If you're integrating the library (just want to use it):**
+
+1. Skim [UNIVERSAL_PORTABILITY.md](UNIVERSAL_PORTABILITY.md) – understand the C core philosophy (5 min)
+2. Read [QUICK_REFERENCE.md](QUICK_REFERENCE.md) – API guide and examples (5 min)
+3. Review [OUTPUT_PATTERNS.md](OUTPUT_PATTERNS.md) – your specific use case (10 min)
+
+**Total: ~20 minutes** to get started using ColorJourney.
 
 ---
 
