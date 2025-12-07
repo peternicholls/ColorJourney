@@ -1,0 +1,42 @@
+excluded:
+  - .build
+  - .git
+
+rules:
+  # Identifier naming - be reasonable about loop variables
+  identifier_name:
+    min_length: 1
+    max_length: 40
+    excluded:
+      - id  # Common abbreviation for identifier
+
+  # File length - documentation can be long
+  file_length:
+    warning: 500
+    error: 800
+
+  # Type body length - break into extensions if needed
+  type_body_length:
+    warning: 400
+    error: 600
+
+  # Function body length
+  function_body_length:
+    warning: 75
+    error: 100
+
+  # Cyclomatic complexity
+  cyclomatic_complexity:
+    warning: 15
+    error: 20
+
+  # Line length - allow longer lines for complex expressions
+  line_length:
+    warning: 150
+    error: 200
+
+disabled_rules:
+  - trailing_comma
+  - vertical_parameter_alignment_on_call
+  - force_cast
+  - force_try

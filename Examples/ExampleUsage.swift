@@ -2,7 +2,7 @@ import ColorJourney
 
 // MARK: - Example 1: Simple Single-Anchor Journey
 
-let blueColor = ColorJourneyRGB(r: 0.3, g: 0.5, b: 0.8)
+let blueColor = ColorJourneyRGB(red: 0.3, green: 0.5, blue: 0.8)
 let journey1 = ColorJourney(config: .singleAnchor(blueColor, style: .balanced))
 
 // Sample at specific points
@@ -20,16 +20,16 @@ print()
 
 let palette = journey1.discrete(count: 5)
 print("Discrete Palette (5 colors):")
-for (i, color) in palette.enumerated() {
-    print("  Color \(i + 1): RGB(\(String(format: "%.2f", color.r)), \(String(format: "%.2f", color.g)), \(String(format: "%.2f", color.b)))")
+for (index, color) in palette.enumerated() {
+    print("  Color \(i + 1): RGB(\(String(format: "%.2f", color.red)), \(String(format: "%.2f", color.green)), \(String(format: "%.2f", color.blue)))")
 }
 print()
 
 // MARK: - Example 3: Multi-Anchor Journey
 
-let red = ColorJourneyRGB(r: 1.0, g: 0.3, b: 0.3)
-let green = ColorJourneyRGB(r: 0.3, g: 1.0, b: 0.3)
-let blue = ColorJourneyRGB(r: 0.3, g: 0.3, b: 1.0)
+let red = ColorJourneyRGB(red: 1.0, green: 0.3, blue: 0.3)
+let green = ColorJourneyRGB(red: 0.3, green: 1.0, blue: 0.3)
+let blue = ColorJourneyRGB(red: 0.3, green: 0.3, blue: 1.0)
 
 var multiConfig = ColorJourneyConfig.multiAnchor([red, green, blue], style: .balanced)
 multiConfig.loopMode = .closed  // Close the loop
@@ -37,14 +37,14 @@ let journey2 = ColorJourney(config: multiConfig)
 
 let multiPalette = journey2.discrete(count: 7)
 print("Multi-Anchor Journey (Red → Green → Blue, Closed Loop):")
-for (i, color) in multiPalette.enumerated() {
-    print("  Color \(i + 1): RGB(\(String(format: "%.2f", color.r)), \(String(format: "%.2f", color.g)), \(String(format: "%.2f", color.b)))")
+for (index, color) in multiPalette.enumerated() {
+    print("  Color \(i + 1): RGB(\(String(format: "%.2f", color.red)), \(String(format: "%.2f", color.green)), \(String(format: "%.2f", color.blue)))")
 }
 print()
 
 // MARK: - Example 4: Styled Journey
 
-let baseColor = ColorJourneyRGB(r: 0.5, g: 0.3, b: 0.7)
+let baseColor = ColorJourneyRGB(red: 0.5, green: 0.3, blue: 0.7)
 
 print("Different Styles (10 colors each):")
 let styles: [(name: String, style: JourneyStyle)] = [
