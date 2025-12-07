@@ -17,10 +17,10 @@ final class ColorJourneyTests: XCTestCase {
         let color2 = ColorJourneyRGB(red: 0.2, green: 0.8, blue: 0.6)
 
         // Note: RGB values are stored as-is, but should be clamped during conversion
-        XCTAssertEqual(color1.r, 1.5)  // Unclamped value stored
-        XCTAssertEqual(color1.g, -0.1) // Unclamped value stored
-        XCTAssertGreaterThanOrEqual(color2.r, 0)
-        XCTAssertLessThanOrEqual(color2.b, 1)
+        XCTAssertEqual(color1.red, 1.5)  // Unclamped value stored
+        XCTAssertEqual(color1.green, -0.1) // Unclamped value stored
+        XCTAssertGreaterThanOrEqual(color2.red, 0)
+        XCTAssertLessThanOrEqual(color2.blue, 1)
     }
 
     // MARK: - Single Anchor Journey Tests
@@ -40,12 +40,12 @@ final class ColorJourneyTests: XCTestCase {
         XCTAssertNotNil(end)
 
         // All colors should have valid RGB values
-        XCTAssertGreaterThanOrEqual(start.r, 0)
-        XCTAssertLessThanOrEqual(start.r, 1)
-        XCTAssertGreaterThanOrEqual(mid.g, 0)
-        XCTAssertLessThanOrEqual(mid.g, 1)
-        XCTAssertGreaterThanOrEqual(end.b, 0)
-        XCTAssertLessThanOrEqual(end.b, 1)
+        XCTAssertGreaterThanOrEqual(start.red, 0)
+        XCTAssertLessThanOrEqual(start.red, 1)
+        XCTAssertGreaterThanOrEqual(mid.green, 0)
+        XCTAssertLessThanOrEqual(mid.green, 1)
+        XCTAssertGreaterThanOrEqual(end.blue, 0)
+        XCTAssertLessThanOrEqual(end.blue, 1)
     }
 
     func testSingleAnchorPastelStyle() {
@@ -356,9 +356,9 @@ final class ColorJourneyTests: XCTestCase {
         let color1 = journey.sample(at: 0.5)
         let color2 = journey.sample(at: 0.5)
 
-        XCTAssertEqual(color1.r, color2.r, accuracy: 0.0001)
-        XCTAssertEqual(color1.g, color2.g, accuracy: 0.0001)
-        XCTAssertEqual(color1.b, color2.b, accuracy: 0.0001)
+        XCTAssertEqual(color1.red, color2.red, accuracy: 0.0001)
+        XCTAssertEqual(color1.green, color2.green, accuracy: 0.0001)
+        XCTAssertEqual(color1.blue, color2.blue, accuracy: 0.0001)
     }
 
     func testVariationEnabled() {

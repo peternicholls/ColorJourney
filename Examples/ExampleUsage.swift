@@ -11,9 +11,12 @@ let color2 = journey1.sample(at: 0.5)
 let color3 = journey1.sample(at: 1.0)
 
 print("Single-Anchor Journey (Balanced):")
-print("  Start:  RGB(\(String(format: "%.2f", color1.r)), \(String(format: "%.2f", color1.g)), \(String(format: "%.2f", color1.b)))")
-print("  Middle: RGB(\(String(format: "%.2f", color2.r)), \(String(format: "%.2f", color2.g)), \(String(format: "%.2f", color2.b)))")
-print("  End:    RGB(\(String(format: "%.2f", color3.r)), \(String(format: "%.2f", color3.g)), \(String(format: "%.2f", color3.b)))")
+let c1Str = "RGB(\(String(format: "%.2f", color1.red)), \(String(format: "%.2f", color1.green)), \(String(format: "%.2f", color1.blue)))"
+let c2Str = "RGB(\(String(format: "%.2f", color2.red)), \(String(format: "%.2f", color2.green)), \(String(format: "%.2f", color2.blue)))"
+let c3Str = "RGB(\(String(format: "%.2f", color3.red)), \(String(format: "%.2f", color3.green)), \(String(format: "%.2f", color3.blue)))"
+print("  Start:  \(c1Str)")
+print("  Middle: \(c2Str)")
+print("  End:    \(c3Str)")
 print()
 
 // MARK: - Example 2: Discrete Palette Generation

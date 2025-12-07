@@ -21,7 +21,9 @@ func basicExamples() {
 
     let palette1 = journey1.discrete(count: 5)
     for (index, color) in palette1.enumerated() {
-        print("  Color \(i): RGB(\(String(format: "%.2f", color.red)), \(String(format: "%.2f", color.green)), \(String(format: "%.2f", color.blue)))")
+        let rgb = "RGB(\(String(format: "%.2f", color.red)), "
+        let gb = "\(String(format: "%.2f", color.green)), \(String(format: "%.2f", color.blue)))"
+        print("  Color \(index): \(rgb)\(gb)")
     }
 
     // Example 2: Multi-anchor closed loop
@@ -37,7 +39,9 @@ func basicExamples() {
 
     let palette2 = journey2.discrete(count: 6)
     for (index, color) in palette2.enumerated() {
-        print("  Color \(i): RGB(\(String(format: "%.2f", color.red)), \(String(format: "%.2f", color.green)), \(String(format: "%.2f", color.blue)))")
+        let rgb = "RGB(\(String(format: "%.2f", color.red)), "
+        let gb = "\(String(format: "%.2f", color.green)), \(String(format: "%.2f", color.blue)))"
+        print("  Color \(index): \(rgb)\(gb)")
     }
 }
 
@@ -65,7 +69,9 @@ func stylePresetExamples() {
 
         let colors = journey.discrete(count: 3)
         for (index, color) in colors.enumerated() {
-            print("  [\(i)] RGB(\(String(format: "%.2f", color.red)), \(String(format: "%.2f", color.green)), \(String(format: "%.2f", color.blue)))")
+            let rgb = "RGB(\(String(format: "%.2f", color.red)), "
+            let gb = "\(String(format: "%.2f", color.green)), \(String(format: "%.2f", color.blue)))"
+            print("  [\(index)] \(rgb)\(gb)")
         }
     }
 }
@@ -129,7 +135,10 @@ func continuousSamplingExample() {
     for index in 0..<10 {
         let parameterT = Float(index) / 9.0
         let color = journey.sample(at: parameterT)
-        print("  t=\(String(format: "%.2f", parameterT)): RGB(\(String(format: "%.2f", color.red)), \(String(format: "%.2f", color.green)), \(String(format: "%.2f", color.blue)))")
+        let tVal = String(format: "%.2f", parameterT)
+        let rgb = "RGB(\(String(format: "%.2f", color.red)), "
+        let gb = "\(String(format: "%.2f", color.green)), \(String(format: "%.2f", color.blue)))"
+        print("  t=\(tVal): \(rgb)\(gb)")
     }
 }
 
@@ -162,7 +171,9 @@ func advancedConfigExample() {
 
     print("Custom configured palette (8 colors):")
     for (index, color) in palette.enumerated() {
-        print("  [\(i)] RGB(\(String(format: "%.2f", color.red)), \(String(format: "%.2f", color.green)), \(String(format: "%.2f", color.blue)))")
+        let rgb = "RGB(\(String(format: "%.2f", color.red)), "
+        let gb = "\(String(format: "%.2f", color.green)), \(String(format: "%.2f", color.blue)))"
+        print("  [\(index)] \(rgb)\(gb)")
     }
 }
 
@@ -242,8 +253,12 @@ func uiUseCaseExample() {
 // MARK: - Helper Functions
 
 func formatPalette(_ colors: [ColorJourneyRGB]) -> String {
-    colors.map { "(\(String(format: "%.2f", $0.r)), \(String(format: "%.2f", $0.g)), \(String(format: "%.2f", $0.b)))" }
-        .joined(separator: ", ")
+    colors.map {
+        let r = String(format: "%.2f", $0.red)
+        let g = String(format: "%.2f", $0.green)
+        let b = String(format: "%.2f", $0.blue)
+        return "(\(r), \(g), \(b))"
+    }.joined(separator: ", ")
 }
 
 // MARK: - Main

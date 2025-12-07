@@ -252,19 +252,31 @@ public final class ColorJourney {
         var cConfig = CJ_Config()
         cj_config_init(&cConfig)
 
-        // Anchors
+        Self.configureAnchors(&cConfig, from: config)
+        Self.configureLightness(&cConfig, from: config)
+        Self.configureChroma(&cConfig, from: config)
+        Self.configureContrast(&cConfig, from: config)
+        cConfig.mid_journey_vibrancy = config.midJourneyVibrancy
+        Self.configureTemperature(&cConfig, from: config)
+        Self.configureLoopMode(&cConfig, from: config)
+        Self.configureVariation(&cConfig, from: config)
+
+        handle = cj_journey_create(&cConfig)
+    }
+
+    private static func configureAnchors(_ cConfig: inout CJ_Config, from config: ColorJourneyConfig) {
         cConfig.anchor_count = Int32(min(config.anchors.count, 8))
         var anchors = [CJ_RGB](repeating: CJ_RGB(r: 0, g: 0, b: 0), count: 8)
         for (index, anchor) in config.anchors.prefix(8).enumerated() {
             anchors[index] = CJ_RGB(r: anchor.red, g: anchor.green, b: anchor.blue)
         }
-        // Copy to C struct (tuple in Swift)
         cConfig.anchors = (
             anchors[0], anchors[1], anchors[2], anchors[3],
             anchors[4], anchors[5], anchors[6], anchors[7]
         )
+    }
 
-        // Lightness
+    private static func configureLightness(_ cConfig: inout CJ_Config, from config: ColorJourneyConfig) {
         switch config.lightness {
         case .neutral:
             cConfig.lightness_bias = CJ_LIGHTNESS_NEUTRAL
@@ -276,8 +288,9 @@ public final class ColorJourney {
             cConfig.lightness_bias = CJ_LIGHTNESS_CUSTOM
             cConfig.lightness_custom_weight = weight
         }
+    }
 
-        // Chroma
+    private static func configureChroma(_ cConfig: inout CJ_Config, from config: ColorJourneyConfig) {
         switch config.chroma {
         case .neutral:
             cConfig.chroma_bias = CJ_CHROMA_NEUTRAL
@@ -289,8 +302,9 @@ public final class ColorJourney {
             cConfig.chroma_bias = CJ_CHROMA_CUSTOM
             cConfig.chroma_custom_multiplier = mult
         }
+    }
 
-        // Contrast
+    private static func configureContrast(_ cConfig: inout CJ_Config, from config: ColorJourneyConfig) {
         switch config.contrast {
         case .low:
             cConfig.contrast_level = CJ_CONTRAST_LOW
@@ -302,10 +316,9 @@ public final class ColorJourney {
             cConfig.contrast_level = CJ_CONTRAST_CUSTOM
             cConfig.contrast_custom_threshold = threshold
         }
+    }
 
-        cConfig.mid_journey_vibrancy = config.midJourneyVibrancy
-
-        // Temperature
+    private static func configureTemperature(_ cConfig: inout CJ_Config, from config: ColorJourneyConfig) {
         switch config.temperature {
         case .neutral:
             cConfig.temperature_bias = CJ_TEMPERATURE_NEUTRAL
@@ -314,8 +327,9 @@ public final class ColorJourney {
         case .cool:
             cConfig.temperature_bias = CJ_TEMPERATURE_COOL
         }
+    }
 
-        // Loop mode
+    private static func configureLoopMode(_ cConfig: inout CJ_Config, from config: ColorJourneyConfig) {
         switch config.loopMode {
         case .open:
             cConfig.loop_mode = CJ_LOOP_OPEN
@@ -324,8 +338,9 @@ public final class ColorJourney {
         case .pingPong:
             cConfig.loop_mode = CJ_LOOP_PINGPONG
         }
+    }
 
-        // Variation
+    private static func configureVariation(_ cConfig: inout CJ_Config, from config: ColorJourneyConfig) {
         cConfig.variation_enabled = config.variation.enabled
         cConfig.variation_dimensions = config.variation.dimensions.rawValue
         switch config.variation.strength {
@@ -338,8 +353,6 @@ public final class ColorJourney {
             cConfig.variation_custom_magnitude = mag
         }
         cConfig.variation_seed = config.variation.seed
-
-        handle = cj_journey_create(&cConfig)
     }
 
     deinit {
