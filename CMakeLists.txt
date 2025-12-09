@@ -42,14 +42,8 @@ target_include_directories(colorjourney
 )
 
 # Platform-specific settings
-if(APPLE)
-    # macOS specific
-    set_target_properties(colorjourney PROPERTIES
-        SOVERSION 1
-        VERSION 1.0.0
-    )
-elseif(UNIX)
-    # Linux/Unix
+if(APPLE OR UNIX)
+    # macOS/Linux/Unix
     set_target_properties(colorjourney PROPERTIES
         SOVERSION 1
         VERSION 1.0.0
@@ -98,7 +92,9 @@ install(TARGETS colorjourney
     RUNTIME DESTINATION bin
 )
 
-install(FILES Sources/CColorJourney/include/ColorJourney.h
+install(FILES
+    Sources/CColorJourney/include/ColorJourney.h
+    Sources/CColorJourney/include/colorjourney_version.h
     DESTINATION include
 )
 
@@ -117,8 +113,14 @@ install(FILES
 )
 
 # Summary
+if(BUILD_SHARED_LIBS)
+    set(LIB_TYPE "Shared")
+else()
+    set(LIB_TYPE "Static")
+endif()
+
 message(STATUS "ColorJourney C Library Configuration:")
 message(STATUS "  Build Type: ${CMAKE_BUILD_TYPE}")
-message(STATUS "  Library Type: ${BUILD_SHARED_LIBS STREQUAL OFF AND "Static" OR "Shared"}")
+message(STATUS "  Library Type: ${LIB_TYPE}")
 message(STATUS "  Testing: ${ENABLE_TESTING}")
 message(STATUS "  C Standard: C${CMAKE_C_STANDARD}")

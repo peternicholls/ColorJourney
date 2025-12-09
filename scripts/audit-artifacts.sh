@@ -71,7 +71,7 @@ if [ "$ARTIFACT_TYPE" = "swift" ]; then
     
     # Forbidden items
     echo "  Forbidden items:"
-    FORBIDDEN_ITEMS=("Sources/CColorJourney" "DevDocs" "Dockerfile" "Makefile" "Package.swift~" ".github" "Tests/CColorJourneyTests")
+    FORBIDDEN_ITEMS=("Sources/CColorJourney" "DevDocs" "Dockerfile" "Makefile" "Package.swift~" ".github" "Tests/CColorJourneyTests" "*.backup*")
     HAS_FORBIDDEN=0
     for item in "${FORBIDDEN_ITEMS[@]}"; do
         if find "$TEMP_DIR" -path "*/$item" -o -path "*/$item/*" 2>/dev/null | grep -q .; then
@@ -81,6 +81,9 @@ if [ "$ARTIFACT_TYPE" = "swift" ]; then
     done
     if [ "$HAS_FORBIDDEN" = "0" ]; then
         echo "    ✓ No forbidden items"
+    else
+        echo -e "${RED}Audit failed: forbidden items detected in Swift artifact${NC}"
+        exit 1
     fi
 
 elif [ "$ARTIFACT_TYPE" = "c" ]; then
@@ -116,6 +119,9 @@ elif [ "$ARTIFACT_TYPE" = "c" ]; then
     done
     if [ "$HAS_FORBIDDEN" = "0" ]; then
         echo "    ✓ No forbidden items"
+    else
+        echo -e "${RED}Audit failed: forbidden items detected in C artifact${NC}"
+        exit 1
     fi
 
 fi

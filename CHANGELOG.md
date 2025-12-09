@@ -43,13 +43,21 @@ When cutting a new release, create a new section following this template:
 - Use semantic versioning for all releases (MAJOR.MINOR.PATCH)
 - Tag releases as `vX.Y.Z` (e.g., `v1.0.0`)
 - Include version mapping note: "Requires C core ≥vX.Y.Z" for Swift releases
-- Link to GitHub releases: `[X.Y.Z]: https://github.com/yourusername/ColorJourney/releases/tag/vX.Y.Z`
+- Link to GitHub releases: `[X.Y.Z]: https://github.com/peternicholls/ColorJourney/releases/tag/vX.Y.Z`
 - Document breaking changes clearly in the release notes
 - For multi-language releases, separate [C] and [Swift] sections if versions differ
 
 ---
 
 ## [Unreleased]
+
+### Added
+- (upcoming features)
+
+### Fixed
+- (upcoming fixes)
+
+## [1.0.0] - 2025-12-09
 
 ### Added
 - Initial release of Color Journey System
@@ -68,16 +76,13 @@ When cutting a new release, create a new section following this template:
 - Comprehensive documentation and examples
 - Pure C core for maximum portability
 - Idiomatic Swift wrapper API
-
-## [1.0.0] - 2025-12-06
-
-### Added
-- Initial public release
-- Core C library with OKLab color space operations
-- Swift wrapper with type-safe configuration
 - Complete API documentation
 - Example code and usage patterns
 - Performance optimizations for real-time color generation
 
-[Unreleased]: https://github.com/yourusername/ColorJourney/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/yourusername/ColorJourney/releases/tag/v1.0.0
+### Notes
+- Swift version requirement: ≥5.9
+- Platform support: iOS 13+, macOS 10.15+, watchOS 6+, tvOS 13+, visionOS 1+, Linux, Windows
+
+[Unreleased]: https://github.com/peternicholls/ColorJourney/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/peternicholls/ColorJourney/releases/tag/v1.0.0

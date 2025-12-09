@@ -178,7 +178,7 @@ Testing Focus:
 **Create RC branch**:
 
 ```bash
-cd /Users/peternicholls/code/ColourJourney
+cd /path/to/your/ColorJourney/repo
 
 # Ensure develop is current
 git checkout develop

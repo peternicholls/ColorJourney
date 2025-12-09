@@ -23,7 +23,7 @@ Or use Xcode: **File** → **Add Package Dependencies** → Enter repository URL
 Download the latest release from [GitHub Releases](https://github.com/peternicholls/ColorJourney/releases):
 
 1. Choose your platform: **macOS**, **Linux**, or **Windows**
-2. Download `ColorJourney-C-{version}-{platform}.tar.gz`
+2. Download `libcolorjourney-{version}-{platform}-{arch}.tar.gz`
 3. Extract and link against `libColorJourney.a`
 
 ---
@@ -32,7 +32,7 @@ Download the latest release from [GitHub Releases](https://github.com/peternicho
 
 ### Swift Releases (Source-Only)
 
-**Package Name**: `ColorJourney-Swift-{version}.tar.gz`
+**Package Name**: `ColorJourney-{version}.tar.gz`
 
 **Contents**:
 - Swift source code (`Sources/ColorJourney/`)
@@ -49,7 +49,7 @@ Download the latest release from [GitHub Releases](https://github.com/peternicho
 
 ### C Library Releases (Static Binary)
 
-**Package Name**: `ColorJourney-C-{version}-{platform}.tar.gz`
+**Package Name**: `libcolorjourney-{version}-{platform}-{arch}.tar.gz`
 
 **Contents**:
 - Static library (`.a` file)
@@ -89,7 +89,7 @@ Swift releases depend on a minimum C core version. Check the release notes for c
 | 1.1.0        | 1.0.0+                 | Swift API additions |
 | 2.0.0        | 2.0.0+                 | Breaking changes |
 
-See [DevDocs/VERSION_MAPPING.md](../DevDocs/VERSION_MAPPING.md) for complete mapping.
+**Swift releases depend on a specific C core version. Check the release notes for exact compatibility information.**
 
 ---
 
