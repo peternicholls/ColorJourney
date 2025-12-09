@@ -1,0 +1,2 @@
+/usr/bin/ar qc libcolorjourney.a CMakeFiles/colorjourney.dir/Sources/CColorJourney/ColorJourney.c.o
+/usr/bin/ranlib libcolorjourney.a

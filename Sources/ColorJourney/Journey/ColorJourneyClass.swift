@@ -204,8 +204,8 @@ public final class ColorJourney {
                 if bufferIndex >= buffer.count {
                     buffer = strongSelf.discrete(range: current..<(current + chunkSize))
                     bufferIndex = 0
-                    // If no more colors, end iteration
-                    if buffer.isEmpty { return nil }
+                    // Buffer should never be empty for valid ranges
+                    assert(!buffer.isEmpty, "Unexpected empty buffer in discreteColors sequence")
                 }
                 let color = buffer[bufferIndex]
                 bufferIndex += 1
