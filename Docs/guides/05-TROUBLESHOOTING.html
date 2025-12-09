@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>Troubleshooting - ColorJourney</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="../index.html" class="logo">📚 ColorJourney Docs</a>
+            <ul class="links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="01-GETTING_STARTED.html">Getting Started</a></li>
+                <li><a href="02-API_QUICK_REFERENCE.html">API Reference</a></li>
+                <li><a href="03-SWIFT_INTEGRATION.html">Swift</a></li>
+                <li><a href="04-C_INTEGRATION.html">C</a></li>
+                <li><a href="05-TROUBLESHOOTING.html">Troubleshooting</a></li>
+                <li><a href="06-FAQ.html">FAQ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>🔧 Troubleshooting Guide</h1>
+        <p class="subtitle">Solutions for common issues and problems</p>
+
+        <div class="toc">
+            <h3>Quick Navigation</h3>
+            <ul>
+                <li><a href="#installation">Installation Issues</a></li>
+                <li><a href="#color-issues">Color Issues</a></li>
+                <li><a href="#api-issues">API Issues</a></li>
+                <li><a href="#performance">Performance Issues</a></li>
+                <li><a href="#platform">Platform-Specific</a></li>
+                <li><a href="#documentation">Documentation</a></li>
+            </ul>
+        </div>
+
+        <h2 id="installation">📦 Installation Issues</h2>
+
+        <h3>Swift Package Not Found</h3>
+        <div class="callout warning">
+            <strong>Problem:</strong> Xcode can't find the ColorJourney package
+        </div>
+
+        <p><strong>Solution:</strong> Verify the URL and clean build cache:</p>
+        <pre><code>// In Package.swift, ensure URL is correct:
+.package(url: "https://github.com/peternicholls/ColorJourney.git", from: "1.0.0")
+
+// Clean and rebuild:
+// Xcode: Cmd+Shift+K (clean) then Cmd+B (build)</code></pre>
+
+        <h3>Compilation Error: "ColorJourney.h not found"</h3>
+        <div class="callout warning">
+            <strong>Problem:</strong> C header file isn't being found
+        </div>
+
+        <p><strong>Solution:</strong> Add header search path:</p>
+        <pre><code>// In your project or Makefile:
+gcc -I/path/to/ColorJourney/Sources/CColorJourney/include \
+    myapp.c ColorJourney.c -lm -o myapp</code></pre>
+
+        <h3>Linker Error: "Undefined reference to cj_journey_create"</h3>
+        <div class="callout warning">
+            <strong>Problem:</strong> C implementation file isn't being linked
+        </div>
+
+        <p><strong>Solution:</strong> Ensure ColorJourney.c is being compiled:</p>
+        <pre><code>// Option 1: Compile together
+gcc -std=c99 myapp.c ColorJourney.c -lm -o myapp
+
+// Option 2: Build library first
+gcc -std=c99 -c ColorJourney.c -o ColorJourney.o
+ar rcs libcolorjourney.a ColorJourney.o
+gcc -std=c99 myapp.c -L. -lcolorjourney -lm -o myapp</code></pre>
+
+        <h2 id="color-issues">🎨 Color Issues</h2>
+
+        <h3>Colors Look Too Similar</h3>
+        <div class="callout warning">
+            <strong>Problem:</strong> Generated palette colors aren't distinct enough
+        </div>
+
+        <p><strong>Solution:</strong> Increase contrast enforcement:</p>
+        <pre><code>// Swift
+let config = .singleAnchor(color, style: .balanced)
+    .contrast(.high)  // or .custom(threshold: 0.15)
+
+// C
+config.contrast = CJ_CONTRAST_HIGH;</code></pre>
+
+        <h3>Colors Are Too Bright/Dark</h3>
+        <div class="callout warning">
+            <strong>Problem:</strong> Palette isn't suitable for your background
+        </div>
+
+        <p><strong>Solution:</strong> Adjust lightness bias:</p>
+        <pre><code>// For dark backgrounds, use lighter colors:
+let config = .singleAnchor(color, style: .balanced)
+    .lightness(.lighter)
+
+// For light backgrounds, use darker colors:
+let config = .singleAnchor(color, style: .balanced)
+    .lightness(.darker)</code></pre>
+
+        <h3>Colors Are Too Muted/Dull</h3>
+        <div class="callout warning">
+            <strong>Problem:</strong> Palette lacks vibrancy
+        </div>
+
+        <p><strong>Solution:</strong> Increase chroma (saturation):</p>
+        <pre><code>let config = .singleAnchor(color, style: .balanced)
+    .chroma(.vivid)  // 1.4x saturation</code></pre>
+
+        <h3>Wrong Colors Are Generated</h3>
+        <div class="callout warning">
+            <strong>Problem:</strong> Output colors don't match expectations
+        </div>
+
+        <p><strong>Solution:</strong> Remember RGB values are linear, not gamma-corrected:</p>
+        <pre><code>// ✗ WRONG: Assuming RGB (0.5, 0.5, 0.5) is 50% brightness
+// It's actually ~22% brightness due to sRGB gamma
+
+// ✓ RIGHT: ColorJourney handles the math internally
+// Just provide your RGB colors and trust the output</code></pre>
+
+        <h2 id="api-issues">🔌 API Issues</h2>
+
+        <h3>Palette Colors Don't Match Between Calls</h3>
+        <div class="callout warning">
+            <strong>Problem:</strong> Same config produces different colors each time
+        </div>
+
+        <p><strong>Solution:</strong> ColorJourney is deterministic. Check if you're using variation:</p>
+        <pre><code>// ✗ WRONG: Variation enabled without seed
+let config = ColorJourneyConfig(
+    anchors: [color],
+    variation: .subtle(dimensions: [.hue], seed: nil)  // Random each time!
+)
+
+// ✓ RIGHT: Use fixed seed for reproducibility
+let config = ColorJourneyConfig(
+    anchors: [color],
+    variation: .subtle(dimensions: [.hue], seed: 42)  // Same seed = same colors
+)</code></pre>
+
+        <h3>Performance Issue: Colors Generated Very Slowly</h3>
+        <div class="callout warning">
+            <strong>Problem:</strong> Palette generation is slow
+        </div>
+
+        <p><strong>Solution:</strong> Create journey once, reuse it:</p>
+        <pre><code>// ✗ SLOW: Creating journey repeatedly
+for i in 0..<1000 {
+    let journey = ColorJourney(config: config)  // Recreated every loop!
+    let color = journey.sample(at: Float(i) / 1000)
+}
+
+// ✓ FAST: Create once
+let journey = ColorJourney(config: config)
+var colors: [ColorJourneyRGB] = []
+for i in 0..<1000 {
+    colors.append(journey.sample(at: Float(i) / 1000))
+}</code></pre>
+
+        <h3>Memory Leak in C Code</h3>
+        <div class="callout danger">
+            <strong>Problem:</strong> Memory usage increases over time
+        </div>
+
+        <p><strong>Solution:</strong> Ensure cleanup happens:</p>
+        <pre><code>// ✓ CORRECT: Always destroy journey
+CJ_Journey* journey = cj_journey_create(&config);
+// ... use journey ...
+cj_journey_destroy(journey);
+
+// ✓ CORRECT: Always free allocated buffers
+CJ_RGB* palette = malloc(count * sizeof(CJ_RGB));
+cj_journey_discrete(journey, count, palette);
+free(palette);  // Must free!</code></pre>
+
+        <h2 id="performance">⚡ Performance Issues</h2>
+
+        <h3>Discrete Palette Generation is Slow</h3>
+        <div class="callout warning">
+            <strong>Problem:</strong> Generating 10,000+ color palette takes too long
+        </div>
+
+        <p><strong>Solution:</strong> Use continuous sampling instead:</p>
+        <pre><code>// ✗ SLOWER: Discrete with contrast enforcement
+let palette = journey.discrete(count: 10000)
+
+// ✓ FASTER: Continuous sampling (no contrast checking)
+var colors: [ColorJourneyRGB] = []
+for i in 0..<10000 {
+    let t = Float(i) / 9999.0
+    colors.append(journey.sample(at: t))
+}</code></pre>
+
+        <h3>SwiftUI View Redraws Slowly</h3>
+        <div class="callout warning">
+            <strong>Problem:</strong> ColorJourney calculations happen on every view redraw
+        </div>
+
+        <p><strong>Solution:</strong> Move calculations outside the view body:</p>
+        <pre><code>// ✗ SLOW: Journey created in body
+struct MyView: View {
+    var body: some View {
+        let journey = ColorJourney(config: config)  // Recalculates every frame!
+        let colors = journey.discrete(count: 8)
+        // ...
+    }
+}
+
+// ✓ FAST: Journey created once
+struct MyView: View {
+    let journey = ColorJourney(config: config)  // Created once, reused
+    
+    var body: some View {
+        let colors = journey.discrete(count: 8)
+        // ...
+    }
+}</code></pre>
+
+        <h2 id="platform">🖥️ Platform-Specific Issues</h2>
+
+        <h3>iOS: Colors Look Different Than Simulator</h3>
+        <div class="callout warning">
+            <strong>Problem:</strong> Real device shows different colors
+        </div>
+
+        <p><strong>Solution:</strong> This is normal due to display differences:</p>
+        <ul>
+            <li>Different devices have different color accuracies</li>
+            <li>Brightness/contrast settings affect appearance</li>
+            <li>ColorJourney's math is correct; variations are device-dependent</li>
+        </ul>
+
+        <h3>macOS: Command-line Tool Fails to Build</h3>
+        <div class="callout warning">
+            <strong>Problem:</strong> Xcode command tools not available
+        </div>
+
+        <p><strong>Solution:</strong> Install Xcode command line tools:</p>
+        <pre><code>xcode-select --install</code></pre>
+
+        <h3>Linux: Missing Math Library</h3>
+        <div class="callout warning">
+            <strong>Problem:</strong> Linker error mentioning math functions
+        </div>
+
+        <p><strong>Solution:</strong> Always link the math library:</p>
+        <pre><code>gcc myapp.c ColorJourney.c -o myapp -lm  # -lm is required!</code></pre>
+
+        <h2 id="documentation">📚 Documentation Issues</h2>
+
+        <h3>HTML Documentation Shows 404 Errors</h3>
+        <div class="callout warning">
+            <strong>Problem:</strong> Docs serve some files but not others
+        </div>
+
+        <p><strong>Solution:</strong> See <a href="../SWIFT_DOCC_404_SOLUTION.md">Swift-DocC 404 Solution</a> guide</p>
+
+        <h3>API Documentation Doesn't Show Examples</h3>
+        <div class="callout warning">
+            <strong>Problem:</strong> Generated API docs lack code examples
+        </div>
+
+        <p><strong>Solution:</strong> Check source code documentation comments:</p>
+        <pre><code>// Look for docstring comments in:
+// - Sources/ColorJourney/ColorJourney.swift (Swift)
+// - Sources/CColorJourney/include/ColorJourney.h (C)
+// - Examples/ folder for working examples</code></pre>
+
+        <h2>🆘 Still Having Issues?</h2>
+
+        <ol>
+            <li>Check the <a href="06-FAQ.html">FAQ</a> for more common questions</li>
+            <li>Review <a href="01-GETTING_STARTED.html">Getting Started</a> for basic setup</li>
+            <li>See the <a href="../generated/swift-docc/">Swift API Docs</a> or <a href="../generated/doxygen/html/">C
+                    API Docs</a></li>
+            <li>Browse working examples in <a href="../../Examples/">Examples/</a> folder</li>
+            <li>Check the <a href="../../DevDocs/standards/DOCUMENTATION.md">Documentation Standards</a> for
+                architecture details</li>
+        </ol>
+
+        <div class="callout success">
+            <strong>✅ Pro Tip:</strong> Run the included tests to verify installation:
+            <pre><code>swift test              # Swift tests
+make test-c             # C tests</code></pre>
+        </div>
+    </main>
+
+    <footer>
+        <p><strong>ColorJourney Documentation</strong> | <a href="../index.html">Home</a></p>
+        <p>Generated 2025-12-08</p>
+    </footer>
+</body>
+
+</html>

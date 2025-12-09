@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>API Usage Guide - ColorJourney</title>
+    <link rel="stylesheet" href="guides/styles.css">
+    <style>
+        .breadcrumb {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .breadcrumb {
+                color: #aaa;
+            }
+        }
+
+        .breadcrumb a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .breadcrumb a {
+                color: #66b3ff;
+            }
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .intro-callout {
+            background: #e3f2fd;
+            border-left: 4px solid #0066cc;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1.5rem 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .intro-callout {
+                background: #1a3a52;
+                border-left-color: #66b3ff;
+            }
+        }
+
+        .guide-section {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .guide-section {
+                background: #242424;
+            }
+        }
+
+        .guide-section h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .code-example {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 4px;
+            border-left: 3px solid #0066cc;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .code-example {
+                background: #1a1a1a;
+                border-left-color: #66b3ff;
+            }
+        }
+
+        .code-example code {
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #d63384;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .code-example code {
+                color: #ff6b9d;
+            }
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .feature-card {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .feature-card {
+                background: #2a2a2a;
+                border-color: #444;
+            }
+        }
+
+        .feature-card h4 {
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+
+        .nav-button {
+            display: inline-block;
+            background: #0066cc;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .nav-button {
+                background: #0052a3;
+            }
+        }
+
+        .nav-button:hover {
+            background: #0052a3;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .nav-button:hover {
+                background: #003d7a;
+            }
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .warning {
+                background: #664d03;
+                border-left-color: #ffc107;
+            }
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .success {
+                background: #1e5631;
+                border-left-color: #95d5b2;
+            }
+        }
+
+        .toc {
+            background: #f0f0f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .toc {
+                background: #2a2a2a;
+            }
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .toc li {
+            margin-bottom: 0.5rem;
+        }
+
+        .toc a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .toc a {
+                color: #66b3ff;
+            }
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">ColorJourney</a>
+            <ul class="links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="api/usage.html" class="active">API Usage</a></li>
+                <li><a href="guides/01-GETTING_STARTED.html">Guides</a></li>
+                <li><a href="generated/swift-docc/">Swift API</a></li>
+                <li><a href="generated/doxygen/html/">C API</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="index.html">Home</a> / API Usage Guide
+        </div>
+
+        <h1>🎨 ColorJourney API Usage Guide</h1>
+        <p class="subtitle">Learn how to create beautiful, perceptually-aware color palettes</p>
+
+        <div class="intro-callout">
+            <strong>Welcome!</strong> This guide will walk you through everything you need to know to use ColorJourney
+            in your projects.
+            Whether you're building a Swift app, embedding the C library, or just exploring the interactive playground,
+            you'll find clear examples and best practices here.
+        </div>
+
+        <!-- Quick Navigation -->
+        <div class="toc">
+            <h3>📖 Quick Navigation</h3>
+            <ul>
+                <li><a href="#swift-quick-start">Swift Quick Start</a></li>
+                <li><a href="#c-quick-start">C Quick Start</a></li>
+                <li><a href="#core-concepts">Core Concepts</a></li>
+                <li><a href="#configuration">Configuration Guide</a></li>
+                <li><a href="#real-world">Real-World Examples</a></li>
+                <li><a href="#web-playground">Web Playground</a></li>
+                <li><a href="#troubleshooting">Troubleshooting</a></li>
+            </ul>
+        </div>
+
+        <!-- Swift Quick Start -->
+        <section id="swift-quick-start" class="guide-section">
+            <h3>🔷 Swift Quick Start (5 minutes)</h3>
+            <p>Get a basic journey running in Swift with just a few lines of code.</p>
+
+            <h4>Step 1: Create a Journey</h4>
+            <p>The simplest way to get started: use a preset style.</p>
+            <div class="code-example"><code>
+import ColorJourney
+
+// Create a journey with a single color and a preset style
+let journey = ColorJourney(
+    config: .singleAnchor(
+        ColorJourneyRGB(red: 0.3, green: 0.5, blue: 0.8),
+        style: .balanced
+    )
+)
+            </code></div>
+
+            <h4>Step 2: Generate Colors</h4>
+            <p>Get either discrete colors for UI elements or sample continuously for gradients.</p>
+            <div class="code-example"><code>
+// For UI elements (e.g., timeline tracks, labels, buttons)
+let palette = journey.discrete(count: 8)
+
+// For smooth gradients
+let midColor = journey.sample(at: 0.5)
+            </code></div>
+
+            <h4>Step 3: Use in SwiftUI</h4>
+            <div class="code-example"><code>
+import SwiftUI
+
+struct MyView: View {
+    let journey = ColorJourney(
+        config: .singleAnchor(
+            ColorJourneyRGB(red: 0.4, green: 0.5, blue: 0.9),
+            style: .vividLoop
+        )
+    )
+    
+    var body: some View {
+        VStack {
+            // Use a gradient
+            Rectangle()
+                .fill(journey.linearGradient(stops: 20))
+                .frame(height: 100)
+            
+            // Use discrete colors
+            HStack {
+                ForEach(journey.discrete(count: 5).indices, id: \.self) { i in
+                    Circle()
+                        .fill(journey.discrete(count: 5)[i].color)
+                        .frame(width: 30)
+                }
+            }
+        }
+    }
+}
+            </code></div>
+
+            <div class="success">
+                <strong>✓ You're done!</strong> You now have a working color journey.
+                Want to explore more? Continue to <a href="#configuration">Configuration Guide</a>.
+            </div>
+        </section>
+
+        <!-- C Quick Start -->
+        <section id="c-quick-start" class="guide-section">
+            <h3>🔨 C Quick Start (5 minutes)</h3>
+            <p>Using ColorJourney from C? Here's the essentials.</p>
+
+            <h4>Step 1: Include the Header</h4>
+            <div class="code-example"><code>
+#include "ColorJourney.h"
+#include &lt;stdio.h&gt;
+            </code></div>
+
+            <h4>Step 2: Initialize Configuration</h4>
+            <div class="code-example"><code>
+CJ_Config config;
+cj_config_init(&config);  // Safe defaults
+
+// Set your anchor color
+config.anchor_count = 1;
+config.anchors[0] = (CJ_RGB){0.30f, 0.50f, 0.80f};
+
+// Configure behavior
+config.contrast_level = CJ_CONTRAST_MEDIUM;
+config.loop_mode = CJ_LOOP_OPEN;
+            </code></div>
+
+            <h4>Step 3: Create and Sample</h4>
+            <div class="code-example"><code>
+// Create the journey
+CJ_Journey journey = cj_journey_create(&config);
+
+// Generate a palette
+CJ_RGB palette[5];
+cj_journey_discrete(journey, 5, palette);
+
+// Or sample at a point
+CJ_RGB color = cj_journey_sample(journey, 0.42f);
+
+// Always clean up
+cj_journey_destroy(journey);
+            </code></div>
+
+            <h4>Step 4: Compile</h4>
+            <div class="code-example"><code>
+gcc -std=c99 -Wall -lm \
+    my_program.c \
+    Sources/CColorJourney/ColorJourney.c \
+    -I Sources/CColorJourney/include \
+    -o my_program
+            </code></div>
+
+            <div class="success">
+                <strong>✓ Done!</strong> You've compiled and can now use ColorJourney from C.
+            </div>
+        </section>
+
+        <!-- Core Concepts -->
+        <section id="core-concepts" class="guide-section">
+            <h3>📚 Core Concepts Explained</h3>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🎯 Journey</h4>
+                    <p>A path through color space. Think of it as a route you travel, sampling colors at different
+                        points along the way. Can be open (distinct start/end), closed (loops), or ping-pong (reverses).
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <h4>⚓ Anchor Colors</h4>
+                    <p>The starting point(s) of your journey. You can use 1-8 anchor colors. The journey interpolates
+                        between them intelligently, maintaining perceptual consistency.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🎨 OKLab Color Space</h4>
+                    <p>The magic behind ColorJourney. OKLab is a perceptually-uniform color space where distance in the
+                        space closely matches human perception of color difference.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>📊 Sampling</h4>
+                    <p>There are two ways to get colors:<br>
+                        • <strong>Continuous:</strong> Sample at any point (0.0-1.0) for smooth gradients<br>
+                        • <strong>Discrete:</strong> Get N evenly-spaced colors for UI elements</p>
+                </div>
+                <div class="feature-card">
+                    <h4>⚙️ Biases</h4>
+                    <p>Control the perceptual character of your palette. Biases for lightness, chroma (saturation),
+                        contrast, and temperature let you express design intent without low-level tuning.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🎲 Seeded Variation</h4>
+                    <p>Add organic micro-variation to colors while staying deterministic. Same seed = same variation,
+                        making results reproducible and auditable.</p>
+                </div>
+            </div>
+
+            <h4>Visual Journey Through Color Space</h4>
+            <p>Imagine your anchor color as a starting point. As you move from t=0 to t=1:</p>
+            <ul>
+                <li><strong>Lightness</strong> gradually shifts (lighter or darker based on your bias)</li>
+                <li><strong>Chroma</strong> is controlled to avoid muddy midpoints</li>
+                <li><strong>Hue</strong> takes the shortest path and respects temperature biases</li>
+                <li><strong>Contrast</strong> is enforced between adjacent colors</li>
+            </ul>
+            <p>The result? Professional-looking palettes that work for real design use cases.</p>
+        </section>
+
+        <!-- Configuration Guide -->
+        <section id="configuration" class="guide-section">
+            <h3>⚙️ Configuration Guide</h3>
+
+            <h4>Quick Reference: Preset Styles</h4>
+            <p>The fastest way to get great results. Use these for 80% of your use cases:</p>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>.balanced</h4>
+                    <p>Neutral, versatile. Good all-purpose palette.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>.pastelDrift</h4>
+                    <p>Light, muted, soft. Perfect for gentle interfaces.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>.vividLoop</h4>
+                    <p>Saturated, high-contrast, closed loop. Bold and energetic.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>.nightMode</h4>
+                    <p>Dark, subdued. Ideal for low-light viewing.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>.warmEarth</h4>
+                    <p>Warm bias, natural tones. Cozy and grounded.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>.coolSky</h4>
+                    <p>Cool bias, light and airy. Fresh and modern.</p>
+                </div>
+            </div>
+
+            <h4>Advanced Configuration</h4>
+            <p>Need fine control? Build a custom configuration:</p>
+            <div class="code-example"><code>
+let config = ColorJourneyConfig(
+    anchors: [color1, color2],
+    lightness: .lighter,           // or .darker, .neutral, .custom(weight)
+    chroma: .vivid,                // or .muted, .neutral, .custom(multiplier)
+    contrast: .high,               // or .low, .medium, .custom(threshold)
+    temperature: .warm,            // or .cool, .neutral
+    loopMode: .closed,             // or .open, .pingPong
+    variation: .subtle(
+        dimensions: [.hue, .lightness],
+        seed: 12345
+    )
+)
+            </code></div>
+
+            <h4>Understanding Each Parameter</h4>
+            <ul>
+                <li><strong>Lightness:</strong> Shifts brightness. .lighter gives brighter colors, .darker gives darker.
+                    Use .custom(weight) for fine control (0-1).</li>
+                <li><strong>Chroma:</strong> Saturation multiplier. .muted (0.6x), .neutral (1.0x), .vivid (1.4x).</li>
+                <li><strong>Contrast:</strong> Minimum perceptual difference (ΔE) between adjacent colors. Higher = more
+                    distinct.</li>
+                <li><strong>Temperature:</strong> Hue bias. .warm pushes toward reds/oranges, .cool toward blues/greens.
+                </li>
+                <li><strong>Loop Mode:</strong> How the journey wraps. .open is distinct start/end, .closed loops
+                    seamlessly, .pingPong reverses.</li>
+                <li><strong>Variation:</strong> Subtle randomness. .off for deterministic, .subtle for light variation,
+                    .noticeable for more.</li>
+            </ul>
+        </section>
+
+        <!-- Real-World Examples -->
+        <section id="real-world" class="guide-section">
+            <h3>🌍 Real-World Examples</h3>
+
+            <h4>Example 1: Timeline Tracks (12 Distinct Colors)</h4>
+            <p><em>Use case:</em> Video editing, project management, calendar views</p>
+            <div class="code-example"><code>
+let journey = ColorJourney(
+    config: .singleAnchor(
+        ColorJourneyRGB(red: 0.4, green: 0.5, blue: 0.9),
+        style: .balanced
+    )
+)
+let trackColors = journey.discrete(count: 12)
+// Now use trackColors[0] through trackColors[11] for your tracks
+            </code></div>
+
+            <h4>Example 2: High-Contrast Label System (8 Categories)</h4>
+            <p><em>Use case:</em> Data visualization, category badges, accessible UI</p>
+            <div class="code-example"><code>
+let journey = ColorJourney(config: ColorJourneyConfig(
+    anchors: [
+        ColorJourneyRGB(red: 0.8, green: 0.3, blue: 0.3),
+        ColorJourneyRGB(red: 0.3, green: 0.8, blue: 0.8)
+    ],
+    contrast: .high,
+    loopMode: .closed
+))
+let labelColors = journey.discrete(count: 8)
+            </code></div>
+
+            <h4>Example 3: Smooth Gradient (Progress Indicator)</h4>
+            <p><em>Use case:</em> Progress bars, heat maps, spectrum displays</p>
+            <div class="code-example"><code>
+let journey = ColorJourney(
+    config: .singleAnchor(
+        ColorJourneyRGB(red: 0.2, green: 0.8, blue: 0.3),
+        style: .vividLoop
+    )
+)
+
+// Sample 256 colors for a smooth gradient
+for i in 0..&lt;256 {
+    let t = Float(i) / 255.0
+    let color = journey.sample(at: t)
+    // Use color in your gradient
+}
+            </code></div>
+
+            <h4>Example 4: User-Specific Colors (Seeded Variation)</h4>
+            <p><em>Use case:</em> User preferences, consistent randomization, personalization</p>
+            <div class="code-example"><code>
+// Same anchor, different seeds = different but consistent colors per user
+let userID: UInt32 = hashFunction(userId)
+let journey = ColorJourney(config: ColorJourneyConfig(
+    anchors: [baseColor],
+    variation: .subtle(dimensions: [.hue, .lightness], seed: userID)
+))
+let userPalette = journey.discrete(count: 5)
+// User always gets the same palette for their ID
+            </code></div>
+        </section>
+
+        <!-- Web Playground -->
+        <section id="web-playground" class="guide-section">
+            <h3>🎮 Try It Interactive: Web Playground</h3>
+
+            <p>Want to experiment without writing code? The ColorJourney Web Playground lets you:</p>
+            <ul>
+                <li>✓ Adjust all parameters in real-time</li>
+                <li>✓ See previews immediately</li>
+                <li>✓ Export as CSS, JSON, or Swift code</li>
+                <li>✓ Share palette links</li>
+                <li>✓ Check WCAG contrast ratios</li>
+                <li>✓ Visualize colors in OKLab space</li>
+            </ul>
+
+            <div class="intro-callout">
+                <strong>Note:</strong> The web version uses the exact same C engine compiled to WebAssembly,
+                so results are deterministic across platforms.
+            </div>
+
+            <div class="nav-links">
+                <a href="https://colorjourney.dev" target="_blank" class="nav-button">
+                    Open Web Playground
+                </a>
+                <a href="https://github.com/peternicholls/ColorJourneyWebsite" target="_blank" class="nav-button">
+                    View Source Code
+                </a>
+            </div>
+
+            <h4>Web Playground Features</h4>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🎨 Live Preview</h4>
+                    <p>See your palette update in real-time as you adjust parameters. Perfect for exploring.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>📊 Diagnostics</h4>
+                    <p>View perceptual distance (ΔE) between colors and WCAG contrast ratios for accessibility.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>💾 Export</h4>
+                    <p>Download as CSS variables, JSON config, or Swift code ready to paste into your project.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🔍 3D Viewer</h4>
+                    <p>Visualize your palette in OKLab color space to understand perceptual relationships.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Best Practices -->
+        <section id="best-practices" class="guide-section">
+            <h3>✨ Best Practices</h3>
+
+            <h4>Do ✓</h4>
+            <ul>
+                <li>✓ Start with preset styles for quick results</li>
+                <li>✓ Use discrete() for UI elements, sample() for gradients</li>
+                <li>✓ Set contrast to .high for accessible interfaces</li>
+                <li>✓ Use seeded variation for reproducible personalization</li>
+                <li>✓ Test contrast ratios in the web playground</li>
+                <li>✓ Consider loop mode: .closed for cyclic data, .open for linear</li>
+            </ul>
+
+            <h4>Don't ✗</h4>
+            <ul>
+                <li>✗ Don't use random seeds if you need reproducibility</li>
+                <li>✗ Don't ignore contrast for accessibility—test with tools</li>
+                <li>✗ Don't set anchor_count to 0</li>
+                <li>✗ Don't forget to destroy() journeys in C code (memory leak)</li>
+                <li>✗ Don't assume WebAssembly will load—check for TypeScript fallback</li>
+            </ul>
+        </section>
+
+        <!-- Troubleshooting -->
+        <section id="troubleshooting" class="guide-section">
+            <h3>🔧 Troubleshooting</h3>
+
+            <h4>Problem: Colors look muddy in the middle</h4>
+            <p><strong>Solution:</strong> Increase midJourneyVibrancy (default is 0, range is 0-1):</p>
+            <div class="code-example"><code>
+let config = ColorJourneyConfig(
+    anchors: [myColor],
+    midJourneyVibrancy: 0.6  // Boost the center
+)
+            </code></div>
+
+            <h4>Problem: Colors are too similar, hard to distinguish</h4>
+            <p><strong>Solution:</strong> Increase contrast level:</p>
+            <div class="code-example"><code>
+let config = ColorJourneyConfig(
+    anchors: [myColor],
+    contrast: .high  // or .custom(threshold: 0.15)
+)
+            </code></div>
+
+            <h4>Problem: C code crashes when creating journey</h4>
+            <p><strong>Solution:</strong> Check that config.anchor_count is ≥ 1 and ≤ 8:</p>
+            <div class="code-example"><code>
+if (config.anchor_count < 1 || config.anchor_count > 8) {
+    fprintf(stderr, "Invalid anchor count\n");
+    return 1;
+}
+            </code></div>
+
+            <h4>Problem: Web playground says "WASM failed to load"</h4>
+            <p><strong>Solution:</strong> This is expected in offline/sandboxed environments. The TypeScript fallback
+                kicks in automatically with identical results.</p>
+
+            <h4>Problem: Generated palette doesn't match web version</h4>
+            <p><strong>Solution:</strong> Check that you're using the same seed and configuration. Determinism is
+                guaranteed only with identical inputs.</p>
+        </section>
+
+        <!-- Next Steps -->
+        <section class="guide-section">
+            <h3>📖 Next Steps</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4><a href="guides/02-API_QUICK_REFERENCE.html">API Quick Reference</a></h4>
+                    <p>One-page lookup for functions, types, and parameters.</p>
+                </div>
+                <div class="feature-card">
+                    <h4><a href="guides/03-SWIFT_INTEGRATION.html">Swift Integration Guide</a></h4>
+                    <p>Deep dive into SwiftUI, AppKit, and UIKit integration.</p>
+                </div>
+                <div class="feature-card">
+                    <h4><a href="guides/04-C_INTEGRATION.html">C Integration Guide</a></h4>
+                    <p>Embedding in C/C++ projects, FFI, and embedded systems.</p>
+                </div>
+                <div class="feature-card">
+                    <h4><a href="generated/swift-docc/">Swift API Documentation</a></h4>
+                    <p>Complete reference with IDE integration and cross-references.</p>
+                </div>
+            </div>
+        </section>
+
+        <div
+            style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 0.9rem;">
+            <p>💡 <strong>Tip:</strong> Bookmark this page and the <a href="https://colorjourney.dev">web playground</a>
+                for quick reference while building.</p>
+            <p>Last updated: December 2025 | <a href="https://github.com/peternicholls/ColorJourney">View on GitHub</a>
+            </p>
+        </div>
+    </main>
+
+    <footer
+        style="text-align: center; padding: 2rem; color: #666; font-size: 0.85rem; border-top: 1px solid #ddd; margin-top: 3rem;">
+        <p>ColorJourney © 2025 | Built with OKLab color science | Licensed under MIT</p>
+    </footer>
+</body>
+
+</html>

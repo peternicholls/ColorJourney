@@ -95,25 +95,53 @@ ColorJourney/
 
 ## Coding Standards
 
+### Documentation Standards
+
+**All contributions must follow the documentation standards in [DOCUMENTATION.md](DOCUMENTATION.md).**
+
+Key requirements:
+1. **Public APIs must be fully documented** with appropriate comment style:
+   - C code: Doxygen format (`@param`, `@return`, `@brief`)
+   - Swift code: DocC format (`///` with structured sections)
+
+2. **Use consistent terminology** from the [Terminology Glossary](DOCUMENTATION.md#terminology-glossary)
+   - Never invent new terms; update the glossary if needed
+   - Examples: "journey", "anchor color", "OKLab", "discrete palette", "perceptual distance"
+
+3. **Complex algorithms must be explained** with a block comment including:
+   - Purpose and trade-offs
+   - Why this approach was chosen
+   - References to published sources or design documents
+
+4. **All documentation must pass the [Review Checklist](DOCUMENTATION.md#review-checklist)**
+   - Completeness: all APIs documented
+   - Clarity: terminology consistent, no vague language
+   - References: design decisions cited, external links valid
+   - Format: correct Doxygen/DocC format
+
 ### C Code
 
 - Follow C99 standard
 - Use `snake_case` for functions and variables
-- Prefix all public symbols with `cj_` or `CJ_`
+- Prefix all public symbols with `CJ_`
 - Keep functions focused and small
-- Comment complex algorithms
+- Comment complex algorithms with [ALGORITHM blocks](DOCUMENTATION.md#algorithm-block-comment-complex-logic)
 - Optimize for performance but maintain readability
 - Use `const` for immutable parameters
 - Always check for null pointers
+- Document memory ownership (who allocates, who frees)
 
 ```c
-// Good example
-float cj_delta_e(CJ_Lab a, CJ_Lab b) {
-    float dL = a.L - b.L;
-    float da = a.a - b.a;
-    float db = a.b - b.b;
-    return sqrtf(dL * dL + da * da + db * db);
-}
+/**
+ * @brief Compute perceptual distance in OKLab space.
+ *
+ * @param a Color in OKLab space
+ * @param b Color in OKLab space
+ * @return Perceptual distance (ΔE) as Euclidean distance in OKLab
+ *
+ * @note Deterministic: identical inputs always produce identical output.
+ */
+float CJ_DeltaE(CJ_Lab a, CJ_Lab b);
 ```
 
 ### Swift Code
@@ -122,29 +150,33 @@ float cj_delta_e(CJ_Lab a, CJ_Lab b) {
 - Use `PascalCase` for types, `camelCase` for functions/properties
 - Prefer value types (structs) over reference types
 - Use enums for configuration options
-- Document public APIs with DocC-style comments
+- Document all public APIs with DocC comments (see [template](DOCUMENTATION.md#swift-function-documentation-docc))
 - Keep functions pure when possible
 - Use `guard` for early returns
 
 ```swift
-// Good example
-public func sample(at t: Float) -> ColorJourneyRGB {
-    guard let handle = handle else {
-        return ColorJourneyRGB(r: 0, g: 0, b: 0)
-    }
-    
-    let rgb = cj_journey_sample(handle, t)
-    return ColorJourneyRGB(r: rgb.r, g: rgb.g, b: rgb.b)
-}
+/// Generates a discrete palette of distinct colors from the journey.
+/// 
+/// - Parameters:
+///   - count: Number of colors to generate (≥ 1)
+///   - seed: Optional seeded variation for deterministic micro-variation
+/// - Returns: Array of `count` Color objects in sRGB
+/// - Throws: `ColorJourneyError.invalidCount` if count < 1
+///
+/// - Note: Perceptual contrast is automatically enforced between adjacent colors
+/// - SeeAlso: ``sample(at:)`` for continuous sampling
+public func discrete(count: Int, seed: UInt64? = nil) throws -> [Color]
 ```
 
 ### Documentation
 
-- Document all public APIs
-- Include usage examples in documentation
-- Update README.md for significant changes
-- Add entries to CHANGELOG.md
-- Use clear, concise language
+- **All public APIs must be documented** (C: Doxygen, Swift: DocC)
+- **Include usage examples** in function/type documentation
+- **Update README.md** for significant API changes
+- **Update CHANGELOG.md** with all user-facing changes
+- **Use clear, concise language** with consistent terminology
+- **Reference external documents** properly (see [External References](DOCUMENTATION.md#external-references))
+- **Run documentation tools** before submitting PR (see [Tools & Generation](DOCUMENTATION.md#tools--generation))
 
 ## Submitting Changes
 

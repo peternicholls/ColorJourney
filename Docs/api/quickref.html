@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>Quick Reference - ColorJourney</title>
+    <link rel="stylesheet" href="guides/styles.css">
+    <style>
+        .breadcrumb {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .breadcrumb {
+                color: #aaa;
+            }
+        }
+
+        .quick-ref {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .ref-card {
+            background: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #0066cc;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .ref-card {
+                background: #2a2a2a;
+            }
+        }
+
+        .ref-card h3 {
+            margin-top: 0;
+            color: #0066cc;
+            font-size: 1rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .ref-card h3 {
+                color: #66b3ff;
+            }
+        }
+
+        .ref-card code {
+            display: block;
+            background: #f0f0f0;
+            padding: 1rem;
+            border-radius: 4px;
+            font-family: 'Menlo', 'Monaco', monospace;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            overflow-x: auto;
+            color: #d63384;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .ref-card code {
+                background: #1a1a1a;
+                color: #ff6b9d;
+            }
+        }
+
+        .ref-card p {
+            font-size: 0.9rem;
+            margin: 0.5rem 0;
+            line-height: 1.6;
+        }
+
+        .parameters {
+            margin: 1.5rem 0;
+            background: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .parameters {
+                background: #2a2a2a;
+            }
+        }
+
+        .param-list {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .param-name {
+            font-family: 'Menlo', 'Monaco', monospace;
+            color: #d63384;
+            font-weight: 600;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .param-name {
+                color: #ff6b9d;
+            }
+        }
+
+        .param-desc {
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .code-snippet {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 4px;
+            font-family: 'Menlo', 'Monaco', monospace;
+            font-size: 0.85rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .code-snippet {
+                background: #1a1a1a;
+            }
+        }
+
+        .code-snippet code {
+            color: #d63384;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .code-snippet code {
+                color: #ff6b9d;
+            }
+        }
+
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .preset-card {
+            background: #f9f9f9;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .preset-card {
+                background: #2a2a2a;
+                border-color: #444;
+            }
+        }
+
+        .preset-card strong {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #0066cc;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .preset-card strong {
+                color: #66b3ff;
+            }
+        }
+
+        .preset-card small {
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .preset-card small {
+                color: #aaa;
+            }
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: #f9f9f9;
+            font-size: 0.9rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .matrix-table {
+                background: #2a2a2a;
+            }
+        }
+
+        .matrix-table th,
+        .matrix-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        @media (prefers-color-scheme: dark) {
+
+            .matrix-table th,
+            .matrix-table td {
+                border-color: #444;
+            }
+        }
+
+        .matrix-table th {
+            background: #f0f0f0;
+            font-weight: 600;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .matrix-table th {
+                background: #1a1a1a;
+            }
+        }
+
+        .matrix-table td code {
+            background: transparent;
+            color: #d63384;
+            font-family: 'Menlo', 'Monaco', monospace;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .matrix-table td code {
+                color: #ff6b9d;
+            }
+        }
+
+        .section-title {
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #ddd;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .section-title {
+                border-top-color: #444;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .quick-ref {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            border-bottom: 2px solid #ddd;
+            flex-wrap: wrap;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .tabs {
+                border-bottom-color: #444;
+            }
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 500;
+            color: #666;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .tab-btn {
+                color: #aaa;
+            }
+        }
+
+        .tab-btn:hover {
+            color: #0066cc;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .tab-btn:hover {
+                color: #66b3ff;
+            }
+        }
+
+        .tab-btn.active {
+            color: #0066cc;
+            border-bottom-color: #0066cc;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .tab-btn.active {
+                color: #66b3ff;
+                border-bottom-color: #66b3ff;
+            }
+        }
+
+        .tab-content {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="../index.html" class="logo">ColorJourney</a>
+            <ul class="links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="usage.html">API Usage</a></li>
+                <li><a href="../guides/01-GETTING_STARTED.html">Guides</a></li>
+                <li><a href="../generated/swift-docc/">Swift API</a></li>
+                <li><a href="../generated/doxygen/html/">C API</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> / Quick Reference
+        </div>
+
+        <h1>⚡ Quick Reference</h1>
+        <p class="subtitle">Copy-paste snippets and cheat sheets for common tasks</p>
+
+        <!-- Swift Basics -->
+        <section class="section-title">
+            <h2>🚀 Swift Quickstart</h2>
+        </section>
+
+        <div class="quick-ref">
+            <div class="ref-card">
+                <h3>Basic Palette (5 min)</h3>
+                <code>
+import ColorJourney
+
+let journey = ColorJourney(
+    config: .singleAnchor(
+        ColorJourneyRGB(
+            red: 0.2, green: 0.5, blue: 0.9
+        ),
+        style: .balanced
+    )
+)
+
+let colors = journey.discrete(count: 6)
+                </code>
+                <p>Start with a single color and get 6 distinct palette colors instantly.</p>
+            </div>
+
+            <div class="ref-card">
+                <h3>Smooth Gradient</h3>
+                <code>
+let gradient = journey.linearGradient(
+    stops: 20
+)
+
+Rectangle()
+    .fill(gradient)
+    .frame(height: 40)
+                </code>
+                <p>Create a smooth multi-stop gradient for SwiftUI views.</p>
+            </div>
+
+            <div class="ref-card">
+                <h3>Custom Config</h3>
+                <code>
+let config = ColorJourneyConfig(
+    anchors: [baseColor],
+    contrast: .high,
+    chroma: .vivid,
+    lightness: .lighter,
+    loopMode: .closed
+)
+
+let journey = ColorJourney(config: config)
+                </code>
+                <p>Full control with explicit parameters for fine-tuning.</p>
+            </div>
+
+            <div class="ref-card">
+                <h3>Seeded Variation</h3>
+                <code>
+let journey = ColorJourney(
+    config: ColorJourneyConfig(
+        anchors: [color],
+        variation: .subtle(
+            dimensions: [.hue, .lightness],
+            seed: UInt32(userId)
+        )
+    )
+)
+                </code>
+                <p>Deterministic per-user color variation using seed.</p>
+            </div>
+        </div>
+
+        <!-- C Basics -->
+        <section class="section-title">
+            <h2>🔧 C Quickstart</h2>
+        </section>
+
+        <div class="quick-ref">
+            <div class="ref-card">
+                <h3>Compile & Link</h3>
+                <code>
+gcc -std=c99 -Wall \
+    -I./Sources/CColorJourney/include \
+    main.c \
+    ./Sources/CColorJourney/ColorJourney.c \
+    -lm -o myapp
+                </code>
+                <p>Minimal build command. Link math library (-lm).</p>
+            </div>
+
+            <div class="ref-card">
+                <h3>Basic Usage</h3>
+                <code>
+#include "ColorJourney.h"
+
+ColorJourneyConfig config = 
+    config_init();
+ColorJourneyRGB color = RGB(0.2, 0.5, 0.9);
+
+ColorJourney journey = 
+    create_journey(color, config);
+
+ColorJourneyRGB sampled = 
+    sample_journey(journey, 0.5);
+
+destroy_journey(journey);
+                </code>
+                <p>Core workflow: init → create → sample → destroy.</p>
+            </div>
+
+            <div class="ref-card">
+                <h3>Discrete Palette</h3>
+                <code>
+ColorJourneyRGB* palette = 
+    discrete_journey(journey, 8, 
+    NULL);
+
+for (int i = 0; i < 8; i++) {
+    printf("Color %d: RGB(%.2f, %.2f, %.2f)\n",
+        i,
+        palette[i].red,
+        palette[i].green,
+        palette[i].blue
+    );
+}
+
+free(palette);
+                </code>
+                <p>Generate N colors and iterate.</p>
+            </div>
+
+            <div class="ref-card">
+                <h3>No Dependencies</h3>
+                <code>
+// Zero external dependencies!
+// Requires only:
+// - C99 standard library
+// - libm (math)
+
+// Works on:
+// - Linux, macOS, Windows
+// - Embedded systems
+// - WebAssembly (Emscripten)
+                </code>
+                <p>Pure C99 + math.h. Extremely portable.</p>
+            </div>
+        </div>
+
+        <!-- Parameter Cheat Sheet -->
+        <section class="section-title">
+            <h2>📋 Parameter Cheat Sheet</h2>
+        </section>
+
+        <div class="parameters">
+            <h3>Style Presets</h3>
+            <div class="preset-grid">
+                <div class="preset-card">
+                    <strong>balanced</strong>
+                    <small>Default. Medium contrast & chroma. Best for general use.</small>
+                </div>
+                <div class="preset-card">
+                    <strong>pastelDrift</strong>
+                    <small>Soft, desaturated. Good for calm, minimalist designs.</small>
+                </div>
+                <div class="preset-card">
+                    <strong>vividLoop</strong>
+                    <small>High saturation, full spectrum. For data visualization.</small>
+                </div>
+                <div class="preset-card">
+                    <strong>nightMode</strong>
+                    <small>Dark, high contrast. Ideal for dark themes.</small>
+                </div>
+                <div class="preset-card">
+                    <strong>warmEarth</strong>
+                    <small>Warm tones. For natural, earthy palettes.</small>
+                </div>
+                <div class="preset-card">
+                    <strong>coolSky</strong>
+                    <small>Cool tones. For technical, professional designs.</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="parameters">
+            <h3>Configuration Options</h3>
+            <table class="matrix-table">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Options</th>
+                        <th>Default</th>
+                        <th>Effect</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>contrast</code></td>
+                        <td><code>.low</code>, <code>.medium</code>, <code>.high</code></td>
+                        <td><code>.medium</code></td>
+                        <td>Color spread in perceptual space</td>
+                    </tr>
+                    <tr>
+                        <td><code>chroma</code></td>
+                        <td><code>.neutral</code>, <code>.balanced</code>, <code>.vivid</code></td>
+                        <td><code>.balanced</code></td>
+                        <td>Color saturation level</td>
+                    </tr>
+                    <tr>
+                        <td><code>lightness</code></td>
+                        <td><code>.lighter</code>, <code>.neutral</code>, <code>.darker</code></td>
+                        <td><code>.neutral</code></td>
+                        <td>Brightness range</td>
+                    </tr>
+                    <tr>
+                        <td><code>temperature</code></td>
+                        <td><code>.cool</code>, <code>.neutral</code>, <code>.warm</code></td>
+                        <td><code>.neutral</code></td>
+                        <td>Color temperature shift</td>
+                    </tr>
+                    <tr>
+                        <td><code>loopMode</code></td>
+                        <td><code>.open</code>, <code>.closed</code></td>
+                        <td><code>.open</code></td>
+                        <td>Wrap colors back to start</td>
+                    </tr>
+                    <tr>
+                        <td><code>vibrancy</code></td>
+                        <td><code>0.0</code> to <code>2.0</code></td>
+                        <td><code>1.0</code></td>
+                        <td>Color intensity multiplier</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Method Reference -->
+        <section class="section-title">
+            <h2>📚 API Methods Reference</h2>
+        </section>
+
+        <div class="quick-ref">
+            <div class="ref-card">
+                <h3>Swift: Sample</h3>
+                <code>
+journey.sample(at: Float)
+    -> ColorJourneyRGB
+
+// Single point sampling
+let color = journey.sample(at: 0.5)
+                </code>
+                <p>Get one color at position t ∈ [0, 1].</p>
+            </div>
+
+            <div class="ref-card">
+                <h3>Swift: Discrete</h3>
+                <code>
+journey.discrete(count: Int)
+    -> [ColorJourneyRGB]
+
+// N evenly-spaced colors
+let palette = journey.discrete(
+    count: 12
+)
+                </code>
+                <p>Get N colors spread evenly across journey.</p>
+            </div>
+
+            <div class="ref-card">
+                <h3>Swift: Gradient</h3>
+                <code>
+journey.linearGradient(stops: Int)
+    -> LinearGradient
+
+// SwiftUI gradient with N stops
+Rectangle()
+    .fill(journey.linearGradient(
+        stops: 50
+    ))
+                </code>
+                <p>SwiftUI LinearGradient ready to use.</p>
+            </div>
+
+            <div class="ref-card">
+                <h3>C: sample_journey</h3>
+                <code>
+ColorJourneyRGB sample_journey(
+    ColorJourney j, float t
+);
+
+// Get color at t
+ColorJourneyRGB rgb = 
+    sample_journey(journey, 0.5);
+                </code>
+                <p>C equivalent of Swift sample.</p>
+            </div>
+
+            <div class="ref-card">
+                <h3>C: discrete_journey</h3>
+                <code>
+ColorJourneyRGB* discrete_journey(
+    ColorJourney j, int count,
+    int* out_count
+);
+
+// Get N colors
+ColorJourneyRGB* palette = 
+    discrete_journey(
+        journey, 12, NULL
+    );
+                </code>
+                <p>Returns allocated array. Free with free().</p>
+            </div>
+
+            <div class="ref-card">
+                <h3>Color Conversion</h3>
+                <code>
+// RGB to CSS hex
+let r = UInt8(color.red * 255)
+let g = UInt8(color.green * 255)
+let b = UInt8(color.blue * 255)
+let hex = String(
+    format: "%02X%02X%02X", r, g, b
+)
+                </code>
+                <p>Convert to web-friendly formats.</p>
+            </div>
+
+            <div class="ref-card">
+                <h3>Memory Management</h3>
+                <code>
+// Swift: Automatic (ARC)
+let j = ColorJourney(config: config)
+// Cleaned up automatically
+
+// C: Manual cleanup
+ColorJourney j = create_journey(...);
+destroy_journey(j);
+                </code>
+                <p>Swift: automatic. C: call destroy.</p>
+            </div>
+        </div>
+
+        <!-- Common Patterns Table -->
+        <section class="section-title">
+            <h2>🎯 Pattern Decision Matrix</h2>
+        </section>
+
+        <table class="matrix-table">
+            <thead>
+                <tr>
+                    <th>I want to...</th>
+                    <th>Use this preset</th>
+                    <th>Code example</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Quick prototype</td>
+                    <td><code>.balanced</code></td>
+                    <td><code>.singleAnchor(color, style: .balanced)</code></td>
+                </tr>
+                <tr>
+                    <td>Dark theme</td>
+                    <td><code>.nightMode</code></td>
+                    <td><code>.singleAnchor(color, style: .nightMode)</code></td>
+                </tr>
+                <tr>
+                    <td>Soft, calm look</td>
+                    <td><code>.pastelDrift</code></td>
+                    <td><code>.singleAnchor(color, style: .pastelDrift)</code></td>
+                </tr>
+                <tr>
+                    <td>Vibrant data viz</td>
+                    <td><code>.vividLoop</code></td>
+                    <td><code>.singleAnchor(color, style: .vividLoop)</code></td>
+                </tr>
+                <tr>
+                    <td>Natural/warm feel</td>
+                    <td><code>.warmEarth</code></td>
+                    <td><code>.singleAnchor(color, style: .warmEarth)</code></td>
+                </tr>
+                <tr>
+                    <td>Professional/cool</td>
+                    <td><code>.coolSky</code></td>
+                    <td><code>.singleAnchor(color, style: .coolSky)</code></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Troubleshooting Quick Links -->
+        <section class="section-title">
+            <h2>🔗 Quick Links</h2>
+        </section>
+
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+            <a href="usage.html" style="text-decoration: none; color: inherit;">
+                <div style="background: #f9f9f9; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #0066cc;">
+                    <h3 style="margin-top: 0; color: #0066cc;">📖 Full API Usage Guide</h3>
+                    <p>Complete documentation with detailed examples and explanations.</p>
+                </div>
+            </a>
+
+            <a href="configuration.html" style="text-decoration: none; color: inherit;">
+                <div style="background: #f9f9f9; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #28a745;">
+                    <h3 style="margin-top: 0; color: #28a745;">⚙️ Configuration Reference</h3>
+                    <p>Detailed parameter tables and bounds for all configuration options.</p>
+                </div>
+            </a>
+
+            <a href="patterns.html" style="text-decoration: none; color: inherit;">
+                <div style="background: #f9f9f9; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #ff9800;">
+                    <h3 style="margin-top: 0; color: #ff9800;">🎨 Common Patterns</h3>
+                    <p>Real-world use cases with complete working code examples.</p>
+                </div>
+            </a>
+
+            <a href="troubleshooting.html" style="text-decoration: none; color: inherit;">
+                <div style="background: #f9f9f9; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #d63384;">
+                    <h3 style="margin-top: 0; color: #d63384;">🔧 Troubleshooting</h3>
+                    <p>Solutions for common issues and problems you might encounter.</p>
+                </div>
+            </a>
+
+            <a href="../generated/swift-docc/" style="text-decoration: none; color: inherit;">
+                <div style="background: #f9f9f9; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #0066cc;">
+                    <h3 style="margin-top: 0; color: #0066cc;">🎯 Swift API Docs</h3>
+                    <p>Auto-generated Swift-DocC documentation with all types and methods.</p>
+                </div>
+            </a>
+
+            <a href="../generated/doxygen/html/" style="text-decoration: none; color: inherit;">
+                <div style="background: #f9f9f9; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #28a745;">
+                    <h3 style="margin-top: 0; color: #28a745;">🔌 C API Docs</h3>
+                    <p>Doxygen-generated C function reference and header documentation.</p>
+                </div>
+            </a>
+        </div>
+
+        <div
+            style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 0.9rem;">
+            <p>💡 <strong>Pro Tip:</strong> Bookmark this page for quick reference while coding!</p>
+        </div>
+    </main>
+
+    <footer
+        style="text-align: center; padding: 2rem; color: #666; font-size: 0.85rem; border-top: 1px solid #ddd; margin-top: 3rem;">
+        <p>ColorJourney © 2025 | Built with OKLab color science | Licensed under MIT</p>
+    </footer>
+</body>
+
+</html>

@@ -71,6 +71,17 @@ playground.xcworkspace
 *.so
 *.dylib
 *.dll
+build/
+bin/
+obj/
+out/
+
+# Logs and environment
+*.log
+*.log.*
+.env
+.env.*
+coverage/
 
 # Documentation build
 docs/_build/

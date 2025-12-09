@@ -1,0 +1,143 @@
+\doxysection{CJ\+\_\+\+Config Struct Reference}
+\hypertarget{struct_c_j___config}{}\label{struct_c_j___config}\index{CJ\_Config@{CJ\_Config}}
+
+
+Complete configuration for a color journey.  
+
+
+
+
+{\ttfamily \#include $<$Color\+Journey.\+h$>$}
+
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{struct_c_j___r_g_b}{CJ\+\_\+\+RGB}} \mbox{\hyperlink{struct_c_j___config_a82d6e61bae965ec82aaf50e0fd1d89a7}{anchors}} \mbox{[}8\mbox{]}
+\item 
+\Hypertarget{struct_c_j___config_a530de20dcebf45bc1eef90bc4ad677d5}\label{struct_c_j___config_a530de20dcebf45bc1eef90bc4ad677d5} 
+int {\bfseries anchor\+\_\+count}
+\begin{DoxyCompactList}\small\item\em Number of valid anchors in the anchors\mbox{[}\mbox{]} array. Must be ≥ 1, ≤ 8. \end{DoxyCompactList}\item 
+\Hypertarget{struct_c_j___config_a4e77fdc385d965a9ad8de24026e53c3f}\label{struct_c_j___config_a4e77fdc385d965a9ad8de24026e53c3f} 
+CJ\+\_\+\+Lightness\+Bias {\bfseries lightness\+\_\+bias}
+\begin{DoxyCompactList}\small\item\em Lightness bias type. See CJ\+\_\+\+Lightness\+Bias for options. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{struct_c_j___config_a5a9339710cb9a0bd3837099c84afb8d0}{lightness\+\_\+custom\+\_\+weight}}
+\item 
+\Hypertarget{struct_c_j___config_af83dfb49e0d4d3e8c4dfd7d6edbd4679}\label{struct_c_j___config_af83dfb49e0d4d3e8c4dfd7d6edbd4679} 
+CJ\+\_\+\+Chroma\+Bias {\bfseries chroma\+\_\+bias}
+\begin{DoxyCompactList}\small\item\em Chroma (saturation) bias type. See CJ\+\_\+\+Chroma\+Bias for options. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{struct_c_j___config_a192e48d8647fdfcb04f331d05bca5388}{chroma\+\_\+custom\+\_\+multiplier}}
+\item 
+\Hypertarget{struct_c_j___config_ac128a11abfdb8adcb5250983554dcc74}\label{struct_c_j___config_ac128a11abfdb8adcb5250983554dcc74} 
+CJ\+\_\+\+Contrast\+Level {\bfseries contrast\+\_\+level}
+\begin{DoxyCompactList}\small\item\em Contrast enforcement level. See CJ\+\_\+\+Contrast\+Level for options. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{struct_c_j___config_ac901caaa6ec51788f8106a2c30b23e6d}{contrast\+\_\+custom\+\_\+threshold}}
+\item 
+float \mbox{\hyperlink{struct_c_j___config_ae90e96b0647c0983ccfce9e873a9f7e9}{mid\+\_\+journey\+\_\+vibrancy}}
+\item 
+\Hypertarget{struct_c_j___config_ae1c39a645ab9fa22dcbdfe4c7db746ab}\label{struct_c_j___config_ae1c39a645ab9fa22dcbdfe4c7db746ab} 
+CJ\+\_\+\+Temperature\+Bias {\bfseries temperature\+\_\+bias}
+\begin{DoxyCompactList}\small\item\em Temperature bias (warm/cool hue shift). See CJ\+\_\+\+Temperature\+Bias. \end{DoxyCompactList}\item 
+\Hypertarget{struct_c_j___config_afc2f48a411053eaf21813862dc6359ba}\label{struct_c_j___config_afc2f48a411053eaf21813862dc6359ba} 
+CJ\+\_\+\+Loop\+Mode {\bfseries loop\+\_\+mode}
+\begin{DoxyCompactList}\small\item\em How the journey wraps at boundaries. See CJ\+\_\+\+Loop\+Mode. \end{DoxyCompactList}\item 
+uint32\+\_\+t \mbox{\hyperlink{struct_c_j___config_a58c41ea4e8df761eed559db283805124}{variation\+\_\+dimensions}}
+\item 
+\Hypertarget{struct_c_j___config_aadf5322d9ddfe21f5defc21be0419bca}\label{struct_c_j___config_aadf5322d9ddfe21f5defc21be0419bca} 
+CJ\+\_\+\+Variation\+Strength {\bfseries variation\+\_\+strength}
+\begin{DoxyCompactList}\small\item\em Strength of variation. See CJ\+\_\+\+Variation\+Strength. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{struct_c_j___config_ae4d75e831d9f6c9bfdc8be1b903c3e3f}{variation\+\_\+custom\+\_\+magnitude}}
+\item 
+uint64\+\_\+t \mbox{\hyperlink{struct_c_j___config_afd678edcba2b36088a204a1328064a49}{variation\+\_\+seed}}
+\item 
+\Hypertarget{struct_c_j___config_adbc77fe8e8784ed97f05abfb47c327cb}\label{struct_c_j___config_adbc77fe8e8784ed97f05abfb47c327cb} 
+bool {\bfseries variation\+\_\+enabled}
+\begin{DoxyCompactList}\small\item\em Enable/disable variation layer entirely. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Complete configuration for a color journey. 
+
+\doxylink{struct_c_j___config}{CJ\+\_\+\+Config} specifies all parameters that shape a color journey\+: the anchor color(s), perceptual biases, looping behavior, and optional seeded variation. Initialize with cj\+\_\+config\+\_\+init before use.
+
+{\bfseries{Perceptual Biases}}\+:
+\begin{DoxyItemize}
+\item lightness\+\_\+bias\+: Controls overall brightness
+\item chroma\+\_\+bias\+: Controls saturation
+\item contrast\+\_\+level\+: Minimum perceptual separation (discrete only)
+\item mid\+\_\+journey\+\_\+vibrancy\+: Boost saturation at center of journey \mbox{[}0, 1\mbox{]}
+\item temperature\+\_\+bias\+: Shift toward warm or cool hues
+\end{DoxyItemize}
+
+{\bfseries{Looping \& Variation}}\+:
+\begin{DoxyItemize}
+\item loop\+\_\+mode\+: How journey behaves at boundaries (open/closed/pingpong)
+\item variation\+\_\+enabled\+: Apply seeded micro-\/variation to discrete colors
+\item variation\+\_\+seed\+: Deterministic seed for reproducible variation
+\end{DoxyItemize}
+
+\begin{DoxyNote}{Note}
+Always initialize with cj\+\_\+config\+\_\+init before modification. 
+\end{DoxyNote}
+\begin{DoxySeeAlso}{See also}
+cj\+\_\+config\+\_\+init 
+
+cj\+\_\+journey\+\_\+create 
+\end{DoxySeeAlso}
+
+
+\label{doc-variable-members}
+\Hypertarget{struct_c_j___config_doc-variable-members}
+\doxysubsection{Field Documentation}
+\Hypertarget{struct_c_j___config_a82d6e61bae965ec82aaf50e0fd1d89a7}\index{CJ\_Config@{CJ\_Config}!anchors@{anchors}}
+\index{anchors@{anchors}!CJ\_Config@{CJ\_Config}}
+\doxysubsubsection{\texorpdfstring{anchors}{anchors}}
+{\footnotesize\ttfamily \label{struct_c_j___config_a82d6e61bae965ec82aaf50e0fd1d89a7} 
+\mbox{\hyperlink{struct_c_j___r_g_b}{CJ\+\_\+\+RGB}} CJ\+\_\+\+Config\+::anchors\mbox{[}8\mbox{]}}
+
+Array of anchor colors (RGB). Single anchor (1 color) produces a full hue wheel journey. Multiple anchors (2-\/8) produce interpolated journeys between them. \Hypertarget{struct_c_j___config_a192e48d8647fdfcb04f331d05bca5388}\index{CJ\_Config@{CJ\_Config}!chroma\_custom\_multiplier@{chroma\_custom\_multiplier}}
+\index{chroma\_custom\_multiplier@{chroma\_custom\_multiplier}!CJ\_Config@{CJ\_Config}}
+\doxysubsubsection{\texorpdfstring{chroma\_custom\_multiplier}{chroma\_custom\_multiplier}}
+{\footnotesize\ttfamily \label{struct_c_j___config_a192e48d8647fdfcb04f331d05bca5388} 
+float CJ\+\_\+\+Config\+::chroma\+\_\+custom\+\_\+multiplier}
+
+Custom chroma multiplier if chroma\+\_\+bias == CJ\+\_\+\+CHROMA\+\_\+\+CUSTOM. Range\+: \mbox{[}0.\+5, 2.\+0\mbox{]} where 0.\+5 = muted (half saturation), 1.\+0 = neutral, 2.\+0 = vivid (double saturation) \Hypertarget{struct_c_j___config_ac901caaa6ec51788f8106a2c30b23e6d}\index{CJ\_Config@{CJ\_Config}!contrast\_custom\_threshold@{contrast\_custom\_threshold}}
+\index{contrast\_custom\_threshold@{contrast\_custom\_threshold}!CJ\_Config@{CJ\_Config}}
+\doxysubsubsection{\texorpdfstring{contrast\_custom\_threshold}{contrast\_custom\_threshold}}
+{\footnotesize\ttfamily \label{struct_c_j___config_ac901caaa6ec51788f8106a2c30b23e6d} 
+float CJ\+\_\+\+Config\+::contrast\+\_\+custom\+\_\+threshold}
+
+Custom contrast threshold if contrast\+\_\+level == CJ\+\_\+\+CONTRAST\+\_\+\+CUSTOM. Specified as minimum OKLab ΔE (perceptual distance) between adjacent colors in discrete palettes. Typical range\+: \mbox{[}0.\+05, 0.\+20\mbox{]}. Higher = more distinct colors. \Hypertarget{struct_c_j___config_a5a9339710cb9a0bd3837099c84afb8d0}\index{CJ\_Config@{CJ\_Config}!lightness\_custom\_weight@{lightness\_custom\_weight}}
+\index{lightness\_custom\_weight@{lightness\_custom\_weight}!CJ\_Config@{CJ\_Config}}
+\doxysubsubsection{\texorpdfstring{lightness\_custom\_weight}{lightness\_custom\_weight}}
+{\footnotesize\ttfamily \label{struct_c_j___config_a5a9339710cb9a0bd3837099c84afb8d0} 
+float CJ\+\_\+\+Config\+::lightness\+\_\+custom\+\_\+weight}
+
+Custom lightness weight if lightness\+\_\+bias == CJ\+\_\+\+LIGHTNESS\+\_\+\+CUSTOM. Range\+: \mbox{[}-\/1, 1\mbox{]} where -\/1 = darkest, 0 = neutral, +1 = lightest \Hypertarget{struct_c_j___config_ae90e96b0647c0983ccfce9e873a9f7e9}\index{CJ\_Config@{CJ\_Config}!mid\_journey\_vibrancy@{mid\_journey\_vibrancy}}
+\index{mid\_journey\_vibrancy@{mid\_journey\_vibrancy}!CJ\_Config@{CJ\_Config}}
+\doxysubsubsection{\texorpdfstring{mid\_journey\_vibrancy}{mid\_journey\_vibrancy}}
+{\footnotesize\ttfamily \label{struct_c_j___config_ae90e96b0647c0983ccfce9e873a9f7e9} 
+float CJ\+\_\+\+Config\+::mid\+\_\+journey\+\_\+vibrancy}
+
+Vibrancy boost at journey midpoint (t ≈ 0.\+5). Range\+: \mbox{[}0, 1\mbox{]} 0.\+0 = no boost (natural fade at midpoint) 0.\+5 = moderate boost (typical for pleasing appearance) 1.\+0 = maximum boost (saturated midpoint) Prevents muddy, desaturated colors in the middle of the journey. \Hypertarget{struct_c_j___config_ae4d75e831d9f6c9bfdc8be1b903c3e3f}\index{CJ\_Config@{CJ\_Config}!variation\_custom\_magnitude@{variation\_custom\_magnitude}}
+\index{variation\_custom\_magnitude@{variation\_custom\_magnitude}!CJ\_Config@{CJ\_Config}}
+\doxysubsubsection{\texorpdfstring{variation\_custom\_magnitude}{variation\_custom\_magnitude}}
+{\footnotesize\ttfamily \label{struct_c_j___config_ae4d75e831d9f6c9bfdc8be1b903c3e3f} 
+float CJ\+\_\+\+Config\+::variation\+\_\+custom\+\_\+magnitude}
+
+Custom variation magnitude if variation\+\_\+strength == CJ\+\_\+\+VARIATION\+\_\+\+CUSTOM. Typical range\+: \mbox{[}0.\+01, 0.\+10\mbox{]} (1\% to 10\% per-\/dimension variation). \Hypertarget{struct_c_j___config_a58c41ea4e8df761eed559db283805124}\index{CJ\_Config@{CJ\_Config}!variation\_dimensions@{variation\_dimensions}}
+\index{variation\_dimensions@{variation\_dimensions}!CJ\_Config@{CJ\_Config}}
+\doxysubsubsection{\texorpdfstring{variation\_dimensions}{variation\_dimensions}}
+{\footnotesize\ttfamily \label{struct_c_j___config_a58c41ea4e8df761eed559db283805124} 
+uint32\+\_\+t CJ\+\_\+\+Config\+::variation\+\_\+dimensions}
+
+Bitfield of CJ\+\_\+\+Variation\+Dimension specifying which color aspects vary. Combine multiple\+: e.\+g., (CJ\+\_\+\+VARIATION\+\_\+\+HUE \texorpdfstring{$\vert$}{|} CJ\+\_\+\+VARIATION\+\_\+\+LIGHTNESS) Ignored if variation\+\_\+enabled == false. \Hypertarget{struct_c_j___config_afd678edcba2b36088a204a1328064a49}\index{CJ\_Config@{CJ\_Config}!variation\_seed@{variation\_seed}}
+\index{variation\_seed@{variation\_seed}!CJ\_Config@{CJ\_Config}}
+\doxysubsubsection{\texorpdfstring{variation\_seed}{variation\_seed}}
+{\footnotesize\ttfamily \label{struct_c_j___config_afd678edcba2b36088a204a1328064a49} 
+uint64\+\_\+t CJ\+\_\+\+Config\+::variation\+\_\+seed}
+
+Deterministic seed for variation PRNG. Same seed = same variation pattern. If 0, uses default deterministic seed (0x123456789\+ABCDEF0). Variation is fully deterministic\+: no true randomness. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Color\+Journey.\+h\end{DoxyCompactItemize}

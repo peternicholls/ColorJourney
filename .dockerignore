@@ -1,0 +1,37 @@
+# Version control
+.git
+.gitignore
+.dockerignore
+
+# Editors and IDE
+.vscode/
+.idea/
+
+# Swift/C build outputs
+.build/
+.swiftpm/
+DerivedData/
+Packages/
+build/
+bin/
+obj/
+out/
+
+# Dependency caches
+Pods/
+Carthage/
+node_modules/
+
+# Logs and environment
+*.log
+*.log.*
+.env
+.env.*
+coverage/
+
+# OS files
+.DS_Store
+
+# Docker files (handled outside build context)
+Dockerfile*
+docker-compose.yml

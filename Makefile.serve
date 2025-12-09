@@ -1,0 +1,67 @@
+# Documentation Server Targets
+# Serve generated documentation with proper HTTP headers and routing
+
+.PHONY: serve serve-docs serve-swift serve-c serve-all
+
+# Serve from Docs directory (unified hub + generated)
+serve-docs:
+	@echo "🚀 Serving documentation from Docs/"
+	@echo ""
+	@echo "📚 Unified Documentation Hub:"
+	@echo "   http://localhost:8000/index.html"
+	@echo ""
+	@echo "Swift API Documentation:"
+	@echo "   http://localhost:8000/generated/swift-docc/"
+	@echo ""
+	@echo "C API Documentation:"
+	@echo "   http://localhost:8000/generated/doxygen/html/"
+	@echo ""
+	@echo "Press Ctrl+C to stop server"
+	@echo ""
+	@cd Docs && python3 -m http.server 8000 --bind 127.0.0.1
+
+# Serve Swift-DocC only (from correct directory)
+serve-swift:
+	@echo "🚀 Serving Swift-DocC from Docs/generated/swift-docc/"
+	@echo ""
+	@echo "Access at: http://localhost:8000/"
+	@echo "Press Ctrl+C to stop server"
+	@echo ""
+	@cd Docs/generated/swift-docc && python3 -m http.server 8000 --bind 127.0.0.1
+
+# Serve Doxygen only
+serve-c:
+	@echo "🚀 Serving Doxygen from Docs/generated/doxygen/html/"
+	@echo ""
+	@echo "Access at: http://localhost:8000/"
+	@echo "Press Ctrl+C to stop server"
+	@echo ""
+	@cd Docs/generated/doxygen/html && python3 -m http.server 8000 --bind 127.0.0.1
+
+# Serve from project root (all docs + code)
+serve-all:
+	@echo "🚀 Serving entire project from root"
+	@echo ""
+	@echo "Unified Documentation Hub:"
+	@echo "   http://localhost:8000/Docs/index.html"
+	@echo ""
+	@echo "Press Ctrl+C to stop server"
+	@echo ""
+	@python3 -m http.server 8000 --bind 127.0.0.1
+
+# Alternative: Use Node.js http-server if available
+serve-swift-node:
+	@if command -v http-server >/dev/null 2>&1; then \
+		echo "🚀 Serving Swift-DocC with Node.js http-server"; \
+		echo ""; \
+		echo "Access at: http://localhost:8080/"; \
+		echo "Press Ctrl+C to stop server"; \
+		echo ""; \
+		cd Docs/generated/swift-docc && http-server -p 8080 -g; \
+	else \
+		echo "❌ http-server not found. Install with: npm install -g http-server"; \
+		echo "Falling back to Python..."; \
+		$(MAKE) serve-swift; \
+	fi
+
+serve: serve-docs

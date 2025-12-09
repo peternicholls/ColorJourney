@@ -1,0 +1,49 @@
+\doxysection{CJ\+\_\+\+RGB Struct Reference}
+\hypertarget{struct_c_j___r_g_b}{}\label{struct_c_j___r_g_b}\index{CJ\_RGB@{CJ\_RGB}}
+
+
+Represents a color in linear s\+RGB color space.  
+
+
+
+
+{\ttfamily \#include $<$Color\+Journey.\+h$>$}
+
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{struct_c_j___r_g_b_a42a21db12233ca3cc2089034028f6e03}\label{struct_c_j___r_g_b_a42a21db12233ca3cc2089034028f6e03} 
+float {\bfseries r}
+\begin{DoxyCompactList}\small\item\em Red component \mbox{[}0, 1\mbox{]}. \end{DoxyCompactList}\item 
+\Hypertarget{struct_c_j___r_g_b_ab4f535fd15467f9c46ff13371af27992}\label{struct_c_j___r_g_b_ab4f535fd15467f9c46ff13371af27992} 
+float {\bfseries g}
+\begin{DoxyCompactList}\small\item\em Green component \mbox{[}0, 1\mbox{]}. \end{DoxyCompactList}\item 
+\Hypertarget{struct_c_j___r_g_b_a2d0d62857bd0eae71de85e2c498449e3}\label{struct_c_j___r_g_b_a2d0d62857bd0eae71de85e2c498449e3} 
+float {\bfseries b}
+\begin{DoxyCompactList}\small\item\em Blue component \mbox{[}0, 1\mbox{]}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Represents a color in linear s\+RGB color space. 
+
+Colors are specified as linear RGB components (not gamma-\/corrected). All components are clamped or expected in the range \mbox{[}0, 1\mbox{]}\+:
+\begin{DoxyItemize}
+\item 0.\+0 = darkest component
+\item 1.\+0 = brightest component
+\end{DoxyItemize}
+
+Values outside \mbox{[}0, 1\mbox{]} are technically valid (extended RGB) but may be clamped by cj\+\_\+rgb\+\_\+clamp or during conversion to other spaces.
+
+\begin{DoxyNote}{Note}
+This is the color format used for input/output throughout the API. 
+\end{DoxyNote}
+\begin{DoxySeeAlso}{See also}
+cj\+\_\+rgb\+\_\+clamp to normalize to valid range 
+
+cj\+\_\+rgb\+\_\+to\+\_\+oklab to convert to perceptual space 
+\end{DoxySeeAlso}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Color\+Journey.\+h\end{DoxyCompactItemize}

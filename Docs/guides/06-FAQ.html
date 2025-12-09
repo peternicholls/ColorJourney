@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>FAQ - ColorJourney</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="../index.html" class="logo">📚 ColorJourney Docs</a>
+            <ul class="links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="01-GETTING_STARTED.html">Getting Started</a></li>
+                <li><a href="02-API_QUICK_REFERENCE.html">API Reference</a></li>
+                <li><a href="03-SWIFT_INTEGRATION.html">Swift</a></li>
+                <li><a href="04-C_INTEGRATION.html">C</a></li>
+                <li><a href="05-TROUBLESHOOTING.html">Troubleshooting</a></li>
+                <li><a href="06-FAQ.html">FAQ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>❓ Frequently Asked Questions</h1>
+        <p class="subtitle">Answers to common questions about ColorJourney</p>
+
+        <div class="toc">
+            <h3>FAQ Categories</h3>
+            <ul>
+                <li><a href="#getting-started">Getting Started</a></li>
+                <li><a href="#usage">Usage & Configuration</a></li>
+                <li><a href="#technical">Technical Details</a></li>
+                <li><a href="#performance">Performance & Optimization</a></li>
+                <li><a href="#platforms">Platform Support</a></li>
+                <li><a href="#licensing">Licensing & Contribution</a></li>
+            </ul>
+        </div>
+
+        <h2 id="getting-started">🚀 Getting Started</h2>
+
+        <h3>What is ColorJourney?</h3>
+        <p>ColorJourney is a library that generates beautiful, perceptually uniform color palettes programmatically. It
+            works by creating a "journey" through color space—starting from one or more anchor colors and generating
+            colors along a smooth, intentional path.</p>
+
+        <h3>How is it different from other color libraries?</h3>
+        <p>Most color libraries give you primitives (HSL, RGB conversions). ColorJourney is different:</p>
+        <ul>
+            <li><strong>Perceptually designed</strong> - Uses OKLab, a perceptually uniform color space</li>
+            <li><strong>Deterministic</strong> - Same input always produces identical colors</li>
+            <li><strong>Fast</strong> - Generates 10,000+ colors per second</li>
+            <li><strong>Portable</strong> - Pure C core works anywhere (iOS, macOS, Linux, Windows, embedded)</li>
+            <li><strong>Designer-friendly</strong> - Configure with intuitive terms like "warm", "vivid", "high
+                contrast"</li>
+        </ul>
+
+        <h3>Do I need design experience to use it?</h3>
+        <p>No! ColorJourney is designed for developers:</p>
+        <ul>
+            <li><strong>Presets</strong> - 6 built-in styles that work great out-of-the-box</li>
+            <li><strong>Type-safe</strong> - Configuration enums prevent invalid combinations</li>
+            <li><strong>Simple API</strong> - Just 3 basic operations: configure, sample, generate</li>
+        </ul>
+
+        <h3>What's the license?</h3>
+        <p>ColorJourney is MIT licensed. You can use it freely in commercial projects.</p>
+
+        <h2 id="usage">💡 Usage & Configuration</h2>
+
+        <h3>What's the difference between sample() and discrete()?</h3>
+        <table>
+            <tr>
+                <th>Method</th>
+                <th>Use Case</th>
+                <th>Speed</th>
+                <th>Output</th>
+            </tr>
+            <tr>
+                <td><code>sample(at: t)</code></td>
+                <td>Single color at position</td>
+                <td>~0.6 μs</td>
+                <td>One color</td>
+            </tr>
+            <tr>
+                <td><code>discrete(count: N)</code></td>
+                <td>Distinct palette for UI</td>
+                <td>~0.1ms per 100</td>
+                <td>N distinct colors</td>
+            </tr>
+            <tr>
+                <td><code>linearGradient(stops: N)</code></td>
+                <td>Smooth gradient in SwiftUI</td>
+                <td>~0.1ms per 100</td>
+                <td>Gradient object</td>
+            </tr>
+        </table>
+
+        <h3>What does "perceptually uniform" mean?</h3>
+        <p>Colors that are mathematically equidistant appear visually equidistant to the human eye. In normal RGB space,
+            a distance of (0.5, 0, 0) looks very different from (0, 0.5, 0). In OKLab (ColorJourney's internal space),
+            equal distances always look equal to humans.</p>
+
+        <h3>Can I use my own anchor colors?</h3>
+        <p>Absolutely! Provide any RGB colors you like:</p>
+        <pre><code>ColorJourneyRGB(red: 0.5, green: 0.2, blue: 0.8)  // Your color</code></pre>
+
+        <h3>What are loop modes for?</h3>
+        <p>They control how the journey behaves at its boundaries:</p>
+        <ul>
+            <li><strong>.open</strong> - Start and end are different (good for linear gradients)</li>
+            <li><strong>.closed</strong> - End loops back to start (good for circular color wheels)</li>
+            <li><strong>.pingPong</strong> - Reverses at boundaries (good for bidirectional transitions)</li>
+        </ul>
+
+        <h3>What's the difference between lightness, chroma, and contrast?</h3>
+        <ul>
+            <li><strong>Lightness</strong> - Overall brightness (shift darker or lighter)</li>
+            <li><strong>Chroma</strong> - Saturation/colorfulness (muted or vivid)</li>
+            <li><strong>Contrast</strong> - Minimum perceptual distance between colors (ensures distinctness)</li>
+        </ul>
+
+        <h3>Should I use variation?</h3>
+        <p>Variation adds subtle randomness for organic feel:</p>
+        <ul>
+            <li><strong>No</strong> - Use <code>.off</code> for exact, reproducible colors</li>
+            <li><strong>Yes</strong> - Use <code>.subtle</code> or <code>.noticeable</code> with a seed for organic but
+                deterministic output</li>
+        </ul>
+
+        <h2 id="technical">🔬 Technical Details</h2>
+
+        <h3>What is OKLab?</h3>
+        <p>OKLab is a perceptually uniform color space developed by Björn Ottosson. ColorJourney uses it internally
+            because distances in OKLab correlate with human perception of color differences.</p>
+
+        <p><strong>Why not use LAB or LUV?</strong> OKLab is more recent and specifically designed for graphics/gamedev
+            with better hue linearity and chroma predictions.</p>
+
+        <h3>What is ΔE (Delta E)?</h3>
+        <p>ΔE is perceptual distance between colors. In OKLab, it's just Euclidean distance: √(ΔL² + Δa² + Δb²).
+            ColorJourney uses ΔE to enforce minimum contrast between palette colors.</p>
+
+        <h3>What's this "fast cube root" I see in the code?</h3>
+        <p>OKLab conversion requires cube root calculations millions of times. The "fast cube root" uses bit
+            manipulation + Newton-Raphson refinement to achieve ~1% error 3-5x faster than <code>cbrtf()</code>. The
+            error is imperceptible to humans.</p>
+
+        <h3>Is ColorJourney deterministic across platforms?</h3>
+        <p>Yes, completely. Same config on iOS, macOS, Linux, Windows, or embedded systems produces identical colors. No
+            floating-point variance issues.</p>
+
+        <h2 id="performance">⚡ Performance & Optimization</h2>
+
+        <h3>How fast is ColorJourney?</h3>
+        <ul>
+            <li>Single sample: ~0.6 microseconds</li>
+            <li>Discrete palette of 100: ~0.1 milliseconds</li>
+            <li>10,000+ colors per second</li>
+            <li>Zero allocations for continuous sampling</li>
+        </ul>
+
+        <h3>Should I worry about performance?</h3>
+        <p>Almost never. Even generating 1000-color palettes takes <1ms. Only optimize if profiling shows ColorJourney
+                is actually the bottleneck.</p>
+
+                <h3>How do I optimize for better performance?</h3>
+                <pre><code>// 1. Create journey once, reuse it
+let journey = ColorJourney(config: config)  // Create once
+for i in 0..<1000 {
+    let color = journey.sample(at: Float(i) / 1000)
+}
+
+// 2. Use sample() for gradients instead of discrete()
+let gradient = journey.linearGradient(stops: 50)  // Optimized
+
+// 3. Cache discrete palettes
+let cachedColors = journey.discrete(count: 100)  // Cache this</code></pre>
+
+                <h3>What's the memory overhead?</h3>
+                <ul>
+                    <li>Journey object: ~500 bytes</li>
+                    <li>Discrete palette of N colors: N × 12 bytes (3 floats)</li>
+                    <li>No hidden allocations or caches</li>
+                </ul>
+
+                <h2 id="platforms">🌍 Platform Support</h2>
+
+                <h3>Which platforms does ColorJourney support?</h3>
+                <ul>
+                    <li>✅ iOS 13+</li>
+                    <li>✅ macOS 10.15+</li>
+                    <li>✅ watchOS 6+</li>
+                    <li>✅ tvOS 13+</li>
+                    <li>✅ visionOS 1+</li>
+                    <li>✅ Linux (any distribution)</li>
+                    <li>✅ Windows (via MSVC, MinGW)</li>
+                    <li>✅ WebAssembly (via Emscripten)</li>
+                    <li>✅ Embedded systems</li>
+                </ul>
+
+                <h3>Can I use ColorJourney in my game engine?</h3>
+                <p>Yes! The C core can be used in:</p>
+                <ul>
+                    <li>Unity (via P/Invoke or native plugins)</li>
+                    <li>Unreal Engine (via C++ binding)</li>
+                    <li>Custom engines (via C/C++ FFI)</li>
+                    <li>Any language with C interop</li>
+                </ul>
+
+                <h3>Does it work on older iOS/macOS versions?</h3>
+                <p>The C core is fully portable. The Swift wrapper requires iOS 13+ / macOS 10.15+. For older versions,
+                    use the C API directly.</p>
+
+                <h3>Can I use it on Android?</h3>
+                <p>Yes, via NDK (native development kit). Link against the C core library.</p>
+
+                <h2 id="licensing">📜 Licensing & Contribution</h2>
+
+                <h3>Can I use ColorJourney commercially?</h3>
+                <p>Yes! ColorJourney is MIT licensed. You can use it freely in commercial, proprietary, open-source, and
+                    educational projects.</p>
+
+                <h3>Do I need to credit ColorJourney?</h3>
+                <p>Not required by the MIT license, but appreciated! A mention in your docs or credits is nice.</p>
+
+                <h3>Can I modify ColorJourney?</h3>
+                <p>Yes. The MIT license allows modifications, but please:</p>
+                <ul>
+                    <li>Include the original license and copyright notice</li>
+                    <li>Document your changes</li>
+                    <li>Consider contributing improvements back</li>
+                </ul>
+
+                <h3>How do I contribute?</h3>
+                <ol>
+                    <li>Fork the repository</li>
+                    <li>Make your changes on a feature branch</li>
+                    <li>Add tests for new functionality</li>
+                    <li>Submit a pull request with clear description</li>
+                </ol>
+
+                <h3>What about the OKLab color space license?</h3>
+                <p>OKLab is designed by Björn Ottosson and released under MIT license. ColorJourney uses his reference
+                    implementation and conversion formulas under the same terms.</p>
+
+                <h2>🤔 More Questions?</h2>
+
+                <ul>
+                    <li><a href="01-GETTING_STARTED.html">Getting Started Guide</a> - Complete walkthrough</li>
+                    <li><a href="02-API_QUICK_REFERENCE.html">API Quick Reference</a> - All functions and parameters
+                    </li>
+                    <li><a href="05-TROUBLESHOOTING.html">Troubleshooting Guide</a> - Solutions for common problems</li>
+                    <li><a href="../generated/swift-docc/">Full Swift API Documentation</a></li>
+                    <li><a href="../generated/doxygen/html/">Full C API Documentation</a></li>
+                    <li><a href="../../Examples/">Code Examples</a> - Working sample code</li>
+                </ul>
+
+                <div class="callout success">
+                    <strong>💡 Pro Tip:</strong> Most answers can be found in:
+                    <ul>
+                        <li><a href="01-GETTING_STARTED.html">Getting Started</a> for basic concepts</li>
+                        <li><a href="02-API_QUICK_REFERENCE.html">API Reference</a> for configuration options</li>
+                        <li><a href="05-TROUBLESHOOTING.html">Troubleshooting</a> for problems</li>
+                        <li>Generated API docs for complete reference</li>
+                    </ul>
+                </div>
+    </main>
+
+    <footer>
+        <p><strong>ColorJourney Documentation</strong> | <a href="../index.html">Home</a></p>
+        <p>Generated 2025-12-08</p>
+    </footer>
+</body>
+
+</html>

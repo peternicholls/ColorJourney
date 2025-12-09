@@ -51,6 +51,47 @@ Optimized C core generates 10,000+ colors per second with deterministic, cross-p
 **True portability:**  
 C99 core works everywhere (iOS, macOS, Linux, Windows, embedded). Swift wrapper adds ergonomic API and SwiftUI integration.
 
+## Documentation Guide
+
+### 📚 User & API Documentation
+
+**Start here for using ColorJourney:**
+
+- **[Docs/](Docs/)** — Generated API documentation
+  - **[Swift API](Docs/generated/swift-docc/)** — Interactive Swift documentation (DocC)
+  - **[C API](Docs/generated/doxygen/html/)** — C core documentation (Doxygen)
+
+- **[Quick Reference](DevDocs/guides/DOCS_QUICKREF.md)** — One-page cheat sheet
+- **[Examples/](Examples/)** — Working code samples (C and Swift)
+- **[Quick Start](#quick-start)** — Getting started in 5 minutes
+
+### 🛠️ Developer Documentation
+
+**For contributing and developing ColorJourney:**
+
+- **[DevDocs/](DevDocs/)** — Complete developer documentation
+  - **[Standards](DevDocs/standards/DOCUMENTATION.md)** — Documentation standards and conventions
+  - **[Architecture](DevDocs/standards/ARCHITECTURE.md)** — System design and data flow
+  - **[Swift-DocC Guide](DevDocs/guides/SWIFT_DOCC_GUIDE.md)** — How to write documentation
+  - **[Build System](DevDocs/guides/UNIFIED_DOCS_BUILD.md)** — Unified documentation generation
+  - **[Publishing Guide](DevDocs/guides/SWIFT_DOCC_PLUGIN_GUIDE.md)** — Publishing documentation online
+
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** — Contributing guidelines
+- **[Implementation Status](DevDocs/IMPLEMENTATION_STATUS.md)** — Project status and progress
+- **[Stress Tests](DevDocs/stress-test/)** — Performance analysis and edge cases
+
+### 📖 All Documentation
+
+| Location | Purpose | Audience |
+|----------|---------|----------|
+| **[Docs/](Docs/)** | Generated API docs (Swift + C) | API Users |
+| **[DevDocs/](DevDocs/)** | Development resources and standards | Contributors |
+| **[Examples/](Examples/)** | Working code samples | Everyone |
+| **[Quick Start](#quick-start)** | Getting started guide | New Users |
+| **[CONTRIBUTING.md](CONTRIBUTING.md)** | Contributing process | Contributors |
+
+---
+
 ## Contents
 
 - [Architecture](#architecture)
@@ -250,6 +291,38 @@ ForEach(colors.indices, id: \.self) { i in
     Circle()
         .fill(colors[i].color)
 }
+```
+
+## Examples
+
+Complete working examples are provided in the `Examples/` directory:
+
+**[CExample.c](Examples/CExample.c)** — Demonstrates the C API:
+- Single-anchor journey setup
+- Discrete palette generation
+- Continuous sampling
+- Memory management (create/destroy)
+- Seeded variation with determinism verification
+- Compiles with: `gcc -std=c99 -Wall -lm Examples/CExample.c Sources/CColorJourney/ColorJourney.c -I Sources/CColorJourney/include -o example`
+
+**[SwiftExample.swift](Examples/SwiftExample.swift)** — Comprehensive Swift examples:
+- Basic and multi-anchor journeys
+- Style presets (6 presets demonstrated)
+- Variation modes (off, subtle, noticeable)
+- Continuous sampling (gradient generation)
+- Discrete palettes (UI element colors)
+- Advanced configuration patterns
+- Real-world use cases (timeline tracks, labels, segments)
+- Performance benchmarking
+
+**[DocstringValidation.swift](Examples/DocstringValidation.swift)** — Validates all doc comment code snippets:
+- 9 separate validation tests
+- Ensures copy-paste examples actually work
+- Demonstrates API patterns from documentation
+
+Run all example verifications with:
+```bash
+make verify-examples    # Compile and run C and Swift examples
 ```
 
 ## Building 
