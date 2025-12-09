@@ -36,10 +36,6 @@ let package = Package(
         .testTarget(
             name: "ColorJourneyTests",
             dependencies: ["ColorJourney"]
-        ),
-        .testTarget(
-            name: "CColorJourneyTests",
-            dependencies: ["CColorJourney"]
         )
     ]
 )
