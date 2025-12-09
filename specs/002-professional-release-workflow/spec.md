@@ -175,6 +175,12 @@ As a potential user, I need clear, minimal badges on the README that show releas
 - **FR-016**: System MUST prevent accidental releases from non-release branches through branch protection rules and CI/CD gates
 - **FR-017**: System MUST provide a documented release playbook for maintainers detailing step-by-step processes for creating RC, approving release, and handling failures
 - **FR-018**: RC branches MUST be deleted after promotion or abandonment; release history is preserved via tags and CHANGELOG entries
+- **FR-019**: Release promotion MUST be blocked if any required artifact build (Swift or any C platform target) fails; failed artifacts MUST be recoverable via re-run without creating a new RC tag until success
+
+### Non-Functional Requirements
+
+- **NFR-001**: Release builds MUST be reproducible with pinned toolchains (Swift 5.9; CMake ≥3.16; documented compiler versions) and deterministic outputs across reruns for the same commit and RC tag
+- **NFR-002**: Artifact packaging MUST complete with defined timing/latency thresholds for badge updates and release publication (e.g., badges reflect latest tag within 5 minutes per SC-006)
 
 ### Key Entities
 
@@ -203,6 +209,8 @@ As a potential user, I need clear, minimal badges on the README that show releas
 - **SC-010**: Swift and C packages can be released independently without coordinating version numbers (unless breaking changes in C core)
 - **SC-011**: README contains exactly 3-4 essential badges; non-critical badges are removed (achieved through audit and cleanup)
 - **SC-012**: All release tags follow SemVer 2.0.0 format with 100% consistency
+- **SC-013**: Release artifact builds succeed across all required platforms in a single promotion cycle; failed artifacts are detected and block tagging until rerun succeeds
+- **SC-014**: Re-running artifact packaging or CI on the same RC tag yields identical outputs (hash-equivalent archives) when source and toolchains are unchanged
 
 ---
 

@@ -1,0 +1,131 @@
+openapi: 3.0.3
+info:
+  title: ColorJourney Release Workflow API (process contract)
+  version: 0.1.0
+  description: Contracts for automation scripts/CI jobs that manage RC creation, promotion, artifact packaging, and badge updates.
+servers:
+  - url: https://api.example.com/internal
+paths:
+  /release-candidates:
+    post:
+      summary: Create release-candidate branch from develop
+      operationId: createReleaseCandidate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [targetVersion, rcNumber]
+              properties:
+                targetVersion:
+                  type: string
+                  pattern: "^\\d+\\.\\d+\\.\\d+$"
+                rcNumber:
+                  type: integer
+                  minimum: 1
+      responses:
+        "201":
+          description: RC branch created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  branch:
+                    type: string
+                    example: release-candidate/1.0.0-rc.1
+  /release-candidates/{version}/promote:
+    post:
+      summary: Promote RC to release and merge into main with SemVer tag
+      operationId: promoteReleaseCandidate
+      parameters:
+        - in: path
+          name: version
+          required: true
+          schema:
+            type: string
+            pattern: "^\\d+\\.\\d+\\.\\d+$"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rcNumber]
+              properties:
+                rcNumber:
+                  type: integer
+                  minimum: 1
+      responses:
+        "200":
+          description: Release promoted and tagged
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tag:
+                    type: string
+                    example: v1.0.0
+                  branchDeleted:
+                    type: boolean
+  /releases/{version}/artifacts:
+    post:
+      summary: Build and attach release artifacts for Swift and C
+      operationId: buildReleaseArtifacts
+      parameters:
+        - in: path
+          name: version
+          required: true
+          schema:
+            type: string
+            pattern: "^\\d+\\.\\d+\\.\\d+$"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                platforms:
+                  type: array
+                  items:
+                    type: string
+                    enum: [macos, linux, windows]
+                artifactTypes:
+                  type: array
+                  items:
+                    type: string
+                    enum: [swift-source, c-static]
+      responses:
+        "202":
+          description: Artifact build started
+  /version-mapping:
+    put:
+      summary: Update Swift→C core dependency mapping for the release
+      operationId: updateVersionMapping
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [swiftVersion, cCoreVersion]
+              properties:
+                swiftVersion:
+                  type: string
+                cCoreVersion:
+                  type: string
+                notes:
+                  type: string
+      responses:
+        "200":
+          description: Mapping stored
+  /badges/refresh:
+    post:
+      summary: Refresh README badges from latest tag and CI status
+      operationId: refreshBadges
+      responses:
+        "200":
+          description: Badges updated
