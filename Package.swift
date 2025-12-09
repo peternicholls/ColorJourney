@@ -15,6 +15,10 @@ let package = Package(
         .library(
             name: "ColorJourney",
             targets: ["ColorJourney"]
+        ),
+        .executable(
+            name: "swatch-demo",
+            targets: ["SwatchDemo"]
         )
     ],
     dependencies: [
@@ -36,6 +40,11 @@ let package = Package(
         .testTarget(
             name: "ColorJourneyTests",
             dependencies: ["ColorJourney"]
+        ),
+        .executableTarget(
+            name: "SwatchDemo",
+            dependencies: ["ColorJourney"],
+            path: "Examples/SwatchDemo"
         )
     ]
 )
