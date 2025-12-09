@@ -77,7 +77,6 @@ jobs:
       - name: Build for iOS Simulator
         run: |
           xcodebuild -scheme ColorJourney \
-                     -destination 'platform=iOS Simulator,name=Any iOS Simulator Device' \
                      -sdk iphonesimulator \
                      build
 
