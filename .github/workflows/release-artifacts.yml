@@ -102,10 +102,10 @@ jobs:
               --exclude='*.key' \
               --exclude='*.pem' \
               --exclude='.env*' \
+              --exclude='*.backup*' \
               -czf "${ARTIFACT_NAME}.tar.gz" \
               Sources/ColorJourney/ \
               Package.swift \
-              Package.resolved \
               README.md \
               LICENSE \
               CHANGELOG.md \

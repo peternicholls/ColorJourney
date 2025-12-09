@@ -218,7 +218,7 @@ If multiple fixes needed:
 |--------|-----------------|---|---|---|---|
 | `main` | Yes (1+) | Yes | Yes | Yes | RC only |
 | `develop` | Yes (1+) | Yes | Yes | Yes | Features |
-| `release-candidate/*` | No | Yes | No | Yes | develop |
+| `release-candidate/*` | No | Yes | No | No | develop |
 
 ---
 

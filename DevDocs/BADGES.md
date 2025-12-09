@@ -10,22 +10,22 @@ Color Journey README includes **3 essential badges** (no more, no less):
 
 ### 1. Build Status Badge
 
-**Purpose**: Indicates whether the latest build on `main` is passing  
+**Purpose**: Indicates whether the latest build on `develop` is passing  
 **Location**: README.md, top section, near title  
 **Format**: GitHub Actions workflow status  
-**Update Frequency**: Automatic, real-time (on push to main)  
+**Update Frequency**: Automatic, real-time (on push to develop)  
 **Example**:
 ```
-[![Build Status](https://github.com/yourusername/ColorJourney/actions/workflows/core-ci.yml/badge.svg?branch=main)](https://github.com/yourusername/ColorJourney/actions/workflows/core-ci.yml)
+[![Build Status](https://github.com/yourusername/ColorJourney/actions/workflows/core-ci.yml/badge.svg?branch=develop)](https://github.com/yourusername/ColorJourney/actions/workflows/core-ci.yml)
 ```
 
 **Implementation**:
 - GitHub Actions provides this automatically for any workflow
 - Accessible via: `https://github.com/OWNER/REPO/actions/workflows/WORKFLOW.yml/badge.svg`
-- Can filter by branch: `?branch=main`
+- Can filter by branch: `?branch=develop`
 - Links to Actions workflow detail page
 
-**Rationale**: Users need to know if code is stable before using it. Real-time, automated, no manual updates needed.
+**Rationale**: The `develop` branch is the primary integration branch where developers work. Users should see the current state of active development. Real-time, automated, no manual updates needed.
 
 ### 2. Version Badge
 
@@ -104,10 +104,10 @@ The following badges **must not** appear in README (violates "clean artifacts" r
 ### Build Status Badge (Real-Time)
 
 **How it works**:
-1. Workflow runs on push to `main` (core-ci.yml)
+1. Workflow runs on push to `develop` (core-ci.yml)
 2. GitHub Actions generates badge dynamically
-3. Badge URL: `https://github.com/OWNER/REPO/actions/workflows/WORKFLOW.yml/badge.svg`
-4. Badge reflects current workflow status in real-time
+3. Badge URL: `https://github.com/OWNER/REPO/actions/workflows/WORKFLOW.yml/badge.svg?branch=develop`
+4. Badge reflects current workflow status on `develop` in real-time
 5. No manual action needed
 
 **CI Job**:

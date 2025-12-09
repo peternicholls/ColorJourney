@@ -24,7 +24,7 @@ Temporary branches:
 
 **Check existing branches**:
 ```bash
-cd /Users/peternicholls/code/ColourJourney
+cd /path/to/your/ColorJourney/repo
 git branch -a
 
 # Expected output:
@@ -142,7 +142,7 @@ git push -u origin main
 ☑ Require branches to be up to date before merging
 ☑ Require conversation resolution before merging
 ☑ Require signed commits (optional)
-☑ Require linear history
+☐ Require linear history (NOT recommended - conflicts with merge commit strategy)
 ```
 
 **Save Protection Rule**.

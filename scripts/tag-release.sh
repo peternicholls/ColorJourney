@@ -89,7 +89,7 @@ if ! git show-ref --verify --quiet "refs/remotes/origin/${RC_BRANCH}"; then
 fi
 
 echo "Merging RC branch: ${RC_BRANCH}"
-git merge --ff-only "origin/${RC_BRANCH}"
+git merge --no-ff -m "Merge branch '${RC_BRANCH}' for release ${VERSION}" "origin/${RC_BRANCH}"
 
 # Create annotated tag
 echo "Creating tag: $TAG"

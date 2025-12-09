@@ -202,11 +202,11 @@ make
 
 **Compilation requirements by platform**:
 
-| Platform | Compiler | Standard | Flags |
-|----------|----------|----------|-------|
-| macOS | Apple Clang | C99 | `-std=c99 -Wall` |
-| Linux | GCC 7+ | C99 | `-std=c99 -Wall` |
-| Windows | MSVC 2019+ | C99 | `/std:c11` |
+| Platform | Compiler | Standard | Flags | Notes |
+|----------|----------|----------|-------|-------|
+| macOS | Apple Clang | C99 | `-std=c99 -Wall` | Strict C99 compliance |
+| Linux | GCC 7+ | C99 | `-std=c99 -Wall` | Strict C99 compliance |
+| Windows | MSVC 2019+ | C11* | `/std:c11` | MSVC uses C11 for C99 feature access |
 | Windows | MinGW | C99 | `-std=c99 -Wall` |
 
 **Example GCC compilation**:

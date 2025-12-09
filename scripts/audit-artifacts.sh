@@ -60,7 +60,7 @@ if [ "$ARTIFACT_TYPE" = "swift" ]; then
     
     # Required items
     echo "  Required items:"
-    REQUIRED_ITEMS=("Sources/ColorJourney" "Package.swift" "Package.resolved" "README.md" "LICENSE" "CHANGELOG.md")
+    REQUIRED_ITEMS=("Sources/ColorJourney" "Package.swift" "README.md" "LICENSE" "CHANGELOG.md")
     for item in "${REQUIRED_ITEMS[@]}"; do
         if find "$TEMP_DIR" -path "*/$item" -o -path "*/$item/*" | grep -q .; then
             echo "    ✓ $item"
@@ -71,7 +71,7 @@ if [ "$ARTIFACT_TYPE" = "swift" ]; then
     
     # Forbidden items
     echo "  Forbidden items:"
-    FORBIDDEN_ITEMS=("Sources/CColorJourney" "DevDocs" "Dockerfile" "Makefile" "Package.swift~" ".github" "Tests/CColorJourneyTests")
+    FORBIDDEN_ITEMS=("Sources/CColorJourney" "DevDocs" "Dockerfile" "Makefile" "Package.swift~" ".github" "Tests/CColorJourneyTests" "*.backup*")
     HAS_FORBIDDEN=0
     for item in "${FORBIDDEN_ITEMS[@]}"; do
         if find "$TEMP_DIR" -path "*/$item" -o -path "*/$item/*" 2>/dev/null | grep -q .; then

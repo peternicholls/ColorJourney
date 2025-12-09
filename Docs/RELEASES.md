@@ -89,7 +89,7 @@ Swift releases depend on a minimum C core version. Check the release notes for c
 | 1.1.0        | 1.0.0+                 | Swift API additions |
 | 2.0.0        | 2.0.0+                 | Breaking changes |
 
-See [DevDocs/VERSION_MAPPING.md](../DevDocs/VERSION_MAPPING.md) for complete mapping.
+**Swift releases depend on a specific C core version. Check the release notes for exact compatibility information.**
 
 ---
 
