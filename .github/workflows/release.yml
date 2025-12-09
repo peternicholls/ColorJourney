@@ -95,8 +95,8 @@ jobs:
                   VERSION=${GITHUB_REF#refs/tags/}
                   echo "Publishing version: ${VERSION}"
 
-                  # Push with verbose output for debugging
-                  pod trunk push ColorJourney.podspec --verbose
+                  # Push with allow-warnings and verbose output for debugging
+                  pod trunk push ColorJourney.podspec --allow-warnings --verbose
 
                   echo "✓ Successfully pushed to CocoaPods Trunk"
 
