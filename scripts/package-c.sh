@@ -91,10 +91,12 @@ cp "README.md" "$TEMP_DIR/$ARTIFACT_NAME/" 2>/dev/null || true
 cp "LICENSE" "$TEMP_DIR/$ARTIFACT_NAME/" 2>/dev/null || true
 cp "CHANGELOG.md" "$TEMP_DIR/$ARTIFACT_NAME/" 2>/dev/null || true
 
-# Copy end-user docs (include Docs/, exclude DevDocs/)
+# Copy end-user docs (include Docs/, exclude DevDocs/ and Makefile)
 if [ -d "Docs" ]; then
     echo "  • End-user documentation"
     cp -r "Docs/" "$TEMP_DIR/$ARTIFACT_NAME/docs/"
+    # Remove Makefile from generated docs (FR-008 forbidden item)
+    find "$TEMP_DIR/$ARTIFACT_NAME/docs" -type f -name "Makefile" -delete
 fi
 
 # Verify exclusions (should not be in C artifact)
