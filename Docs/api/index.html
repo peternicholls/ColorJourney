@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>API Guides - ColorJourney</title>
+    <link rel="stylesheet" href="guides/styles.css">
+    <style>
+        .breadcrumb {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .breadcrumb {
+                color: #aaa;
+            }
+        }
+
+        .guide-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .guide-card {
+            background: #f9f9f9;
+            padding: 2rem;
+            border-radius: 8px;
+            border-left: 4px solid #0066cc;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .guide-card {
+                background: #2a2a2a;
+            }
+        }
+
+        .guide-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.1);
+        }
+
+        .guide-card h3 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            color: #0066cc;
+            font-size: 1.3rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .guide-card h3 {
+                color: #66b3ff;
+            }
+        }
+
+        .guide-card p {
+            margin: 0.5rem 0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .guide-card .description {
+            color: #333;
+            margin: 1rem 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .guide-card .description {
+                color: #ccc;
+            }
+        }
+
+        .guide-card .best-for {
+            background: #e3f2fd;
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin: 1rem 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .guide-card .best-for {
+                background: #0d2a4d;
+            }
+        }
+
+        .guide-card .features {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+        }
+
+        .guide-card .features li {
+            padding: 0.25rem 0;
+        }
+
+        .guide-card .features li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .guide-link {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: #0066cc;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .guide-link {
+                background: #0066cc;
+            }
+        }
+
+        .guide-link:hover {
+            background: #0052a3;
+        }
+
+        .learning-path {
+            background: #e8f5e9;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .learning-path {
+                background: #1b5e20;
+            }
+        }
+
+        .path-step {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+        }
+
+        .step-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: #28a745;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            margin-top: 0;
+            margin-bottom: 0.25rem;
+        }
+
+        .step-content p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .step-content p {
+                color: #ccc;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .guide-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .decision-tree {
+            background: #f9f9f9;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .decision-tree {
+                background: #2a2a2a;
+            }
+        }
+
+        .tree-node {
+            margin: 1.5rem 0 1.5rem 0;
+            padding-left: 1.5rem;
+            border-left: 3px solid #0066cc;
+        }
+
+        .tree-node strong {
+            color: #0066cc;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .tree-node strong {
+                color: #66b3ff;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="../index.html" class="logo">ColorJourney</a>
+            <ul class="links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="usage.html">API Usage</a></li>
+                <li><a href="../guides/01-GETTING_STARTED.html">Guides</a></li>
+                <li><a href="../generated/swift-docc/">Swift API</a></li>
+                <li><a href="../generated/doxygen/html/">C API</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> / API Guides
+        </div>
+
+        <h1>🎨 API Guides</h1>
+        <p class="subtitle">Hand-holding documentation to help you use ColorJourney effectively</p>
+
+        <!-- Learning Path -->
+        <section class="learning-path">
+            <h2>📚 Recommended Learning Path</h2>
+            <div class="path-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4><a href="usage.html">Start with API Usage Guide</a></h4>
+                    <p>Learn core concepts and see your first working examples in 5 minutes (Swift or C).</p>
+                </div>
+            </div>
+            <div class="path-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4><a href="patterns.html">Explore Common Patterns</a></h4>
+                    <p>See 7 real-world use cases: timelines, data viz, gradients, personalization, and more.</p>
+                </div>
+            </div>
+            <div class="path-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4><a href="configuration.html">Understand Configuration</a></h4>
+                    <p>Deep-dive into all parameters, presets, and how they affect color output.</p>
+                </div>
+            </div>
+            <div class="path-step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4><a href="quickref.html">Bookmark Quick Reference</a></h4>
+                    <p>Keep this handy while coding for fast syntax lookup and copy-paste examples.</p>
+                </div>
+            </div>
+            <div class="path-step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h4><a href="troubleshooting.html">Debug with Troubleshooting Guide</a></h4>
+                    <p>When something doesn't work as expected, find solutions and root causes here.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- All Guides -->
+        <section>
+            <h2>📖 All Guides</h2>
+
+            <div class="guide-grid">
+                <!-- Usage Guide -->
+                <div class="guide-card">
+                    <h3>📖 API Usage Guide</h3>
+                    <p class="description">
+                        Complete guide to learning ColorJourney from scratch.
+                    </p>
+                    <div class="best-for">
+                        <strong>Best for:</strong> Everyone starting with ColorJourney
+                    </div>
+                    <ul class="features">
+                        <li>5-minute Swift quick start</li>
+                        <li>5-minute C quick start</li>
+                        <li>Core concepts explained</li>
+                        <li>4 real-world examples</li>
+                        <li>Web playground integration</li>
+                        <li>Best practices</li>
+                        <li>Troubleshooting basics</li>
+                    </ul>
+                    <a href="usage.html" class="guide-link">Read Guide →</a>
+                </div>
+
+                <!-- Quick Reference -->
+                <div class="guide-card">
+                    <h3>⚡ Quick Reference</h3>
+                    <p class="description">
+                        Copy-paste snippets and cheat sheets for fast lookup while coding.
+                    </p>
+                    <div class="best-for">
+                        <strong>Best for:</strong> Quick syntax lookup while coding
+                    </div>
+                    <ul class="features">
+                        <li>Swift quick snippets</li>
+                        <li>C quick snippets</li>
+                        <li>Style presets list</li>
+                        <li>Parameter reference table</li>
+                        <li>Method reference</li>
+                        <li>Decision matrix</li>
+                        <li>Fast links to all guides</li>
+                    </ul>
+                    <a href="quickref.html" class="guide-link">Read Guide →</a>
+                </div>
+
+                <!-- Configuration -->
+                <div class="guide-card">
+                    <h3>⚙️ Configuration Reference</h3>
+                    <p class="description">
+                        Complete parameter documentation with bounds and practical combinations.
+                    </p>
+                    <div class="best-for">
+                        <strong>Best for:</strong> Fine-tuning your exact color needs
+                    </div>
+                    <ul class="features">
+                        <li>6 preset styles detailed</li>
+                        <li>7 parameter tables</li>
+                        <li>Bounds & valid ranges</li>
+                        <li>Real-world combinations</li>
+                        <li>Use cases for each</li>
+                        <li>Code examples</li>
+                        <li>Accessibility tips</li>
+                    </ul>
+                    <a href="configuration.html" class="guide-link">Read Guide →</a>
+                </div>
+
+                <!-- Common Patterns -->
+                <div class="guide-card">
+                    <h3>🎯 Common Patterns & Use Cases</h3>
+                    <p class="description">
+                        Real-world scenarios with complete working code examples.
+                    </p>
+                    <div class="best-for">
+                        <strong>Best for:</strong> Solving specific design problems
+                    </div>
+                    <ul class="features">
+                        <li>12-color timeline tracks</li>
+                        <li>8-category data viz</li>
+                        <li>Smooth gradients</li>
+                        <li>User personalization</li>
+                        <li>Light/dark themes</li>
+                        <li>WCAG accessibility</li>
+                        <li>Brand color systems</li>
+                    </ul>
+                    <a href="patterns.html" class="guide-link">Read Guide →</a>
+                </div>
+
+                <!-- Troubleshooting -->
+                <div class="guide-card">
+                    <h3>🔧 Troubleshooting Guide</h3>
+                    <p class="description">
+                        Solutions for common issues, root causes, and debugging tips.
+                    </p>
+                    <div class="best-for">
+                        <strong>Best for:</strong> When something doesn't work as expected
+                    </div>
+                    <ul class="features">
+                        <li>Muddy colors fixes</li>
+                        <li>Lack of variation solutions</li>
+                        <li>Performance optimization</li>
+                        <li>Determinism & reproducibility</li>
+                        <li>Contrast & accessibility</li>
+                        <li>Integration problems</li>
+                        <li>15+ FAQ items</li>
+                    </ul>
+                    <a href="troubleshooting.html" class="guide-link">Read Guide →</a>
+                </div>
+
+                <!-- Getting Started (from guides folder) -->
+                <div class="guide-card">
+                    <h3>🚀 Getting Started</h3>
+                    <p class="description">
+                        Introduction with 3-step quick start and setup instructions.
+                    </p>
+                    <div class="best-for">
+                        <strong>Best for:</strong> First-time users in guides section
+                    </div>
+                    <ul class="features">
+                        <li>Installation guide</li>
+                        <li>3-step quick start</li>
+                        <li>Common use cases</li>
+                        <li>iOS setup</li>
+                        <li>macOS setup</li>
+                        <li>Web setup</li>
+                    </ul>
+                    <a href="../guides/01-GETTING_STARTED.html" class="guide-link">Read Guide →</a>
+                </div>
+
+                <!-- Swift Integration -->
+                <div class="guide-card">
+                    <h3>🎯 Swift Integration</h3>
+                    <p class="description">
+                        Deep-dive into using ColorJourney in Swift and SwiftUI projects.
+                    </p>
+                    <div class="best-for">
+                        <strong>Best for:</strong> iOS, macOS, watchOS developers
+                    </div>
+                    <ul class="features">
+                        <li>SwiftUI integration</li>
+                        <li>AppKit examples</li>
+                        <li>UIKit patterns</li>
+                        <li>Performance tips</li>
+                        <li>Advanced usage</li>
+                        <li>Caching strategies</li>
+                    </ul>
+                    <a href="../guides/03-SWIFT_INTEGRATION.html" class="guide-link">Read Guide →</a>
+                </div>
+
+                <!-- C Integration -->
+                <div class="guide-card">
+                    <h3>🔧 C Integration</h3>
+                    <p class="description">
+                        Using the C core library for embedded systems and FFI bindings.
+                    </p>
+                    <div class="best-for">
+                        <strong>Best for:</strong> C developers, embedded systems, game engines
+                    </div>
+                    <ul class="features">
+                        <li>C API reference</li>
+                        <li>FFI bindings</li>
+                        <li>Compilation guide</li>
+                        <li>Embedded systems</li>
+                        <li>WebAssembly setup</li>
+                        <li>Memory management</li>
+                    </ul>
+                    <a href="../guides/04-C_INTEGRATION.html" class="guide-link">Read Guide →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Which Guide Should I Read? -->
+        <section class="decision-tree">
+            <h2>🤔 Which Guide Should I Read?</h2>
+
+            <div class="tree-node">
+                <strong>Q: I'm new to ColorJourney</strong><br>
+                A: Start with <a href="usage.html">API Usage Guide</a> → Then <a href="patterns.html">Common
+                    Patterns</a>
+            </div>
+
+            <div class="tree-node">
+                <strong>Q: I need quick syntax while coding</strong><br>
+                A: Use <a href="quickref.html">Quick Reference</a> (bookmark it!)
+            </div>
+
+            <div class="tree-node">
+                <strong>Q: I want to understand all configuration options</strong><br>
+                A: Read <a href="configuration.html">Configuration Reference</a>
+            </div>
+
+            <div class="tree-node">
+                <strong>Q: I'm solving a specific design problem</strong><br>
+                A: Check <a href="patterns.html">Common Patterns & Use Cases</a>
+            </div>
+
+            <div class="tree-node">
+                <strong>Q: Something isn't working right</strong><br>
+                A: Go to <a href="troubleshooting.html">Troubleshooting Guide</a>
+            </div>
+
+            <div class="tree-node">
+                <strong>Q: I'm integrating with Swift/SwiftUI</strong><br>
+                A: Read <a href="../guides/03-SWIFT_INTEGRATION.html">Swift Integration Guide</a>
+            </div>
+
+            <div class="tree-node">
+                <strong>Q: I'm integrating with C or embedded systems</strong><br>
+                A: Read <a href="../guides/04-C_INTEGRATION.html">C Integration Guide</a>
+            </div>
+
+            <div class="tree-node">
+                <strong>Q: I need to check WCAG contrast or accessibility</strong><br>
+                A: Try <a href="https://colorjourney.dev" target="_blank">web playground</a> or read
+                <a href="patterns.html">accessibility section</a> of patterns guide
+            </div>
+        </section>
+
+        <!-- Key Features Summary -->
+        <section style="background: #f9f9f9; padding: 2rem; border-radius: 8px; margin: 2rem 0;">
+            <h2>✨ Key Features Across All Guides</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div>
+                    <h4 style="margin-top: 0; color: #0066cc;">✅ Complete Examples</h4>
+                    <p>Every guide has working code examples you can copy & paste.</p>
+                </div>
+                <div>
+                    <h4 style="margin-top: 0; color: #0066cc;">✅ Swift & C</h4>
+                    <p>Examples for both Swift and C (or C-only where applicable).</p>
+                </div>
+                <div>
+                    <h4 style="margin-top: 0; color: #0066cc;">✅ Real-World Use Cases</h4>
+                    <p>Not just "hello world" — actual design system problems.</p>
+                </div>
+                <div>
+                    <h4 style="margin-top: 0; color: #0066cc;">✅ Performance Tips</h4>
+                    <p>Optimization strategies and benchmarks included.</p>
+                </div>
+                <div>
+                    <h4 style="margin-top: 0; color: #0066cc;">✅ Accessibility First</h4>
+                    <p>WCAG compliance and inclusive design guidance.</p>
+                </div>
+                <div>
+                    <h4 style="margin-top: 0; color: #0066cc;">✅ Dark Mode Support</h4>
+                    <p>All guides work perfectly in light and dark themes.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation to Auto-Generated Docs -->
+        <section
+            style="background: #e3f2fd; padding: 2rem; border-radius: 8px; margin: 2rem 0; border-left: 4px solid #2196F3;">
+            <h2>🔬 Advanced: Auto-Generated API Documentation</h2>
+            <p>Once you've learned the basics from these guides, explore the comprehensive auto-generated API
+                documentation:</p>
+            <ul>
+                <li><strong><a href="../generated/swift-docc/">Swift API Documentation (DocC)</a>:</strong>
+                    100% API coverage with cross-references, type information, and parameter details.</li>
+                <li><strong><a href="../generated/doxygen/html/">C API Documentation (Doxygen)</a>:</strong>
+                    C function reference, call graphs, and algorithm explanations.</li>
+            </ul>
+        </section>
+
+        <div
+            style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 0.9rem;">
+            <p>🎨 <strong>Ready to start?</strong> Begin with the <a href="usage.html">API Usage Guide</a> for your
+                5-minute introduction!</p>
+        </div>
+    </main>
+
+    <footer
+        style="text-align: center; padding: 2rem; color: #666; font-size: 0.85rem; border-top: 1px solid #ddd; margin-top: 3rem;">
+        <p>ColorJourney © 2025 | Built with OKLab color science | Licensed under MIT</p>
+    </footer>
+</body>
+
+</html>

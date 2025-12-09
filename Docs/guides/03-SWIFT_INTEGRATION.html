@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>Swift Integration Guide - ColorJourney</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="../index.html" class="logo">📚 ColorJourney Docs</a>
+            <ul class="links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="01-GETTING_STARTED.html">Getting Started</a></li>
+                <li><a href="02-API_QUICK_REFERENCE.html">API Reference</a></li>
+                <li><a href="03-SWIFT_INTEGRATION.html">Swift</a></li>
+                <li><a href="04-C_INTEGRATION.html">C</a></li>
+                <li><a href="05-TROUBLESHOOTING.html">Troubleshooting</a></li>
+                <li><a href="06-FAQ.html">FAQ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>🚀 Swift Integration Guide</h1>
+        <p class="subtitle">Complete guide to using ColorJourney in Swift and SwiftUI applications</p>
+
+        <div class="toc">
+            <h3>Contents</h3>
+            <ul>
+                <li><a href="#installation">Installation</a></li>
+                <li><a href="#imports">Imports & Setup</a></li>
+                <li><a href="#basic-usage">Basic Usage</a></li>
+                <li><a href="#configuration">Configuration</a></li>
+                <li><a href="#swiftui">SwiftUI Integration</a></li>
+                <li><a href="#color-types">Color Type Conversions</a></li>
+                <li><a href="#performance">Performance Tips</a></li>
+                <li><a href="#examples">Code Examples</a></li>
+            </ul>
+        </div>
+
+        <h2 id="installation">📦 Installation</h2>
+
+        <h3>Swift Package Manager (Recommended)</h3>
+        <p>In your <code>Package.swift</code>:</p>
+        <pre><code>dependencies: [
+    .package(url: "https://github.com/peternicholls/ColorJourney.git", from: "1.0.0")
+],
+targets: [
+    .target(
+        name: "YourTarget",
+        dependencies: ["ColorJourney"]
+    )
+]</code></pre>
+
+        <h3>Xcode Project</h3>
+        <ol>
+            <li>File → Add Packages</li>
+            <li>Enter: <code>https://github.com/peternicholls/ColorJourney.git</code></li>
+            <li>Select version (1.0.0 or later)</li>
+            <li>Add to your target</li>
+        </ol>
+
+        <h3>CocoaPods (When Available)</h3>
+        <pre><code>pod 'ColorJourney', '~> 1.0'</code></pre>
+
+        <h2 id="imports">📍 Imports & Setup</h2>
+
+        <h3>Basic Import</h3>
+        <pre><code>import ColorJourney</code></pre>
+
+        <h3>With SwiftUI</h3>
+        <pre><code>import SwiftUI
+import ColorJourney</code></pre>
+
+        <h3>Color Type Bridging</h3>
+        <p>ColorJourney provides automatic conversion to platform color types:</p>
+        <pre><code>let cgColor = ColorJourneyRGB(red: 0.5, green: 0.2, blue: 0.8)
+
+// SwiftUI Color
+let swiftUIColor: Color = cgColor.color
+
+// UIKit UIColor (iOS)
+let uiColor: UIColor = cgColor.uiColor
+
+// AppKit NSColor (macOS)
+let nsColor: NSColor = cgColor.nsColor</code></pre>
+
+        <h2 id="basic-usage">💡 Basic Usage</h2>
+
+        <h3>Create a Single-Anchor Journey</h3>
+        <pre><code>let journey = ColorJourney(
+    config: .singleAnchor(
+        ColorJourneyRGB(red: 0.5, green: 0.2, blue: 0.8),
+        style: .balanced
+    )
+)</code></pre>
+
+        <h3>Sample a Single Color</h3>
+        <pre><code>// Sample at position (0.0 = start, 1.0 = end)
+let midColor = journey.sample(at: 0.5)
+let startColor = journey.sample(at: 0.0)
+let endColor = journey.sample(at: 1.0)</code></pre>
+
+        <h3>Generate a Palette</h3>
+        <pre><code>// 8 distinct, perceptually uniform colors
+let palette = journey.discrete(count: 8)</code></pre>
+
+        <h3>Create a Gradient</h3>
+        <pre><code>// SwiftUI-compatible gradient with 50 stops
+let gradient = journey.linearGradient(stops: 50)</code></pre>
+
+        <h2 id="configuration">⚙️ Configuration</h2>
+
+        <h3>Builder Pattern (Recommended)</h3>
+        <pre><code>let config = .singleAnchor(baseColor, style: .balanced)
+    .lightness(.lighter)
+    .chroma(.vivid)
+    .contrast(.high)
+    .temperature(.warm)</code></pre>
+
+        <h3>Full Configuration Object</h3>
+        <pre><code>let config = ColorJourneyConfig(
+    anchors: [color1, color2, color3],
+    lightness: .lighter,
+    chroma: .vivid,
+    contrast: .high,
+    midJourneyVibrancy: 0.3,
+    temperature: .warm,
+    loopMode: .closed,
+    variation: .subtle(
+        dimensions: [.hue, .lightness],
+        seed: 42
+    )
+)</code></pre>
+
+        <h3>Configuration Options</h3>
+
+        <h4>Lightness Bias</h4>
+        <pre><code>.neutral     // Keep original lightness
+.lighter     // Shift toward brighter colors
+.darker      // Shift toward darker colors
+.custom(weight: 0.5)  // Custom [-1.0, 1.0]</code></pre>
+
+        <h4>Chroma Bias (Saturation)</h4>
+        <pre><code>.neutral     // Keep original saturation
+.muted       // 60% saturation (0.6x)
+.vivid       // 140% saturation (1.4x)
+.custom(multiplier: 1.2)  // Custom [0.5, 2.0]</code></pre>
+
+        <h4>Contrast</h4>
+        <pre><code>.low         // Soft (ΔE ≥ 0.05)
+.medium      // Balanced (ΔE ≥ 0.1)
+.high        // Strong (ΔE ≥ 0.15)
+.custom(threshold: 0.08)  // Custom ΔE value</code></pre>
+
+        <h4>Temperature</h4>
+        <pre><code>.neutral     // No temperature bias
+.warm        // Shift toward reds, oranges, yellows
+.cool        // Shift toward blues, greens, purples</code></pre>
+
+        <h4>Loop Modes</h4>
+        <pre><code>.open        // Colors at t=0 and t=1 are different
+.closed      // Color at t=1 matches t=0 (seamless loop)
+.pingPong    // Reverses at boundaries</code></pre>
+
+        <h4>Variation</h4>
+        <pre><code>.off         // No variation
+
+.subtle(
+    dimensions: [.hue, .lightness],
+    seed: 42
+)
+
+.noticeable(
+    dimensions: [.hue, .chroma, .lightness],
+    seed: 42
+)</code></pre>
+
+        <h2 id="swiftui">🎨 SwiftUI Integration</h2>
+
+        <h3>Discrete Color Grid</h3>
+        <pre><code>struct ColorPaletteGrid: View {
+    let journey = ColorJourney(
+        config: .singleAnchor(baseColor, style: .balanced)
+    )
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            ForEach(journey.discrete(count: 8).indices, id: \.self) { i in
+                Rectangle()
+                    .fill(journey.discrete(count: 8)[i].color)
+                    .frame(height: 50)
+            }
+        }
+    }
+}</code></pre>
+
+        <h3>Linear Gradient</h3>
+        <pre><code>struct GradientView: View {
+    let journey = ColorJourney(
+        config: .singleAnchor(baseColor, style: .balanced)
+    )
+    
+    var body: some View {
+        Rectangle()
+            .fill(journey.linearGradient(stops: 20))
+            .frame(height: 200)
+    }
+}</code></pre>
+
+        <h3>Dynamic Configuration</h3>
+        <pre><code>struct ThemedPalette: View {
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        let lightness: LightnessBias = colorScheme == .dark ? .darker : .lighter
+        
+        let config = .singleAnchor(baseColor, style: .balanced)
+            .lightness(lightness)
+        
+        let journey = ColorJourney(config: config)
+        
+        VStack {
+            ForEach(journey.discrete(count: 6).indices, id: \.self) { i in
+                Rectangle()
+                    .fill(journey.discrete(count: 6)[i].color)
+            }
+        }
+    }
+}</code></pre>
+
+        <h2 id="color-types">🎨 Color Type Conversions</h2>
+
+        <h3>ColorJourneyRGB Details</h3>
+        <pre><code>public struct ColorJourneyRGB: Hashable {
+    public var red: Float     // [0, 1]
+    public var green: Float   // [0, 1]
+    public var blue: Float    // [0, 1]
+}</code></pre>
+
+        <h3>Converting to Platform Types</h3>
+        <pre><code>let cgColor = ColorJourneyRGB(red: 0.5, green: 0.2, blue: 0.8)
+
+// SwiftUI
+let swiftUIColor = cgColor.color  // → Color
+
+// iOS/iPadOS
+let uiColor = cgColor.uiColor  // → UIColor
+
+// macOS
+let nsColor = cgColor.nsColor  // → NSColor</code></pre>
+
+        <h3>Creating from Platform Colors (iOS)</h3>
+        <pre><code>let uiColor = UIColor(red: 0.5, green: 0.2, blue: 0.8, alpha: 1.0)
+var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+
+let cgColor = ColorJourneyRGB(
+    red: Float(red),
+    green: Float(green),
+    blue: Float(blue)
+)</code></pre>
+
+        <h2 id="performance">⚡ Performance Tips</h2>
+
+        <h3>Create Once, Use Many Times</h3>
+        <pre><code>// ✓ Good: Create outside view
+let journey = ColorJourney(config: config)
+
+struct MyView: View {
+    var body: some View {
+        let colors = journey.discrete(count: 10)
+        // Use colors...
+    }
+}
+
+// ✗ Bad: Creating inside view body
+struct MyView: View {
+    var body: some View {
+        let journey = ColorJourney(config: config)  // Recreates every frame!
+        // Use journey...
+    }
+}</code></pre>
+
+        <h3>Cache Discrete Palettes</h3>
+        <pre><code>struct CachedPalette {
+    let journey: ColorJourney
+    let colors: [ColorJourneyRGB]
+    
+    init(config: ColorJourneyConfig, count: Int) {
+        self.journey = ColorJourney(config: config)
+        self.colors = journey.discrete(count: count)
+    }
+}</code></pre>
+
+        <h3>Sampling vs Discrete</h3>
+        <pre><code>// For smooth gradients: sample continuously
+let gradient = journey.linearGradient(stops: 50)
+
+// For UI elements: use discrete
+let palette = journey.discrete(count: 8)
+
+// For single colors: use sample
+let color = journey.sample(at: 0.5)</code></pre>
+
+        <h2 id="examples">📚 Code Examples</h2>
+
+        <h3>Material-Inspired Color System</h3>
+        <pre><code>struct MaterialColors {
+    static let primary = ColorJourneyRGB(red: 0.2, green: 0.6, blue: 1.0)
+    
+    static func palette(style: JourneyStyle) -> [ColorJourneyRGB] {
+        let journey = ColorJourney(
+            config: .singleAnchor(primary, style: style)
+                .contrast(.high)
+        )
+        return journey.discrete(count: 10)
+    }
+}</code></pre>
+
+        <h3>Theme-Aware Color Provider</h3>
+        <pre><code>class ColorProvider {
+    @Environment(\.colorScheme) var colorScheme
+    
+    func palette(for anchor: ColorJourneyRGB) -> [ColorJourneyRGB] {
+        let lightness: LightnessBias = colorScheme == .dark ? .darker : .lighter
+        
+        let config = ColorJourneyConfig(
+            anchors: [anchor],
+            lightness: lightness,
+            chroma: .vivid,
+            contrast: .high
+        )
+        
+        return ColorJourney(config: config).discrete(count: 8)
+    }
+}</code></pre>
+
+        <h3>Chart Color Mapper</h3>
+        <pre><code>struct ChartColors {
+    static let coolToWarm = ColorJourney(
+        config: ColorJourneyConfig(
+            anchors: [
+                ColorJourneyRGB(red: 0.0, green: 0.0, blue: 1.0),  // Blue
+                ColorJourneyRGB(red: 1.0, green: 0.0, blue: 0.0)   // Red
+            ],
+            loopMode: .open
+        )
+    )
+    
+    static func colorForValue(_ value: Float, min: Float, max: Float) -> Color {
+        let normalized = (value - min) / (max - min)
+        let clipped = max(0, min(1, normalized))
+        return coolToWarm.sample(at: clipped).color
+    }
+}</code></pre>
+
+        <h2>📖 See Also</h2>
+        <ul>
+            <li><a href="01-GETTING_STARTED.html">Getting Started Guide</a></li>
+            <li><a href="02-API_QUICK_REFERENCE.html">API Quick Reference</a></li>
+            <li><a href="04-C_INTEGRATION.html">C Integration Guide</a></li>
+            <li><a href="../generated/swift-docc/">Full Swift API Documentation</a></li>
+        </ul>
+    </main>
+
+    <footer>
+        <p><strong>ColorJourney Documentation</strong> | <a href="../index.html">Home</a></p>
+        <p>Generated 2025-12-08</p>
+    </footer>
+</body>
+
+</html>

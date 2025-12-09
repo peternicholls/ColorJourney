@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>Common Patterns & Use Cases - ColorJourney</title>
+    <link rel="stylesheet" href="guides/styles.css">
+    <style>
+        .breadcrumb {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .breadcrumb {
+                color: #aaa;
+            }
+        }
+
+        .use-case {
+            background: #f9f9f9;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            border-left: 4px solid #0066cc;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .use-case {
+                background: #2a2a2a;
+            }
+        }
+
+        .use-case h3 {
+            margin-top: 0;
+        }
+
+        .use-case-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .code-block {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .code-block {
+                background: #1a1a1a;
+            }
+        }
+
+        .code-block code {
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            color: #d63384;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .code-block code {
+                color: #ff6b9d;
+            }
+        }
+
+        .description {
+            line-height: 1.8;
+        }
+
+        .icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .tips {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1.5rem 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .tips {
+                background: #664d03;
+                border-left-color: #ffc107;
+            }
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: #f9f9f9;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .comparison-table {
+                background: #2a2a2a;
+            }
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        @media (prefers-color-scheme: dark) {
+
+            .comparison-table th,
+            .comparison-table td {
+                border-bottom-color: #444;
+            }
+        }
+
+        .comparison-table th {
+            background: #f0f0f0;
+            font-weight: 600;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .comparison-table th {
+                background: #1a1a1a;
+            }
+        }
+
+        .checkmark {
+            color: #28a745;
+        }
+
+        .cross {
+            color: #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .use-case-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="../index.html" class="logo">ColorJourney</a>
+            <ul class="links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="usage.html">API Usage</a></li>
+                <li><a href="../guides/01-GETTING_STARTED.html">Guides</a></li>
+                <li><a href="../generated/swift-docc/">Swift API</a></li>
+                <li><a href="../generated/doxygen/html/">C API</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> / <a href="usage.html">API Usage</a> / Common Patterns
+        </div>
+
+        <h1>🎯 Common Patterns & Use Cases</h1>
+        <p class="subtitle">Real-world scenarios with working code examples</p>
+
+        <!-- Product Timeline Visualization -->
+        <section class="use-case">
+            <div class="icon">📅</div>
+            <h3>Product Timeline: 12 Distinct Track Colors</h3>
+            <div class="use-case-content">
+                <div class="description">
+                    <p><strong>Problem:</strong> You need 12 visually distinct colors for timeline tracks (e.g., video
+                        editing, project management, roadmap views).</p>
+                    <p><strong>Requirements:</strong></p>
+                    <ul>
+                        <li>Colors must be clearly distinguishable</li>
+                        <li>Professional, not garish</li>
+                        <li>Works in both light and dark themes</li>
+                        <li>Consistent across app sessions</li>
+                    </ul>
+                    <p><strong>Solution:</strong> Use a balanced preset with medium contrast. The journey naturally
+                        spreads colors across the perceptual space.</p>
+                </div>
+                <div class="code-block"><code>
+let journey = ColorJourney(
+    config: .singleAnchor(
+        ColorJourneyRGB(
+            red: 0.4,
+            green: 0.5,
+            blue: 0.9
+        ),
+        style: .balanced
+    )
+)
+
+let trackColors = journey.discrete(count: 12)
+
+// Use trackColors[0] through trackColors[11]
+for (index, color) in trackColors.enumerated() {
+    let track = TimelineTrack(
+        id: index,
+        color: color.color  // SwiftUI Color
+    )
+}
+                </code></div>
+            </div>
+            <div class="tips">
+                <strong>💡 Tip:</strong> If you want the colors to wrap around (e.g., track 13 = track 1), use
+                <code>loopMode: .closed</code>.
+            </div>
+        </section>
+
+        <!-- Data Visualization -->
+        <section class="use-case">
+            <div class="icon">📊</div>
+            <h3>Data Visualization: High-Contrast 8-Category Palette</h3>
+            <div class="use-case-content">
+                <div class="description">
+                    <p><strong>Problem:</strong> Create a data visualization legend with 8 categories. Colors must be
+                        distinguishable for colorblind users.</p>
+                    <p><strong>Requirements:</strong></p>
+                    <ul>
+                        <li>High contrast (WCAG AAA if possible)</li>
+                        <li>Professional look</li>
+                        <li>No muddy or similar-looking colors</li>
+                        <li>Closed loop (for cyclic data)</li>
+                    </ul>
+                    <p><strong>Solution:</strong> Use two anchor colors with high contrast and closed loop mode. This
+                        creates a full-spectrum journey.</p>
+                </div>
+                <div class="code-block"><code>
+let journey = ColorJourney(config: 
+    ColorJourneyConfig(
+        anchors: [
+            ColorJourneyRGB(
+                red: 0.8, green: 0.3, blue: 0.3
+            ),
+            ColorJourneyRGB(
+                red: 0.3, green: 0.8, blue: 0.8
+            )
+        ],
+        contrast: .high,
+        loopMode: .closed,
+        chroma: .vivid
+    )
+)
+
+let categoryColors = journey.discrete(count: 8)
+
+// Test in web playground for WCAG contrast
+// scores before deployment
+                </code></div>
+            </div>
+            <div class="tips">
+                <strong>⚡ Pro Tip:</strong> Test your palette in the <a href="https://colorjourney.dev"
+                    target="_blank">web playground</a>
+                to see WCAG contrast ratios before using in your product.
+            </div>
+        </section>
+
+        <!-- Smooth Gradients -->
+        <section class="use-case">
+            <div class="icon">🌈</div>
+            <h3>Smooth Gradients: Progress Bars & Heat Maps</h3>
+            <div class="use-case-content">
+                <div class="description">
+                    <p><strong>Problem:</strong> Generate a smooth 256-step gradient for progress visualization or heat
+                        mapping numerical values.</p>
+                    <p><strong>Requirements:</strong></p>
+                    <ul>
+                        <li>Smooth transition (no banding)</li>
+                        <li>No muddy midpoints</li>
+                        <li>Semantically clear (green=good, red=bad)</li>
+                    </ul>
+                    <p><strong>Solution:</strong> Use continuous sampling with a high-contrast style. The
+                        <code>linearGradient()</code> helper generates SwiftUI gradients automatically.</p>
+                </div>
+                <div class="code-block"><code>
+let journey = ColorJourney(
+    config: .singleAnchor(
+        ColorJourneyRGB(
+            red: 0.2,
+            green: 0.8,
+            blue: 0.3
+        ),
+        style: .vividLoop
+    )
+)
+
+// Method 1: Use SwiftUI helper (easiest)
+Rectangle()
+    .fill(journey.linearGradient(stops: 20))
+    .frame(height: 30)
+
+// Method 2: Manual sampling (for custom
+// gradients or non-SwiftUI)
+var gradientSteps = [ColorJourneyRGB]()
+for i in 0..&lt;256 {
+    let t = Float(i) / 255.0
+    gradientSteps.append(
+        journey.sample(at: t)
+    )
+}
+                </code></div>
+            </div>
+            <div class="tips">
+                <strong>🎨 Design Tip:</strong> For diverging gradients (e.g., blue=low, red=high), use two-anchor
+                journeys
+                with opposite colors and <code>loopMode: .open</code>.
+            </div>
+        </section>
+
+        <!-- User-Specific Personalization -->
+        <section class="use-case">
+            <div class="icon">👤</div>
+            <h3>User Personalization: Seeded Variation by User ID</h3>
+            <div class="use-case-content">
+                <div class="description">
+                    <p><strong>Problem:</strong> Each user gets a unique but consistent color palette. Same palette on
+                        every session, across devices.</p>
+                    <p><strong>Requirements:</strong></p>
+                    <ul>
+                        <li>Deterministic (same user = same colors forever)</li>
+                        <li>Looks different per user (organic variation)</li>
+                        <li>Reproducible across devices</li>
+                        <li>No server storage needed</li>
+                    </ul>
+                    <p><strong>Solution:</strong> Use a seeded variation with user ID as the seed. OKLab ensures
+                        perceptual consistency.</p>
+                </div>
+                <div class="code-block"><code>
+func generateUserPalette(
+    for user: User
+) -> [ColorJourneyRGB] {
+    // Create deterministic seed from user ID
+    let seed = UInt32(user.id.hashValue)
+    
+    let journey = ColorJourney(
+        config: ColorJourneyConfig(
+            anchors: [brandColor],
+            variation: .subtle(
+                dimensions: [.hue, .lightness],
+                seed: seed
+            )
+        )
+    )
+    
+    return journey.discrete(count: 5)
+}
+
+// Same user, same call, same colors:
+let palette1 = generateUserPalette(for: user)
+let palette2 = generateUserPalette(for: user)
+// palette1 == palette2 ✓
+                </code></div>
+            </div>
+            <div class="tips">
+                <strong>🔐 Security Note:</strong> Don't use randomness for authentication. Seeds are visible in
+                generated configs.
+                Use only for aesthetic variation.
+            </div>
+        </section>
+
+        <!-- Dark & Light Theme -->
+        <section class="use-case">
+            <div class="icon">🌓</div>
+            <h3>Theme Support: Auto-Adapting Light & Dark Modes</h3>
+            <div class="use-case-content">
+                <div class="description">
+                    <p><strong>Problem:</strong> Generate appropriate palettes for both light and dark themes from the
+                        same anchor color.</p>
+                    <p><strong>Requirements:</strong></p>
+                    <ul>
+                        <li>Light theme: bright, airy colors</li>
+                        <li>Dark theme: dark, high-contrast colors</li>
+                        <li>Same semantic meaning in both</li>
+                    </ul>
+                    <p><strong>Solution:</strong> Use lightness bias to shift the same palette up (light) or down
+                        (dark).</p>
+                </div>
+                <div class="code-block"><code>
+func getPalette(for theme: Theme) 
+    -> [ColorJourneyRGB] {
+    
+    let lightnessBias: ColorJourneyConfig
+        .LightnessBias = theme.isDark 
+            ? .darker 
+            : .lighter
+    
+    let journey = ColorJourney(
+        config: ColorJourneyConfig(
+            anchors: [anchorColor],
+            lightness: lightnessBias,
+            contrast: .high
+        )
+    )
+    
+    return journey.discrete(count: 6)
+}
+
+// Usage:
+@Environment(\.colorScheme) var colorScheme
+let isDark = colorScheme == .dark
+let palette = getPalette(for: .init(
+    isDark: isDark
+))
+                </code></div>
+            </div>
+            <div class="tips">
+                <strong>💡 Tip:</strong> Test both light and dark themes in the web playground to ensure readability.
+            </div>
+        </section>
+
+        <!-- Accessible UI System -->
+        <section class="use-case">
+            <div class="icon">♿</div>
+            <h3>Accessible UI System: WCAG AAA Compliant Colors</h3>
+            <div class="use-case-content">
+                <div class="description">
+                    <p><strong>Problem:</strong> Create a color system that meets WCAG AAA contrast requirements for
+                        accessibility.</p>
+                    <p><strong>Requirements:</strong></p>
+                    <ul>
+                        <li>All colors pass WCAG AAA (7:1 contrast)</li>
+                        <li>Works with black text for readability</li>
+                        <li>Professional appearance</li>
+                    </ul>
+                    <p><strong>Solution:</strong> Use high contrast level and test in web playground before deploying.
+                    </p>
+                </div>
+                <div class="code-block"><code>
+let accessiblePalette = ColorJourney(
+    config: ColorJourneyConfig(
+        anchors: [baseColor],
+        contrast: .high,     // Enforces high ΔE
+        chroma: .neutral,    // Avoid too dark
+        lightness: .neutral
+    )
+).discrete(count: 8)
+
+// In web playground, check WCAG scores
+// for each color against black/white:
+// ✓ All colors must show 7:1+ ratio
+                </code></div>
+            </div>
+            <div class="tips">
+                <strong>⚠️ Important:</strong> WCAG compliance depends on text color and background. Always test your
+                actual
+                text + background combinations, not isolated colors.
+            </div>
+        </section>
+
+        <!-- Brand Color System -->
+        <section class="use-case">
+            <div class="icon">🎨</div>
+            <h3>Brand Color System: Consistent Brand-Derived Palette</h3>
+            <div class="use-case-content">
+                <div class="description">
+                    <p><strong>Problem:</strong> Generate a complete design system color scale (light → dark) from a
+                        single brand color.</p>
+                    <p><strong>Requirements:</strong></p>
+                    <ul>
+                        <li>Maintains brand identity</li>
+                        <li>Provides tints (light) and shades (dark)</li>
+                        <li>Professional appearance</li>
+                        <li>Accessible contrast levels</li>
+                    </ul>
+                    <p><strong>Solution:</strong> Use the same anchor (brand color) with different lightness biases to
+                        generate tint/shade ramps.</p>
+                </div>
+                <div class="code-block"><code>
+struct BrandColorRamp {
+    let tints: [ColorJourneyRGB]
+    let shades: [ColorJourneyRGB]
+    
+    init(brandColor: ColorJourneyRGB) {
+        // Light ramp (tints)
+        let lightJourney = ColorJourney(
+            config: ColorJourneyConfig(
+                anchors: [brandColor],
+                lightness: .lighter,
+                contrast: .medium
+            )
+        )
+        self.tints = lightJourney.discrete(
+            count: 5
+        )
+        
+        // Dark ramp (shades)
+        let darkJourney = ColorJourney(
+            config: ColorJourneyConfig(
+                anchors: [brandColor],
+                lightness: .darker,
+                contrast: .medium
+            )
+        )
+        self.shades = darkJourney.discrete(
+            count: 5
+        )
+    }
+}
+
+let brandRamp = BrandColorRamp(
+    brandColor: .init(
+        red: 0.0, 
+        green: 0.6, 
+        blue: 1.0
+    )
+)
+                </code></div>
+            </div>
+            <div class="tips">
+                <strong>📚 Reference:</strong> This pattern matches design systems like Material Design and Tailwind CSS
+                color scales.
+            </div>
+        </section>
+
+        <!-- Feature Comparison -->
+        <section style="margin-top: 3rem;">
+            <h2>⚖️ When to Use Each Pattern</h2>
+            <p>Quick decision matrix for choosing the right approach:</p>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Preset Style</th>
+                        <th>Single Anchor</th>
+                        <th>Multi-Anchor</th>
+                        <th>Variation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Quick prototype</td>
+                        <td class="checkmark">✓</td>
+                        <td class="cross">✗</td>
+                        <td class="cross">✗</td>
+                        <td class="cross">✗</td>
+                    </tr>
+                    <tr>
+                        <td>Fine-tuned control</td>
+                        <td class="cross">✗</td>
+                        <td class="checkmark">✓</td>
+                        <td class="checkmark">✓</td>
+                        <td class="checkmark">✓</td>
+                    </tr>
+                    <tr>
+                        <td>Full-spectrum palette</td>
+                        <td class="cross">✗</td>
+                        <td class="checkmark">✓</td>
+                        <td class="checkmark">✓</td>
+                        <td class="cross">✗</td>
+                    </tr>
+                    <tr>
+                        <td>Deterministic output</td>
+                        <td class="checkmark">✓</td>
+                        <td class="checkmark">✓</td>
+                        <td class="checkmark">✓</td>
+                        <td class="checkmark">✓</td>
+                    </tr>
+                    <tr>
+                        <td>User personalization</td>
+                        <td class="cross">✗</td>
+                        <td class="checkmark">✓</td>
+                        <td class="checkmark">✓</td>
+                        <td class="checkmark">✓</td>
+                    </tr>
+                    <tr>
+                        <td>Brand consistency</td>
+                        <td class="cross">✗</td>
+                        <td class="checkmark">✓</td>
+                        <td class="checkmark">✓</td>
+                        <td class="cross">✗</td>
+                    </tr>
+                    <tr>
+                        <td>Accessible UI</td>
+                        <td class="checkmark">✓</td>
+                        <td class="checkmark">✓</td>
+                        <td class="checkmark">✓</td>
+                        <td class="cross">✗</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Performance Patterns -->
+        <section style="margin-top: 3rem; background: #f9f9f9; padding: 2rem; border-radius: 8px;">
+            <h2>⚡ Performance Patterns</h2>
+
+            <h3>Pattern: Cache Generated Palettes</h3>
+            <p>For performance-critical code, generate once and cache:</p>
+            <div class="code-block"><code>
+class ColorSystem {
+    private static let shared = ColorSystem()
+    private var paletteCache: [String: [ColorJourneyRGB]] = [:]
+    
+    static func palette(name: String) 
+        -> [ColorJourneyRGB] {
+        shared.cachedPalette(name: name)
+    }
+    
+    private func cachedPalette(
+        name: String
+    ) -> [ColorJourneyRGB] {
+        if let cached = paletteCache[name] {
+            return cached
+        }
+        
+        let palette = generatePalette(name: name)
+        paletteCache[name] = palette
+        return palette
+    }
+    
+    private func generatePalette(name: String) 
+        -> [ColorJourneyRGB] {
+        let journey = ColorJourney(
+            config: .singleAnchor(
+                baseColor,
+                style: .balanced
+            )
+        )
+        return journey.discrete(count: 12)
+    }
+}
+
+// Usage: Fast lookup after first call
+let colors = ColorSystem.palette(name: "primary")
+            </code></div>
+
+            <h3>Performance Characteristics</h3>
+            <ul>
+                <li><strong>Journey Creation:</strong> ~1-2 μs (microseconds)</li>
+                <li><strong>Sample (continuous):</strong> &lt;1 μs per color</li>
+                <li><strong>Discrete (N colors):</strong> ~0.1 ms for 100 colors</li>
+                <li><strong>Memory:</strong> ~256 bytes per journey object</li>
+            </ul>
+
+            <p><strong>TL;DR:</strong> ColorJourney is fast enough for real-time UI updates. Cache only if generating
+                hundreds of palettes per second.</p>
+        </section>
+
+        <div
+            style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 0.9rem;">
+            <p>🎨 <strong>Need more examples?</strong> Try the <a href="https://colorjourney.dev" target="_blank">web
+                    playground</a>
+                or check <a href="../generated/swift-docc/">Swift API docs</a> for additional patterns.</p>
+        </div>
+    </main>
+
+    <footer
+        style="text-align: center; padding: 2rem; color: #666; font-size: 0.85rem; border-top: 1px solid #ddd; margin-top: 3rem;">
+        <p>ColorJourney © 2025 | Built with OKLab color science | Licensed under MIT</p>
+    </footer>
+</body>
+
+</html>

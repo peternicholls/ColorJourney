@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>Troubleshooting - ColorJourney</title>
+    <link rel="stylesheet" href="guides/styles.css">
+    <style>
+        .breadcrumb {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .breadcrumb {
+                color: #aaa;
+            }
+        }
+
+        .problem {
+            background: #fff3cd;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            border-left: 4px solid #ff9800;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .problem {
+                background: #664d03;
+            }
+        }
+
+        .solution {
+            background: #d4edda;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #28a745;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .solution {
+                background: #1b5e20;
+            }
+        }
+
+        .code-block {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 1rem 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .code-block {
+                background: #1a1a1a;
+            }
+        }
+
+        .code-block code {
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            color: #d63384;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .code-block code {
+                color: #ff6b9d;
+            }
+        }
+
+        .section {
+            margin: 3rem 0;
+            padding: 2rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .section {
+                background: #2a2a2a;
+            }
+        }
+
+        .section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .section h3 {
+                color: #fff;
+            }
+        }
+
+        .symptom-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .symptom-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .symptom-list li {
+                border-bottom-color: #444;
+            }
+        }
+
+        .symptom-list li:before {
+            content: "❌ ";
+            margin-right: 0.5rem;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .before {
+            border-left: 4px solid #dc3545;
+            padding-left: 1rem;
+        }
+
+        .after {
+            border-left: 4px solid #28a745;
+            padding-left: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .faq-item {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            border-radius: 4px;
+            background: #f9f9f9;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .faq-item {
+                background: #2a2a2a;
+            }
+        }
+
+        .faq-item strong {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #0066cc;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .faq-item strong {
+                color: #66b3ff;
+            }
+        }
+
+        .debug-checklist {
+            background: #e7f3ff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .debug-checklist {
+                background: #0d2a4d;
+            }
+        }
+
+        .debug-checklist ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        .debug-checklist li {
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="../index.html" class="logo">ColorJourney</a>
+            <ul class="links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="usage.html">API Usage</a></li>
+                <li><a href="../guides/01-GETTING_STARTED.html">Guides</a></li>
+                <li><a href="../generated/swift-docc/">Swift API</a></li>
+                <li><a href="../generated/doxygen/html/">C API</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> / <a href="usage.html">API Usage</a> / Troubleshooting
+        </div>
+
+        <h1>🔧 Troubleshooting Guide</h1>
+        <p class="subtitle">Solutions to common issues and problems</p>
+
+        <!-- Colors Look Wrong -->
+        <section class="section">
+            <h2>🎨 Colors Look Wrong or Muddy</h2>
+
+            <div class="problem">
+                <strong>Symptom:</strong> Generated colors appear muddy, washed out, or don't match expectations.
+            </div>
+
+            <div class="solution">
+                <strong>Common Causes & Solutions:</strong>
+
+                <h3>1. Insufficient Contrast Setting</h3>
+                <p><strong>Cause:</strong> Using default or medium contrast creates close, similar colors.</p>
+                <p><strong>Fix:</strong> Increase contrast level:</p>
+                <div class="code-block"><code>
+// Before (muddy)
+let journey = ColorJourney(
+    config: .singleAnchor(baseColor)
+)
+
+// After (vibrant)
+let journey = ColorJourney(
+    config: ColorJourneyConfig(
+        anchors: [baseColor],
+        contrast: .high  // Increases ΔE spread
+    )
+)
+                </code></div>
+
+                <h3>2. Wrong Lightness Bias</h3>
+                <p><strong>Cause:</strong> Lightness bias shifts all colors too light or too dark.</p>
+                <p><strong>Fix:</strong> Choose appropriate bias:</p>
+                <div class="code-block"><code>
+// For light background, use bright colors
+lightness: .lighter
+
+// For dark background, use dark colors
+lightness: .darker
+
+// For mixed backgrounds (default)
+lightness: .neutral
+                </code></div>
+
+                <h3>3. Wrong Style Preset</h3>
+                <p><strong>Cause:</strong> Preset style doesn't match your aesthetic needs.</p>
+                <p><strong>Fix:</strong> Try different presets:</p>
+                <div class="code-block"><code>
+// Test different styles
+for style in [ColorJourneyStyle.balanced,
+              .pastelDrift, .vividLoop,
+              .nightMode, .warmEarth,
+              .coolSky] {
+    let journey = ColorJourney(
+        config: .singleAnchor(
+            baseColor,
+            style: style
+        )
+    )
+    
+    // Preview the palette
+    let palette = journey.discrete(count: 6)
+}
+                </code></div>
+
+                <h3>4. Display/Rendering Issue</h3>
+                <p><strong>Cause:</strong> RGB colors exported may not display correctly due to color space mismatch.
+                </p>
+                <p><strong>Verification:</strong></p>
+                <div class="code-block"><code>
+// Test if the generated RGB is valid
+let color = journey.sample(at: 0.5)
+
+// Should be: red ∈ [0, 1], green ∈ [0, 1], 
+// blue ∈ [0, 1]
+assert(color.red >= 0 && color.red &lt;= 1)
+assert(color.green >= 0 && color.green &lt;= 1)
+assert(color.blue >= 0 && color.blue &lt;= 1)
+
+// If using for web/CSS, multiply by 255
+let cssRed = UInt8(color.red * 255)
+let cssGreen = UInt8(color.green * 255)
+let cssBlue = UInt8(color.blue * 255)
+                </code></div>
+            </div>
+
+            <div class="tips"
+                style="background: #e3f2fd; border-left-color: #2196F3; padding: 1rem; border-radius: 4px; margin-top: 1rem;">
+                <strong>💡 Debug Tip:</strong> Use the <a href="https://colorjourney.dev" target="_blank">web
+                    playground</a>
+                to preview colors visually before using them in code. You'll immediately see if they're muddy or
+                vibrant.
+            </div>
+        </section>
+
+        <!-- Not Enough Variation -->
+        <section class="section">
+            <h2>📉 Colors Are Too Similar or Lack Variation</h2>
+
+            <div class="problem">
+                <strong>Symptom:</strong> Generated palette colors are indistinguishable or lack the variation you need.
+            </div>
+
+            <div class="solution">
+                <strong>Solutions:</strong>
+
+                <h3>Increase the Color Count</h3>
+                <p><strong>Cause:</strong> Requesting too few colors doesn't utilize full journey space.</p>
+                <p><strong>Fix:</strong> Increase count parameter:</p>
+                <div class="code-block"><code>
+// Before: only 2 colors, similar colors
+let poor = journey.discrete(count: 2)
+
+// After: 8 colors, well-spread
+let good = journey.discrete(count: 8)
+
+// Optimal: use as many as possible
+let palette = journey.discrete(count: 20)
+                </code></div>
+
+                <h3>Use Multi-Anchor Journey</h3>
+                <p><strong>Cause:</strong> Single anchor limits color range.</p>
+                <p><strong>Fix:</strong> Add more anchor points:</p>
+                <div class="code-block"><code>
+// Before: single anchor
+let journey = ColorJourney(
+    config: .singleAnchor(blueColor)
+)
+
+// After: multi-anchor for full spectrum
+let journey = ColorJourney(
+    config: ColorJourneyConfig(
+        anchors: [
+            blueColor,
+            ColorJourneyRGB(red: 1, green: 0, 
+                          blue: 0)
+        ]
+    )
+)
+                </code></div>
+
+                <h3>Enable Closed Loop Mode</h3>
+                <p><strong>Cause:</strong> Open loop (default) ends at a specific color.</p>
+                <p><strong>Fix:</strong> Use closed loop for full spectrum:</p>
+                <div class="code-block"><code>
+// Before: open loop (single direction)
+let journey = ColorJourney(
+    config: ColorJourneyConfig(
+        anchors: [startColor],
+        loopMode: .open
+    )
+)
+
+// After: closed loop (circular)
+let journey = ColorJourney(
+    config: ColorJourneyConfig(
+        anchors: [startColor],
+        loopMode: .closed  // Wraps back around
+    )
+)
+                </code></div>
+
+                <h3>Apply Chroma Boost</h3>
+                <p><strong>Cause:</strong> Chroma setting too neutral reduces saturation.</p>
+                <p><strong>Fix:</strong> Increase chroma:</p>
+                <div class="code-block"><code>
+// Before: neutral chroma (desaturated)
+let journey = ColorJourney(
+    config: ColorJourneyConfig(
+        anchors: [color],
+        chroma: .neutral
+    )
+)
+
+// After: vivid chroma (saturated)
+let journey = ColorJourney(
+    config: ColorJourneyConfig(
+        anchors: [color],
+        chroma: .vivid
+    )
+)
+                </code></div>
+            </div>
+        </section>
+
+        <!-- Performance Issues -->
+        <section class="section">
+            <h2>⚡ Performance or Speed Issues</h2>
+
+            <div class="problem">
+                <strong>Symptom:</strong> Color generation is slow or causing frame drops during animation.
+            </div>
+
+            <div class="solution">
+                <strong>Solutions:</strong>
+
+                <h3>Cache Generated Palettes</h3>
+                <p><strong>Cause:</strong> Regenerating same palette repeatedly is wasteful.</p>
+                <p><strong>Fix:</strong> Generate once, cache result:</p>
+                <div class="code-block"><code>
+// ❌ SLOW: Regenerating every frame
+func slowUpdate() {
+    let palette = ColorJourney(
+        config: .singleAnchor(color)
+    ).discrete(count: 8)  // Every frame!
+}
+
+// ✅ FAST: Cache the palette
+let cachedPalette: [ColorJourneyRGB]?
+    = nil
+
+func fastInit() {
+    if cachedPalette == nil {
+        cachedPalette = ColorJourney(
+            config: .singleAnchor(color)
+        ).discrete(count: 8)
+    }
+}
+
+func fastUpdate() {
+    // Use cached palette
+    for color in cachedPalette! {
+        // ...
+    }
+}
+                </code></div>
+
+                <h3>Use Discrete Instead of Continuous Sampling</h3>
+                <p><strong>Cause:</strong> Sampling every pixel in a loop is slow.</p>
+                <p><strong>Fix:</strong> Pre-generate discrete palette:</p>
+                <div class="code-block"><code>
+// ❌ SLOW: Sampling in loop
+for i in 0..&lt;100 {
+    let t = Float(i) / 99
+    let color = journey.sample(at: t)  // 100 samples
+}
+
+// ✅ FAST: Pre-generate once
+let gradient = journey.discrete(count: 100)
+for color in gradient {
+    // ...
+}
+                </code></div>
+
+                <h3>Profile Your Code</h3>
+                <p><strong>Debug Checklist:</strong></p>
+                <div class="debug-checklist">
+                    <ol>
+                        <li>Use Xcode Instruments (Product → Profile)</li>
+                        <li>Select "Time Profiler" or "Core Animation"</li>
+                        <li>Look for ColorJourney-related time</li>
+                        <li>If <1% of time, optimization not needed</li>
+                        <li>If >5% of time, apply caching strategies above</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- Determinism & Reproducibility -->
+        <section class="section">
+            <h2>🔄 Colors Keep Changing or Aren't Reproducible</h2>
+
+            <div class="problem">
+                <strong>Symptom:</strong> Same code produces different colors each time, or colors differ across
+                devices/users.
+            </div>
+
+            <div class="solution">
+                <strong>Solutions:</strong>
+
+                <h3>Make Variation Seeded</h3>
+                <p><strong>Cause:</strong> Using `.random` variation (unseeded randomness).</p>
+                <p><strong>Fix:</strong> Use seeded variation:</p>
+                <div class="code-block"><code>
+// ❌ NOT reproducible: Random variation
+let journey = ColorJourney(
+    config: ColorJourneyConfig(
+        anchors: [color],
+        variation: .noticeable  // Uses current time!
+    )
+)
+
+// ✅ Reproducible: Seeded variation
+let userSeed = UInt32(user.id)
+let journey = ColorJourney(
+    config: ColorJourneyConfig(
+        anchors: [color],
+        variation: .subtle(
+            dimensions: [.hue],
+            seed: userSeed
+        )
+    )
+)
+
+// Same user, same seed, same colors
+let palette1 = journey.discrete(count: 5)
+let palette2 = journey.discrete(count: 5)
+// palette1 == palette2 ✓
+                </code></div>
+
+                <h3>Pin Configuration</h3>
+                <p><strong>Cause:</strong> Default configs may change across library versions.</p>
+                <p><strong>Fix:</strong> Explicitly set all parameters:</p>
+                <div class="code-block"><code>
+// ❌ Not future-proof
+let journey = ColorJourney(
+    config: .singleAnchor(color)
+)
+
+// ✅ Future-proof: Explicit config
+let journey = ColorJourney(
+    config: ColorJourneyConfig(
+        anchors: [color],
+        contrast: .medium,
+        chroma: .balanced,
+        lightness: .neutral,
+        temperature: .neutral,
+        loopMode: .open,
+        vibrancy: 1.0,
+        variation: .off  // No randomness
+    )
+)
+                </code></div>
+            </div>
+        </section>
+
+        <!-- Contrast & Accessibility -->
+        <section class="section">
+            <h2>♿ Accessibility or Contrast Issues</h2>
+
+            <div class="problem">
+                <strong>Symptom:</strong> Colors don't meet WCAG contrast requirements, or appear washed out in high
+                contrast mode.
+            </div>
+
+            <div class="solution">
+                <strong>Solutions:</strong>
+
+                <h3>Test in Web Playground</h3>
+                <p><strong>Most Important:</strong> Use the <a href="https://colorjourney.dev" target="_blank">web
+                        playground</a>
+                    to check WCAG contrast scores:</p>
+                <ol>
+                    <li>Enter your config in the playground</li>
+                    <li>View the "WCAG Contrast" scores</li>
+                    <li>Check if 4.5:1 (AA) or 7:1 (AAA)</li>
+                    <li>Adjust contrast/lightness if needed</li>
+                </ol>
+
+                <h3>Increase Contrast Setting</h3>
+                <p><strong>Cause:</strong> Default contrast may not be sufficient for accessibility.</p>
+                <p><strong>Fix:</strong> Use high contrast:</p>
+                <div class="code-block"><code>
+// Before: Medium contrast (may not meet WCAG)
+let journey = ColorJourney(
+    config: .singleAnchor(color)
+)
+
+// After: High contrast (ensures readability)
+let journey = ColorJourney(
+    config: ColorJourneyConfig(
+        anchors: [color],
+        contrast: .high,
+        lightness: .neutral  // Avoid too dark/light
+    )
+)
+                </code></div>
+
+                <h3>Verify Against Expected Background</h3>
+                <p><strong>Cause:</strong> Checking contrast against wrong background color.</p>
+                <p><strong>Fix:</strong> Always test actual combinations:</p>
+                <div class="code-block"><code>
+// Test YOUR specific backgrounds
+let lightBackground = ColorJourneyRGB(
+    red: 0.95, green: 0.95, blue: 0.95
+)
+let darkBackground = ColorJourneyRGB(
+    red: 0.1, green: 0.1, blue: 0.1
+)
+
+let palette = journey.discrete(count: 8)
+
+// Check contrast for each color against 
+// both backgrounds in playground:
+// ✓ text color vs light background
+// ✓ text color vs dark background
+                </code></div>
+            </div>
+        </section>
+
+        <!-- Integration Issues -->
+        <section class="section">
+            <h2>🔗 Integration Problems</h2>
+
+            <div class="problem">
+                <strong>Symptom:</strong> Having trouble integrating ColorJourney into your project.
+            </div>
+
+            <div class="solution">
+                <strong>Common Integration Issues:</strong>
+
+                <h3>Swift Package Manager Installation</h3>
+                <div class="code-block"><code>
+// In Package.swift
+dependencies: [
+    .package(
+        url: "https://github.com/peternicholls/",
+        from: "1.0.0"
+    )
+],
+targets: [
+    .target(
+        name: "YourTarget",
+        dependencies: ["ColorJourney"]
+    )
+]
+
+// Or in Xcode:
+// File → Add Packages → Enter GitHub URL
+                </code></div>
+
+                <h3>C Integration / FFI</h3>
+                <p><strong>See:</strong> <a href="../guides/04-C_INTEGRATION.html">C Integration Guide</a>
+                    for detailed setup instructions.</p>
+
+                <h3>Web/WASM Integration</h3>
+                <p><strong>Recommended:</strong> Use the <a href="https://colorjourney.dev" target="_blank">web
+                        playground</a>
+                    or check <a href="https://github.com/peternicholls/ColorJourneyWebsite"
+                        target="_blank">ColorJourneyWebsite</a>
+                    repository for WASM/TypeScript bindings.</p>
+
+                <h3>Troubleshooting Build Errors</h3>
+                <p><strong>Error:</strong> "Cannot find 'ColorJourney' in scope"</p>
+                <div class="code-block"><code>
+// Solution 1: Add import statement
+import ColorJourney
+
+// Solution 2: Verify package dependency
+// In Xcode: Target Settings → Build Phases 
+// → Link Binary With Libraries
+
+// Solution 3: Clean build
+xcode:
+Product → Clean Build Folder
+Product → Build
+                </code></div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="section">
+            <h2>❓ Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <strong>Q: Why do colors look different on my device?</strong>
+                <p><strong>A:</strong> Different displays have different color profiles (sRGB vs. DCI-P3, brightness,
+                    etc.).
+                    This is normal. Use the <a href="https://colorjourney.dev" target="_blank">web playground</a> to
+                    verify colors
+                    match your expectations in a standard sRGB display.</p>
+            </div>
+
+            <div class="faq-item">
+                <strong>Q: Can I use ColorJourney for real-time color generation (e.g., game graphics)?</strong>
+                <p><strong>A:</strong> Yes! ColorJourney is very fast (<1 μs per color sample). Cache generated palettes
+                        if generating the same palette repeatedly. For <100 colors per frame, performance is not a
+                        concern.</p>
+            </div>
+
+            <div class="faq-item">
+                <strong>Q: What if I need RGB values as 0-255 instead of 0-1?</strong>
+                <p><strong>A:</strong> Multiply each component by 255 and convert to UInt8:</p>
+                <div class="code-block"><code>
+let color = journey.sample(at: 0.5)
+let r = UInt8(color.red * 255)
+let g = UInt8(color.green * 255)
+let b = UInt8(color.blue * 255)
+let hexString = String(format: "%02X%02X%02X", r, g, b)
+                </code></div>
+            </div>
+
+            <div class="faq-item">
+                <strong>Q: How do I export colors to CSS/JSON for web?</strong>
+                <p><strong>A:</strong> The <a href="https://colorjourney.dev" target="_blank">web playground</a> can
+                    export
+                    in CSS, JSON, and Swift formats. For programmatic export, see <a
+                        href="configuration.html">Configuration Reference</a>.</p>
+            </div>
+
+            <div class="faq-item">
+                <strong>Q: Can colors be different in light vs. dark mode?</strong>
+                <p><strong>A:</strong> Yes! Use `lightness: .lighter` for light backgrounds and `lightness: .darker`
+                    for dark backgrounds. See <a href="patterns.html#dark-light-theme">Common Patterns</a>.</p>
+            </div>
+
+            <div class="faq-item">
+                <strong>Q: Is ColorJourney deterministic across platforms?</strong>
+                <p><strong>A:</strong> Yes! Same configuration + seed = identical RGB values on Swift, C, WebAssembly,
+                    TypeScript, etc.
+                    This enables reproducible color systems across your application stack.</p>
+            </div>
+        </section>
+
+        <!-- Getting Help -->
+        <section style="margin-top: 3rem; background: #e8f5e9; padding: 2rem; border-radius: 8px;">
+            <h2>📞 Getting Help</h2>
+            <p>If you can't find your issue here:</p>
+            <ul>
+                <li><strong>Check the Docs:</strong> Read <a href="usage.html">API Usage Guide</a>
+                    and <a href="configuration.html">Configuration Reference</a></li>
+                <li><strong>Try the Playground:</strong> Experiment in the <a href="https://colorjourney.dev"
+                        target="_blank">web playground</a>
+                    to understand behavior visually</li>
+                <li><strong>Review Examples:</strong> Check <a href="patterns.html">Common Patterns & Use Cases</a>
+                    for similar scenarios</li>
+                <li><strong>Read Swift API Docs:</strong> <a href="../generated/swift-docc/">Detailed parameter
+                        documentation</a></li>
+                <li><strong>Read C API Docs:</strong> <a href="../generated/doxygen/html/">C function reference</a></li>
+                <li><strong>GitHub Issues:</strong> <a href="https://github.com/peternicholls/ColourJourney/issues"
+                        target="_blank">Search or file an issue</a></li>
+            </ul>
+        </section>
+
+        <div
+            style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 0.9rem;">
+            <p>🎨 <strong>Still stuck?</strong> The community is helpful! Check GitHub issues or reach out with your
+                specific scenario.</p>
+        </div>
+    </main>
+
+    <footer
+        style="text-align: center; padding: 2rem; color: #666; font-size: 0.85rem; border-top: 1px solid #ddd; margin-top: 3rem;">
+        <p>ColorJourney © 2025 | Built with OKLab color science | Licensed under MIT</p>
+    </footer>
+</body>
+
+</html>

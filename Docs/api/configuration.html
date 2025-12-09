@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>Configuration Reference - ColorJourney</title>
+    <link rel="stylesheet" href="guides/styles.css">
+    <style>
+        .breadcrumb {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .breadcrumb {
+                color: #aaa;
+            }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: #f9f9f9;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            table {
+                background: #2a2a2a;
+            }
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        @media (prefers-color-scheme: dark) {
+
+            th,
+            td {
+                border-bottom-color: #444;
+            }
+        }
+
+        th {
+            background: #f0f0f0;
+            font-weight: 600;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            th {
+                background: #1a1a1a;
+            }
+        }
+
+        .param-name {
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            color: #d63384;
+            font-weight: 500;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .param-name {
+                color: #ff6b9d;
+            }
+        }
+
+        .code-inline {
+            background: #f0f0f0;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .code-inline {
+                background: #333;
+            }
+        }
+
+        .preset-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .preset-card {
+                background: #2a2a2a;
+            }
+        }
+
+        .preset-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .section {
+            margin: 2.5rem 0;
+        }
+
+        .reference-box {
+            background: #e3f2fd;
+            border-left: 4px solid #0066cc;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .reference-box {
+                background: #1a3a52;
+                border-left-color: #66b3ff;
+            }
+        }
+
+        code {
+            color: #d63384;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            code {
+                color: #ff6b9d;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="../index.html" class="logo">ColorJourney</a>
+            <ul class="links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="usage.html">API Usage</a></li>
+                <li><a href="../guides/01-GETTING_STARTED.html">Guides</a></li>
+                <li><a href="../generated/swift-docc/">Swift API</a></li>
+                <li><a href="../generated/doxygen/html/">C API</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> / <a href="usage.html">API Usage</a> / Configuration Reference
+        </div>
+
+        <h1>⚙️ Configuration Reference</h1>
+        <p class="subtitle">Complete guide to all configuration parameters and options</p>
+
+        <div class="reference-box">
+            <strong>📌 Quick Tip:</strong> Use preset styles for 80% of use cases. Only customize when you need specific
+            behavior.
+        </div>
+
+        <!-- Preset Styles -->
+        <section class="section">
+            <h2>🎨 Preset Styles</h2>
+            <p>Six built-in styles tuned for common use cases. Use these as starting points:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Style</th>
+                        <th>Characteristics</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="code-inline">.balanced</span></td>
+                        <td>Neutral lightness, medium contrast, natural progression</td>
+                        <td>General purpose, dashboards, neutral interfaces</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.pastelDrift</span></td>
+                        <td>Light colors, low saturation, soft transitions</td>
+                        <td>Gentle UIs, wellness apps, minimalist design</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.vividLoop</span></td>
+                        <td>High saturation, high contrast, seamless loop</td>
+                        <td>Data viz, bold branding, timeline views</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.nightMode</span></td>
+                        <td>Dark base, subdued tones, high contrast</td>
+                        <td>Dark themes, evening viewing, low-light environments</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.warmEarth</span></td>
+                        <td>Warm hue bias, natural tones, grounded feel</td>
+                        <td>Nature-inspired design, comfort, earthy palettes</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.coolSky</span></td>
+                        <td>Cool hue bias, light and airy, modern feel</td>
+                        <td>Tech products, professional design, modern interfaces</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>How to Use Presets</h3>
+            <p>Create a single-anchor journey with a preset:</p>
+            <div class="code-example">
+                <code>let journey = ColorJourney(
+    config: .singleAnchor(
+        ColorJourneyRGB(red: 0.4, green: 0.5, blue: 0.8),
+        style: .balanced  // ← Change this to try different styles
+    )
+)</code>
+            </div>
+        </section>
+
+        <!-- Configuration Parameters -->
+        <section class="section">
+            <h2>🔧 Configuration Parameters</h2>
+
+            <h3>Lightness Bias</h3>
+            <p>Controls the overall brightness of your palette.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Option</th>
+                        <th>Effect</th>
+                        <th>Use When</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="code-inline">.neutral</span></td>
+                        <td>Preserves anchor color lightness</td>
+                        <td>You want colors similar in brightness to your anchor</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.lighter</span></td>
+                        <td>Shifts palette toward brighter colors (≈+0.2 in OKLab L)</td>
+                        <td>Light theme, airy design, high visibility</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.darker</span></td>
+                        <td>Shifts palette toward darker colors (≈-0.2 in OKLab L)</td>
+                        <td>Dark theme, dramatic effect, low-light viewing</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.custom(weight: Float)</span></td>
+                        <td>Fine control (range: 0.0-1.0)</td>
+                        <td>Precise lightness adjustment for brand guidelines</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Chroma Bias (Saturation)</h3>
+            <p>Controls how saturated (vivid) or muted your colors are.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Option</th>
+                        <th>Multiplier</th>
+                        <th>Use When</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="code-inline">.muted</span></td>
+                        <td>0.6×</td>
+                        <td>Gentle, soft, desaturated palette</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.neutral</span></td>
+                        <td>1.0×</td>
+                        <td>Preserve anchor color saturation</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.vivid</span></td>
+                        <td>1.4×</td>
+                        <td>Bold, energetic, high-impact colors</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.custom(multiplier)</span></td>
+                        <td>Any 0.5-2.0</td>
+                        <td>Specific saturation requirement</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Contrast Level</h3>
+            <p>Enforces minimum perceptual distance (ΔE in OKLab) between colors.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Level</th>
+                        <th>ΔE Minimum</th>
+                        <th>Use For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="code-inline">.low</span></td>
+                        <td>≥ 0.05</td>
+                        <td>Subtle differences, monochromatic schemes</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.medium</span></td>
+                        <td>≥ 0.10</td>
+                        <td>General purpose, most UIs (default)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.high</span></td>
+                        <td>≥ 0.15</td>
+                        <td>Accessibility, distinct categories, data viz</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.custom(threshold)</span></td>
+                        <td>Your value</td>
+                        <td>Specific perceptual requirement</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="reference-box">
+                <strong>💡 Accessibility Tip:</strong> Use <code>.high</code> contrast for accessible interfaces.
+                Test with the web playground's WCAG contrast checker.
+            </div>
+
+            <h3>Temperature Bias</h3>
+            <p>Shifts hue toward warm (red/orange/yellow) or cool (blue/green/purple) regions.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bias</th>
+                        <th>Effect</th>
+                        <th>Use For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="code-inline">.cool</span></td>
+                        <td>Push hue toward blue/green/purple</td>
+                        <td>Professional, tech-forward, calming feel</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.neutral</span></td>
+                        <td>No temperature bias</td>
+                        <td>Preserve natural hue progression</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.warm</span></td>
+                        <td>Push hue toward red/orange/yellow</td>
+                        <td>Energetic, social, welcoming feel</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Loop Mode</h3>
+            <p>How the journey behaves at its boundaries (t=0 and t=1).</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mode</th>
+                        <th>Behavior</th>
+                        <th>Use For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="code-inline">.open</span></td>
+                        <td>Start and end are distinct colors</td>
+                        <td>Linear data, progress bars, sequential data</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.closed</span></td>
+                        <td>Seamlessly wraps (t=1 matches t=0)</td>
+                        <td>Cyclic data, timelines, circular progress</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.pingPong</span></td>
+                        <td>Reverses at boundaries (0→1→0)</td>
+                        <td>Symmetric patterns, back-and-forth animations</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Mid-Journey Vibrancy</h3>
+            <p>Boosts chroma (saturation) at the center (t=0.5) to prevent muddy midpoints.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Value</th>
+                        <th>Effect</th>
+                        <th>Recommended</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0.0</td>
+                        <td>No boost (linear saturation)</td>
+                        <td>When you want flat saturation progression</td>
+                    </tr>
+                    <tr>
+                        <td>0.3-0.4</td>
+                        <td>Subtle boost</td>
+                        <td>Most cases, gentle vibrancy</td>
+                    </tr>
+                    <tr>
+                        <td>0.5-0.6</td>
+                        <td>Moderate boost</td>
+                        <td>Default for most presets, vivid midpoint</td>
+                    </tr>
+                    <tr>
+                        <td>0.7-1.0</td>
+                        <td>Strong boost</td>
+                        <td>Special effects, energetic feel</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="reference-box">
+                <strong>⚡ Pro Tip:</strong> If your 5-color palette looks dull in the middle, increase
+                <code>midJourneyVibrancy</code> to 0.5-0.6.
+            </div>
+
+            <h3>Variation (Seeded Randomness)</h3>
+            <p>Optional micro-variation that's deterministic (reproducible with same seed).</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Option</th>
+                        <th>Effect</th>
+                        <th>Use When</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="code-inline">.off</span></td>
+                        <td>No variation, fully deterministic</td>
+                        <td>You need exact, reproducible output</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.subtle(dimensions, seed)</span></td>
+                        <td>Small variations, reproducible</td>
+                        <td>Organic feel with determinism</td>
+                    </tr>
+                    <tr>
+                        <td><span class="code-inline">.noticeable(dimensions, seed)</span></td>
+                        <td>Larger variations, still deterministic</td>
+                        <td>Distinct variation, user-specific palettes</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p><strong>Variation Dimensions:</strong></p>
+            <ul>
+                <li><code>.hue</code> — Vary the color (hue angle)</li>
+                <li><code>.chroma</code> — Vary saturation</li>
+                <li><code>.lightness</code> — Vary brightness</li>
+                <li><code>.all</code> — Vary all dimensions together</li>
+            </ul>
+
+            <p><strong>Determinism with Variation:</strong></p>
+            <ul>
+                <li>Same seed = same variation (reproducible)</li>
+                <li>Different seed = different variation</li>
+                <li>No seed (random) = different every time</li>
+            </ul>
+        </section>
+
+        <!-- Practical Combinations -->
+        <section class="section">
+            <h2>🎯 Practical Combinations</h2>
+
+            <h3>Scenario: Accessible Data Visualization (8 categories)</h3>
+            <div class="code-example"><code>
+let config = ColorJourneyConfig(
+    anchors: [
+        ColorJourneyRGB(red: 0.9, green: 0.2, blue: 0.3),
+        ColorJourneyRGB(red: 0.2, green: 0.8, blue: 0.8)
+    ],
+    contrast: .high,           // ← Ensure distinct colors
+    loopMode: .closed,         // ← Seamless cycle
+    chroma: .vivid             // ← Make categories pop
+)
+            </code></div>
+
+            <h3>Scenario: Gentle Pastel Theme (5 accent colors)</h3>
+            <div class="code-example"><code>
+let config = ColorJourneyConfig(
+    anchors: [ColorJourneyRGB(red: 0.6, green: 0.7, blue: 0.8)],
+    lightness: .lighter,       // ← Brighter overall
+    chroma: .muted,            // ← Soft, desaturated
+    contrast: .low,            // ← Subtle differences
+    midJourneyVibrancy: 0.2    // ← Keep it gentle
+)
+            </code></div>
+
+            <h3>Scenario: Dark Theme with High Contrast</h3>
+            <div class="code-example"><code>
+let config = ColorJourneyConfig(
+    anchors: [ColorJourneyRGB(red: 0.3, green: 0.6, blue: 0.9)],
+    lightness: .darker,        // ← Dark overall
+    contrast: .high,           // ← Clear distinction
+    temperature: .cool,        // ← Modern feel
+    chroma: .vivid             // ← Vibrant despite darkness
+)
+            </code></div>
+
+            <h3>Scenario: Brand-Consistent User Variation</h3>
+            <div class="code-example"><code>
+let userID: UInt32 = hashFunction(currentUser.id)
+let config = ColorJourneyConfig(
+    anchors: [brandColor],
+    variation: .subtle(
+        dimensions: [.hue, .lightness],
+        seed: userID            // ← Same user, same colors forever
+    )
+)
+            </code></div>
+        </section>
+
+        <!-- Parameter Bounds -->
+        <section class="section">
+            <h2>📏 Parameter Bounds & Ranges</h2>
+
+            <p><strong>Important:</strong> All parameters have valid ranges. Invalid values may cause unexpected
+                behavior.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Type</th>
+                        <th>Valid Range</th>
+                        <th>Default</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>anchor_count</td>
+                        <td>Integer</td>
+                        <td>1-8</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>anchors[i]</td>
+                        <td>RGB color</td>
+                        <td>[0.0, 1.0] per channel</td>
+                        <td>—</td>
+                    </tr>
+                    <tr>
+                        <td>lightness_bias</td>
+                        <td>Float</td>
+                        <td>[-1.0, 1.0]</td>
+                        <td>0.0</td>
+                    </tr>
+                    <tr>
+                        <td>chroma_multiplier</td>
+                        <td>Float</td>
+                        <td>[0.5, 2.0]</td>
+                        <td>1.0</td>
+                    </tr>
+                    <tr>
+                        <td>contrast_level</td>
+                        <td>Enum</td>
+                        <td>low, medium, high</td>
+                        <td>medium</td>
+                    </tr>
+                    <tr>
+                        <td>temperature_bias</td>
+                        <td>Enum</td>
+                        <td>cool, neutral, warm</td>
+                        <td>neutral</td>
+                    </tr>
+                    <tr>
+                        <td>mid_journey_vibrancy</td>
+                        <td>Float</td>
+                        <td>[0.0, 1.0]</td>
+                        <td>0.5</td>
+                    </tr>
+                    <tr>
+                        <td>loop_mode</td>
+                        <td>Enum</td>
+                        <td>open, closed, pingPong</td>
+                        <td>open</td>
+                    </tr>
+                    <tr>
+                        <td>variation_seed</td>
+                        <td>UInt32</td>
+                        <td>0-4294967295</td>
+                        <td>0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Common Patterns -->
+        <section class="section">
+            <h2>🔄 Common Patterns</h2>
+
+            <h3>Pattern 1: Fixed Palette Generation</h3>
+            <p>Generate a 10-color palette once, store it, use everywhere:</p>
+            <div class="code-example"><code>
+let masterPalette = ColorJourney(
+    config: .singleAnchor(brandColor, style: .balanced)
+).discrete(count: 10)
+
+// Store this and reuse throughout your app
+            </code></div>
+
+            <h3>Pattern 2: Dynamic UI Colors</h3>
+            <p>Derive colors from user input on-the-fly:</p>
+            <div class="code-example"><code>
+func getColorsForTheme(_ theme: Theme) -> [ColorJourneyRGB] {
+    let journey = ColorJourney(
+        config: .singleAnchor(theme.baseColor, style: theme.style)
+    )
+    return journey.discrete(count: 8)
+}
+            </code></div>
+
+            <h3>Pattern 3: Gradient Generation</h3>
+            <p>Create smooth 256-step gradients for visualizations:</p>
+            <div class="code-example"><code>
+func generateGradient(from: ColorJourneyRGB, to: ColorJourneyRGB) -> [ColorJourneyRGB] {
+    let journey = ColorJourney(config: ColorJourneyConfig(
+        anchors: [from, to]
+    ))
+    return (0..&lt;256).map { journey.sample(at: Float($0) / 255.0) }
+}
+            </code></div>
+        </section>
+
+        <div
+            style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 0.9rem;">
+            <p>💡 <strong>Still need help?</strong> Check out the <a href="usage.html">API Usage Guide</a> or browse
+                examples in the <a href="../generated/swift-docc/">Swift API docs</a>.</p>
+        </div>
+    </main>
+
+    <footer
+        style="text-align: center; padding: 2rem; color: #666; font-size: 0.85rem; border-top: 1px solid #ddd; margin-top: 3rem;">
+        <p>ColorJourney © 2025 | Built with OKLab color science | Licensed under MIT</p>
+    </footer>
+</body>
+
+</html>

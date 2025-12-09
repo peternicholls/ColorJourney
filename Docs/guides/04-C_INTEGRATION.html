@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>C Integration Guide - ColorJourney</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="../index.html" class="logo">📚 ColorJourney Docs</a>
+            <ul class="links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="01-GETTING_STARTED.html">Getting Started</a></li>
+                <li><a href="02-API_QUICK_REFERENCE.html">API Reference</a></li>
+                <li><a href="03-SWIFT_INTEGRATION.html">Swift</a></li>
+                <li><a href="04-C_INTEGRATION.html">C</a></li>
+                <li><a href="05-TROUBLESHOOTING.html">Troubleshooting</a></li>
+                <li><a href="06-FAQ.html">FAQ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>🔧 C Integration Guide</h1>
+        <p class="subtitle">Complete guide to using the ColorJourney C core library</p>
+
+        <div class="toc">
+            <h3>Contents</h3>
+            <ul>
+                <li><a href="#setup">Setup & Compilation</a></li>
+                <li><a href="#api-overview">API Overview</a></li>
+                <li><a href="#basic-usage">Basic Usage</a></li>
+                <li><a href="#configuration">Configuration</a></li>
+                <li><a href="#memory">Memory Management</a></li>
+                <li><a href="#color-conversions">Color Conversions</a></li>
+                <li><a href="#examples">Code Examples</a></li>
+                <li><a href="#portability">Portability Notes</a></li>
+            </ul>
+        </div>
+
+        <h2 id="setup">📦 Setup & Compilation</h2>
+
+        <h3>Copy Files to Your Project</h3>
+        <pre><code>cp Sources/CColorJourney/ColorJourney.h .
+cp Sources/CColorJourney/ColorJourney.c .</code></pre>
+
+        <h3>Compilation (GCC/Clang)</h3>
+        <pre><code>gcc -std=c99 -O3 -Wall -c ColorJourney.c -o ColorJourney.o
+ar rcs libcolorjourney.a ColorJourney.o</code></pre>
+
+        <h3>Linking in Your Project</h3>
+        <pre><code>gcc -std=c99 -o myapp myapp.c ColorJourney.c -lm</code></pre>
+
+        <h3>Using as a Static Library</h3>
+        <pre><code>gcc -I. -o myapp myapp.c libcolorjourney.a -lm</code></pre>
+
+        <h3>Build with Makefile</h3>
+        <pre><code>make lib              # Build static library
+make example          # Build and run example
+make test-c           # Run C tests</code></pre>
+
+        <h2 id="api-overview">🔌 API Overview</h2>
+
+        <h3>Core Types</h3>
+        <pre><code>#include "ColorJourney.h"
+
+// Color representation (linear sRGB)
+typedef struct {
+    float r;  // Red [0, 1]
+    float g;  // Green [0, 1]
+    float b;  // Blue [0, 1]
+} CJ_RGB;
+
+// Configuration structure
+typedef struct {
+    CJ_RGB anchors[8];
+    int anchor_count;
+    CJ_LightnessBias lightness;
+    CJ_ChromaBias chroma;
+    // ... more fields
+} CJ_Config;
+
+// Journey opaque handle
+typedef struct CJ_Journey CJ_Journey;</code></pre>
+
+        <h3>Main Functions</h3>
+        <pre><code>CJ_Config cj_config_init();
+CJ_Journey* cj_journey_create(const CJ_Config* config);
+CJ_RGB cj_journey_sample(CJ_Journey* journey, float t);
+void cj_journey_discrete(CJ_Journey* journey, int count, CJ_RGB* out);
+void cj_journey_destroy(CJ_Journey* journey);</code></pre>
+
+        <h2 id="basic-usage">💡 Basic Usage</h2>
+
+        <h3>Minimal Example</h3>
+        <pre><code>#include "ColorJourney.h"
+#include <stdio.h>
+
+int main() {
+    // Create config
+    CJ_Config config = cj_config_init();
+    config.anchors[0] = (CJ_RGB){0.5f, 0.2f, 0.8f};
+    config.anchor_count = 1;
+    
+    // Create journey
+    CJ_Journey* journey = cj_journey_create(&config);
+    
+    // Sample a color
+    CJ_RGB color = cj_journey_sample(journey, 0.5f);
+    printf("Color: %.2f, %.2f, %.2f\n", color.r, color.g, color.b);
+    
+    // Cleanup
+    cj_journey_destroy(journey);
+    return 0;
+}</code></pre>
+
+        <h3>Discrete Palette</h3>
+        <pre><code>CJ_Journey* journey = cj_journey_create(&config);
+
+CJ_RGB* palette = (CJ_RGB*)malloc(8 * sizeof(CJ_RGB));
+cj_journey_discrete(journey, 8, palette);
+
+for (int i = 0; i < 8; i++) {
+    printf("Color %d: %.2f, %.2f, %.2f\n", i, 
+           palette[i].r, palette[i].g, palette[i].b);
+}
+
+free(palette);
+cj_journey_destroy(journey);</code></pre>
+
+        <h2 id="configuration">⚙️ Configuration</h2>
+
+        <h3>Single Anchor</h3>
+        <pre><code>CJ_Config config = cj_config_init();
+config.anchors[0] = (CJ_RGB){1.0f, 0.0f, 0.0f};
+config.anchor_count = 1;</code></pre>
+
+        <h3>Multiple Anchors</h3>
+        <pre><code>CJ_Config config = cj_config_init();
+config.anchors[0] = (CJ_RGB){1.0f, 0.0f, 0.0f};  // Red
+config.anchors[1] = (CJ_RGB){0.0f, 1.0f, 0.0f};  // Green
+config.anchors[2] = (CJ_RGB){0.0f, 0.0f, 1.0f};  // Blue
+config.anchor_count = 3;</code></pre>
+
+        <h3>Configuring Parameters</h3>
+        <pre><code>config.lightness = CJ_LIGHTNESS_LIGHTER;
+config.chroma = CJ_CHROMA_VIVID;
+config.contrast = CJ_CONTRAST_HIGH;
+config.temperature = CJ_TEMPERATURE_WARM;
+config.loop_mode = CJ_LOOP_CLOSED;
+config.mid_journey_vibrancy = 0.3f;</code></pre>
+
+        <h3>Enum Values</h3>
+
+        <h4>Lightness</h4>
+        <pre><code>CJ_LIGHTNESS_NEUTRAL
+CJ_LIGHTNESS_LIGHTER
+CJ_LIGHTNESS_DARKER</code></pre>
+
+        <h4>Chroma</h4>
+        <pre><code>CJ_CHROMA_NEUTRAL
+CJ_CHROMA_MUTED
+CJ_CHROMA_VIVID</code></pre>
+
+        <h4>Contrast</h4>
+        <pre><code>CJ_CONTRAST_LOW
+CJ_CONTRAST_MEDIUM
+CJ_CONTRAST_HIGH</code></pre>
+
+        <h4>Temperature</h4>
+        <pre><code>CJ_TEMPERATURE_NEUTRAL
+CJ_TEMPERATURE_WARM
+CJ_TEMPERATURE_COOL</code></pre>
+
+        <h4>Loop Modes</h4>
+        <pre><code>CJ_LOOP_OPEN       // Start and end distinct
+CJ_LOOP_CLOSED     // Loops back to start
+CJ_LOOP_PINGPONG   // Reverses at boundaries</code></pre>
+
+        <h2 id="memory">💾 Memory Management</h2>
+
+        <h3>Journey Lifecycle</h3>
+        <pre><code>// Allocate
+CJ_Journey* journey = cj_journey_create(&config);
+
+// Use
+CJ_RGB color = cj_journey_sample(journey, 0.5f);
+
+// Deallocate
+cj_journey_destroy(journey);
+journey = NULL;  // Good practice</code></pre>
+
+        <h3>Error Handling</h3>
+        <pre><code>CJ_Journey* journey = cj_journey_create(&config);
+
+if (journey == NULL) {
+    fprintf(stderr, "Failed to create journey\n");
+    return 1;
+}
+
+// Use journey...
+cj_journey_destroy(journey);</code></pre>
+
+        <h3>Palette Allocation</h3>
+        <pre><code>int count = 10;
+CJ_RGB* palette = (CJ_RGB*)malloc(count * sizeof(CJ_RGB));
+
+if (palette == NULL) {
+    fprintf(stderr, "Memory allocation failed\n");
+    return 1;
+}
+
+cj_journey_discrete(journey, count, palette);
+
+// Use palette...
+
+free(palette);</code></pre>
+
+        <h2 id="color-conversions">🎨 Color Conversions</h2>
+
+        <h3>RGB to OKLab</h3>
+        <pre><code>CJ_RGB rgb = {0.5f, 0.2f, 0.8f};
+CJ_Lab lab = cj_rgb_to_oklab(rgb);
+
+printf("L=%.3f, a=%.3f, b=%.3f\n", lab.L, lab.a, lab.b);</code></pre>
+
+        <h3>OKLab to RGB</h3>
+        <pre><code>CJ_Lab lab = {0.5f, 0.1f, -0.1f};
+CJ_RGB rgb = cj_oklab_to_rgb(lab);
+
+printf("R=%.2f, G=%.2f, B=%.2f\n", rgb.r, rgb.g, rgb.b);</code></pre>
+
+        <h3>OKLab to LCh (Polar)</h3>
+        <pre><code>CJ_Lab lab = {0.5f, 0.1f, -0.1f};
+CJ_LCh lch = cj_oklab_to_lch(lab);
+
+printf("L=%.3f, C=%.3f, h=%.3f\n", lch.L, lch.C, lch.h);</code></pre>
+
+        <h3>Perceptual Distance (Delta E)</h3>
+        <pre><code>CJ_Lab color1 = cj_rgb_to_oklab((CJ_RGB){1.0f, 0.0f, 0.0f});
+CJ_Lab color2 = cj_rgb_to_oklab((CJ_RGB){0.0f, 1.0f, 0.0f});
+
+float deltaE = cj_delta_e(color1, color2);
+printf("Perceptual distance: %.3f\n", deltaE);</code></pre>
+
+        <h2 id="examples">📚 Code Examples</h2>
+
+        <h3>Complete Program</h3>
+        <pre><code>#include "ColorJourney.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    // Initialize config
+    CJ_Config config = cj_config_init();
+    config.anchors[0] = (CJ_RGB){0.2f, 0.6f, 1.0f};
+    config.anchor_count = 1;
+    config.lightness = CJ_LIGHTNESS_LIGHTER;
+    config.chroma = CJ_CHROMA_VIVID;
+    config.contrast = CJ_CONTRAST_HIGH;
+    
+    // Create journey
+    CJ_Journey* journey = cj_journey_create(&config);
+    if (!journey) {
+        fprintf(stderr, "Failed to create journey\n");
+        return 1;
+    }
+    
+    // Generate palette
+    int count = 8;
+    CJ_RGB* colors = (CJ_RGB*)malloc(count * sizeof(CJ_RGB));
+    if (!colors) {
+        cj_journey_destroy(journey);
+        return 1;
+    }
+    
+    cj_journey_discrete(journey, count, colors);
+    
+    // Output as CSV
+    for (int i = 0; i < count; i++) {
+        printf("%.3f,%.3f,%.3f\n", 
+               colors[i].r, colors[i].g, colors[i].b);
+    }
+    
+    // Cleanup
+    free(colors);
+    cj_journey_destroy(journey);
+    return 0;
+}</code></pre>
+
+        <h3>Multi-Anchor Example</h3>
+        <pre><code>// Red → Green → Blue gradient
+CJ_Config config = cj_config_init();
+config.anchors[0] = (CJ_RGB){1.0f, 0.0f, 0.0f};  // Red
+config.anchors[1] = (CJ_RGB){0.0f, 1.0f, 0.0f};  // Green
+config.anchors[2] = (CJ_RGB){0.0f, 0.0f, 1.0f};  // Blue
+config.anchor_count = 3;
+config.loop_mode = CJ_LOOP_CLOSED;
+
+CJ_Journey* journey = cj_journey_create(&config);
+CJ_RGB palette[12];
+cj_journey_discrete(journey, 12, palette);
+cj_journey_destroy(journey);</code></pre>
+
+        <h2 id="portability">🌍 Portability Notes</h2>
+
+        <h3>Platform Support</h3>
+        <p>ColorJourney C core is fully portable C99:</p>
+        <ul>
+            <li>✅ Linux (GCC, Clang)</li>
+            <li>✅ macOS (Clang)</li>
+            <li>✅ Windows (MSVC, MinGW)</li>
+            <li>✅ iOS/Android (via NDK)</li>
+            <li>✅ Embedded systems</li>
+            <li>✅ WebAssembly</li>
+        </ul>
+
+        <h3>No External Dependencies</h3>
+        <p>ColorJourney only depends on the C math library (<code>-lm</code>), which is standard on all platforms.</p>
+
+        <h3>Deterministic Output</h3>
+        <pre><code>// Same config → identical output across all platforms
+config.anchors[0] = (CJ_RGB){0.5f, 0.2f, 0.8f};
+config.anchor_count = 1;
+
+CJ_Journey* j1 = cj_journey_create(&config);
+CJ_RGB c1 = cj_journey_sample(j1, 0.5f);
+cj_journey_destroy(j1);
+
+// Later, elsewhere, any platform:
+CJ_Journey* j2 = cj_journey_create(&config);
+CJ_RGB c2 = cj_journey_sample(j2, 0.5f);  // c2 == c1 ✓
+cj_journey_destroy(j2);</code></pre>
+
+        <h2>📖 See Also</h2>
+        <ul>
+            <li><a href="01-GETTING_STARTED.html">Getting Started Guide</a></li>
+            <li><a href="02-API_QUICK_REFERENCE.html">API Quick Reference</a></li>
+            <li><a href="03-SWIFT_INTEGRATION.html">Swift Integration Guide</a></li>
+            <li><a href="../generated/doxygen/html/">Full C API Documentation</a></li>
+        </ul>
+    </main>
+
+    <footer>
+        <p><strong>ColorJourney Documentation</strong> | <a href="../index.html">Home</a></p>
+        <p>Generated 2025-12-08</p>
+    </footer>
+</body>
+
+</html>

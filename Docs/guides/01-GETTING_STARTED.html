@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>Getting Started - ColorJourney</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            line-height: 1.7;
+            color: #333;
+            background: #fff;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                color: #eee;
+                background: #1a1a1a;
+            }
+        }
+
+        /* Header Navigation */
+        header {
+            border-bottom: 1px solid #ddd;
+            background: #f9f9f9;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            header {
+                background: #242424;
+                border-bottom-color: #444;
+            }
+        }
+
+        header nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header a.logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            header a.logo {
+                color: #66b3ff;
+            }
+        }
+
+        header nav .links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        header nav a {
+            color: #333;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            header nav a {
+                color: #ccc;
+            }
+        }
+
+        header nav a:hover {
+            color: #0066cc;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #111;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            h1 {
+                color: #fff;
+            }
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 3rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .subtitle {
+                color: #aaa;
+            }
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: #111;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            h2 {
+                color: #fff;
+                border-bottom-color: #333;
+            }
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #222;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            h3 {
+                color: #ddd;
+            }
+        }
+
+        /* Code Blocks */
+        pre {
+            background: #f5f5f5;
+            border-left: 4px solid #0066cc;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            pre {
+                background: #2a2a2a;
+                border-left-color: #66b3ff;
+            }
+        }
+
+        code {
+            font-family: "Monaco", "Courier New", monospace;
+            font-size: 0.9em;
+            background: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            code {
+                background: #2a2a2a;
+            }
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        @media (prefers-color-scheme: dark) {
+
+            th,
+            td {
+                border-color: #444;
+            }
+        }
+
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            th {
+                background: #2a2a2a;
+            }
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            tr:nth-child(even) {
+                background: #222;
+            }
+        }
+
+        /* Links */
+        a {
+            color: #0066cc;
+            text-decoration: none;
+            border-bottom: 1px dotted transparent;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            a {
+                color: #66b3ff;
+            }
+        }
+
+        a:hover {
+            border-bottom-color: #0066cc;
+        }
+
+        /* Lists */
+        ul,
+        ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Callouts */
+        .callout {
+            padding: 1.5rem;
+            border-left: 4px solid #0066cc;
+            background: #f0f7ff;
+            border-radius: 4px;
+            margin: 1.5rem 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .callout {
+                background: #1a2a3a;
+                border-left-color: #66b3ff;
+            }
+        }
+
+        .callout.warning {
+            border-left-color: #ff9900;
+            background: #fff7f0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .callout.warning {
+                background: #3a2a1a;
+                border-left-color: #ffb84d;
+            }
+        }
+
+        .callout.success {
+            border-left-color: #28a745;
+            background: #f0fff4;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .callout.success {
+                background: #1a3a1a;
+                border-left-color: #66bb6a;
+            }
+        }
+
+        .callout strong {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #0066cc;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-top: 1rem;
+            margin-right: 1rem;
+        }
+
+        .btn:hover {
+            background: #0052a3;
+        }
+
+        .btn.secondary {
+            background: #666;
+            color: white;
+        }
+
+        .btn.secondary:hover {
+            background: #555;
+        }
+
+        /* Sidebar TOC */
+        .toc {
+            position: fixed;
+            right: 2rem;
+            top: 100px;
+            width: 250px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            font-size: 0.9rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .toc {
+                background: #242424;
+                border-color: #444;
+            }
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 0.5rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .toc h3 {
+                border-bottom-color: #444;
+            }
+        }
+
+        .toc ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .toc li {
+            margin: 0.25rem 0;
+        }
+
+        .toc a {
+            font-size: 0.85rem;
+            display: block;
+            padding: 0.25rem 0;
+        }
+
+        .toc ul ul {
+            margin-left: 1rem;
+            border-left: 1px solid #ddd;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .toc ul ul {
+                border-left-color: #444;
+            }
+        }
+
+        @media (max-width: 1400px) {
+            .toc {
+                display: none;
+            }
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid #ddd;
+            background: #f9f9f9;
+            margin-top: 3rem;
+            padding: 2rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            footer {
+                background: #242424;
+                border-top-color: #444;
+                color: #999;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            main {
+                padding: 1.5rem 1rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            header nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            header nav .links {
+                flex-direction: column;
+                gap: 0.5rem;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="../index.html" class="logo">📚 ColorJourney Docs</a>
+            <ul class="links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="01-GETTING_STARTED.html">Getting Started</a></li>
+                <li><a href="02-API_QUICK_REFERENCE.html">API Reference</a></li>
+                <li><a href="03-SWIFT_INTEGRATION.html">Swift</a></li>
+                <li><a href="04-C_INTEGRATION.html">C</a></li>
+                <li><a href="05-TROUBLESHOOTING.html">Troubleshooting</a></li>
+                <li><a href="06-FAQ.html">FAQ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>🚀 Getting Started with ColorJourney</h1>
+        <p class="subtitle">Create beautiful color palettes in minutes</p>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h3>On This Page</h3>
+            <ul>
+                <li><a href="#tldr">TL;DR</a></li>
+                <li><a href="#install">Installation</a></li>
+                <li><a href="#first-colors">Your First Colors</a></li>
+                <li><a href="#configuration">Configuration</a></li>
+                <li><a href="#styles">Preset Styles</a></li>
+                <li><a href="#use-cases">Use Cases</a></li>
+                <li><a href="#swiftui">SwiftUI</a></li>
+                <li><a href="#mistakes">Common Mistakes</a></li>
+                <li><a href="#next-steps">Next Steps</a></li>
+            </ul>
+        </div>
+
+        <h2 id="tldr">⚡ TL;DR - 3 Steps to Your First Palette</h2>
+
+        <h3>Step 1: Install</h3>
+        <pre><code>// Swift Package Manager
+.package(url: "https://github.com/peternicholls/ColorJourney.git", from: "1.0.0")</code></pre>
+
+        <h3>Step 2: Import</h3>
+        <pre><code>import ColorJourney</code></pre>
+
+        <h3>Step 3: Generate</h3>
+        <pre><code>let journey = ColorJourney(
+    config: .singleAnchor(
+        ColorJourneyRGB(red: 0.5, green: 0.2, blue: 0.8),
+        style: .balanced
+    )
+)
+let colors = journey.discrete(count: 8)</code></pre>
+
+        <p>✅ Done! You now have 8 beautiful, perceptually uniform colors.</p>
+
+        <h2 id="install">📦 Installation</h2>
+
+        <h3>Swift Package Manager (Recommended)</h3>
+        <pre><code>.package(url: "https://github.com/peternicholls/ColorJourney.git", from: "1.0.0")</code></pre>
+
+        <h3>Xcode Project</h3>
+        <ol>
+            <li>File → Add Packages</li>
+            <li>Paste: <code>https://github.com/peternicholls/ColorJourney.git</code></li>
+            <li>Select version and add to your target</li>
+        </ol>
+
+        <h3>Manual Installation (C Only)</h3>
+        <pre><code>cp Sources/CColorJourney/ColorJourney.h .
+cp Sources/CColorJourney/ColorJourney.c .</code></pre>
+
+        <h2 id="first-colors">🎨 Your First Colors</h2>
+
+        <h3>Swift</h3>
+        <pre><code>import ColorJourney
+
+let journey = ColorJourney(
+    config: .singleAnchor(
+        ColorJourneyRGB(red: 0.5, green: 0.2, blue: 0.8),
+        style: .balanced
+    )
+)
+
+// Generate 8 distinct colors
+let colors = journey.discrete(count: 8)
+
+// Use in SwiftUI
+ForEach(colors.indices, id: \.self) { i in
+    Rectangle()
+        .fill(colors[i].color)
+        .frame(height: 50)
+}</code></pre>
+
+        <h3>C</h3>
+        <pre><code>#include "ColorJourney.h"
+
+CJ_RGB anchor = {0.5f, 0.2f, 0.8f};
+CJ_Config config = cj_config_init();
+config.anchors[0] = anchor;
+config.anchor_count = 1;
+
+CJ_Journey *journey = cj_journey_create(&config);
+
+// Generate 8 colors
+for (int i = 0; i < 8; i++) {
+    float t = (float)i / 7.0f;
+    CJ_RGB color = cj_journey_sample(journey, t);
+    printf("%.2f, %.2f, %.2f\n", color.r, color.g, color.b);
+}
+
+cj_journey_destroy(journey);</code></pre>
+
+        <div class="callout success">
+            <strong>✅ What Happened?</strong>
+            <p>ColorJourney created a smooth path through color space, generating 8 visually distinct, perceptually
+                uniform colors from your single anchor color.</p>
+        </div>
+
+        <h2 id="configuration">⚙️ Configuration Basics</h2>
+
+        <h3>Adjust Brightness</h3>
+        <pre><code>// Dark mode
+.singleAnchor(color, style: .balanced)
+    .lightness(.darker)
+
+// Light mode
+.singleAnchor(color, style: .balanced)
+    .lightness(.lighter)</code></pre>
+
+        <h3>Control Saturation</h3>
+        <pre><code>// Soft, pastel colors
+.singleAnchor(color, style: .balanced)
+    .chroma(.muted)
+
+// Bold, vibrant colors
+.singleAnchor(color, style: .balanced)
+    .chroma(.vivid)</code></pre>
+
+        <h3>Enforce Contrast</h3>
+        <pre><code>// Soft, subtle
+.singleAnchor(color, style: .balanced)
+    .contrast(.low)
+
+// High contrast, easy to read
+.singleAnchor(color, style: .balanced)
+    .contrast(.high)</code></pre>
+
+        <h3>Temperature Shift</h3>
+        <pre><code>// Warm and inviting
+.singleAnchor(color, style: .balanced)
+    .temperature(.warm)
+
+// Cool and professional
+.singleAnchor(color, style: .balanced)
+    .temperature(.cool)</code></pre>
+
+        <h2 id="styles">🎯 Preset Styles</h2>
+
+        <p>Each preset combines multiple settings for common use cases:</p>
+
+        <table>
+            <tr>
+                <th>Style</th>
+                <th>Use Case</th>
+                <th>Character</th>
+            </tr>
+            <tr>
+                <td><code>.balanced</code></td>
+                <td>General purpose</td>
+                <td>Neutral, versatile</td>
+            </tr>
+            <tr>
+                <td><code>.pastelDrift</code></td>
+                <td>Soft UI, sophisticated</td>
+                <td>Light, muted, elegant</td>
+            </tr>
+            <tr>
+                <td><code>.vividLoop</code></td>
+                <td>Circular color wheels</td>
+                <td>Saturated, high contrast</td>
+            </tr>
+            <tr>
+                <td><code>.nightMode</code></td>
+                <td>Dark UI</td>
+                <td>Dark, subdued, easy on eyes</td>
+            </tr>
+            <tr>
+                <td><code>.warmEarth</code></td>
+                <td>Natural, organic feel</td>
+                <td>Warm, earthy tones</td>
+            </tr>
+            <tr>
+                <td><code>.coolSky</code></td>
+                <td>Professional, airy</td>
+                <td>Cool, light, calm</td>
+            </tr>
+        </table>
+
+        <h2 id="use-cases">💡 Common Use Cases</h2>
+
+        <h3>Timeline Tracks</h3>
+        <pre><code>let journey = ColorJourney(
+    config: .singleAnchor(baseColor, style: .balanced)
+        .contrast(.high)
+)
+let trackColors = journey.discrete(count: 12)</code></pre>
+
+        <h3>Category Labels</h3>
+        <pre><code>let journey = ColorJourney(
+    config: .singleAnchor(baseColor, style: .vividLoop)
+        .chroma(.vivid)
+)
+let categoryColors = journey.discrete(count: 8)</code></pre>
+
+        <h3>Smooth Gradients</h3>
+        <pre><code>let journey = ColorJourney(
+    config: .singleAnchor(baseColor, style: .balanced)
+)
+let gradient = journey.linearGradient(stops: 50)</code></pre>
+
+        <h3>Multi-Color Transitions</h3>
+        <pre><code>let config = ColorJourneyConfig(
+    anchors: [redColor, greenColor, blueColor],
+    loopMode: .closed
+)
+let palette = ColorJourney(config: config).discrete(count: 12)</code></pre>
+
+        <h2 id="swiftui">🖥️ SwiftUI Integration</h2>
+
+        <pre><code>import SwiftUI
+import ColorJourney
+
+struct ColorPaletteView: View {
+    let journey = ColorJourney(
+        config: .singleAnchor(
+            ColorJourneyRGB(red: 0.4, green: 0.5, blue: 0.9),
+            style: .balanced
+        )
+    )
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            ForEach(journey.discrete(count: 8).indices, id: \.self) { index in
+                Rectangle()
+                    .fill(journey.discrete(count: 8)[index].color)
+                    .frame(height: 40)
+            }
+        }
+    }
+}</code></pre>
+
+        <h2 id="mistakes">⚠️ Common Mistakes to Avoid</h2>
+
+        <div class="callout warning">
+            <strong>❌ Wrong: Creating journeys repeatedly</strong>
+            <pre><code>// Inefficient
+for i in 0..<100 {
+    let journey = ColorJourney(config: config)
+    let color = journey.sample(at: Float(i) / 100)
+}</code></pre>
+        </div>
+
+        <div class="callout success">
+            <strong>✅ Right: Create once, sample many times</strong>
+            <pre><code>// Efficient
+let journey = ColorJourney(config: config)
+for i in 0..<100 {
+    let color = journey.sample(at: Float(i) / 100)
+}</code></pre>
+        </div>
+
+        <div class="callout warning">
+            <strong>❌ Wrong: Assuming RGB color math</strong>
+            <p>RGB (0.5, 0.5, 0.5) is NOT 50% brightness! ColorJourney handles perceptual math internally.</p>
+        </div>
+
+        <div class="callout success">
+            <strong>✅ Right: Trust ColorJourney's OKLab calculations</strong>
+            <p>Just provide RGB colors and trust the output for perceptual correctness.</p>
+        </div>
+
+        <h2 id="next-steps">🎓 Next Steps</h2>
+
+        <div style="margin: 2rem 0;">
+            <a href="02-API_QUICK_REFERENCE.html" class="btn">API Quick Reference</a>
+            <a href="03-SWIFT_INTEGRATION.html" class="btn">Swift Guide</a>
+            <a href="04-C_INTEGRATION.html" class="btn secondary">C Guide</a>
+        </div>
+
+        <ul>
+            <li><a href="02-API_QUICK_REFERENCE.html">API Quick Reference</a> - Complete parameter guide</li>
+            <li><a href="03-SWIFT_INTEGRATION.html">Swift Integration Guide</a> - In-depth Swift usage</li>
+            <li><a href="04-C_INTEGRATION.html">C Integration Guide</a> - C core library usage</li>
+            <li><a href="05-TROUBLESHOOTING.html">Troubleshooting</a> - Common issues and solutions</li>
+            <li><a href="06-FAQ.html">FAQ</a> - Frequently asked questions</li>
+            <li><a href="../generated/swift-docc/">Swift API Docs</a> - Full API reference</li>
+            <li><a href="../generated/doxygen/html/">C API Docs</a> - C core reference</li>
+        </ul>
+
+        <h2>📖 Key Concepts</h2>
+
+        <dl>
+            <dt><strong>Journey</strong></dt>
+            <dd>A parametrized path through color space that defines how colors transition</dd>
+
+            <dt><strong>Anchor</strong></dt>
+            <dd>The starting color(s) that define the journey's direction</dd>
+
+            <dt><strong>OKLab</strong></dt>
+            <dd>A perceptually uniform color space where distances equal perceived color differences</dd>
+
+            <dt><strong>Perceptually Uniform</strong></dt>
+            <dd>Colors equally spaced in math are equally spaced visually to the human eye</dd>
+
+            <dt><strong>ΔE (Delta E)</strong></dt>
+            <dd>Perceptual distance between two colors - ensures distinctness</dd>
+
+            <dt><strong>Chroma</strong></dt>
+            <dd>Saturation/colorfulness - controls vibrancy</dd>
+
+            <dt><strong>Lightness</strong></dt>
+            <dd>Brightness - controls how dark or light colors appear</dd>
+        </dl>
+    </main>
+
+    <footer>
+        <p><strong>ColorJourney Documentation</strong> | <a href="../index.html">Home</a> | <a
+                href="../../README.md">GitHub</a></p>
+        <p>Generated 2025-12-08 | <a href="../README.md">Docs README</a></p>
+    </footer>
+</body>
+
+</html>

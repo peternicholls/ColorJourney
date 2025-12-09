@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>API Quick Reference - ColorJourney</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="../index.html" class="logo">📚 ColorJourney Docs</a>
+            <ul class="links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="01-GETTING_STARTED.html">Getting Started</a></li>
+                <li><a href="02-API_QUICK_REFERENCE.html">API Reference</a></li>
+                <li><a href="03-SWIFT_INTEGRATION.html">Swift</a></li>
+                <li><a href="04-C_INTEGRATION.html">C</a></li>
+                <li><a href="05-TROUBLESHOOTING.html">Troubleshooting</a></li>
+                <li><a href="06-FAQ.html">FAQ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>⚡ API Quick Reference</h1>
+        <p class="subtitle">Fast lookup for ColorJourney configuration and API usage</p>
+
+        <div class="toc">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="#swift-basics">Swift Basics</a></li>
+                <li><a href="#swift-config">Swift Configuration</a></li>
+                <li><a href="#c-basics">C Basics</a></li>
+                <li><a href="#enums">Configuration Enums</a></li>
+                <li><a href="#methods">Methods</a></li>
+                <li><a href="#patterns">Common Patterns</a></li>
+            </ul>
+        </div>
+
+        <h2 id="swift-basics">🚀 Swift: Basics</h2>
+
+        <h3>Single Anchor with Preset Style</h3>
+        <pre><code>let journey = ColorJourney(
+    config: .singleAnchor(
+        ColorJourneyRGB(red: 0.5, green: 0.2, blue: 0.8),
+        style: .balanced  // or .pastelDrift, .vividLoop, etc.
+    )
+)</code></pre>
+
+        <h3>Multi-Anchor Journey</h3>
+        <pre><code>let config = ColorJourneyConfig(
+    anchors: [color1, color2, color3],
+    loopMode: .closed
+)
+let journey = ColorJourney(config: config)</code></pre>
+
+        <h3>Sample Colors</h3>
+        <pre><code>// Single sample at position
+let color = journey.sample(at: 0.5)  // t ∈ [0, 1]
+
+// Discrete palette
+let colors = journey.discrete(count: 8)
+
+// Gradient stops
+let gradient = journey.linearGradient(stops: 20)</code></pre>
+
+        <h2 id="swift-config">⚙️ Swift: Configuration</h2>
+
+        <h3>Builder Pattern</h3>
+        <pre><code>let config = .singleAnchor(color, style: .balanced)
+    .lightness(.lighter)
+    .chroma(.vivid)
+    .contrast(.high)
+    .temperature(.warm)
+    .loopMode(.closed)
+    .variation(.subtle(dimensions: [.hue, .lightness], seed: 42))</code></pre>
+
+        <h3>Full Configuration Object</h3>
+        <pre><code>let config = ColorJourneyConfig(
+    anchors: [color],
+    lightness: .lighter,
+    chroma: .vivid,
+    contrast: .high,
+    midJourneyVibrancy: 0.3,
+    temperature: .warm,
+    loopMode: .closed,
+    variation: .subtle(dimensions: [.hue, .lightness], seed: 42)
+)</code></pre>
+
+        <h2 id="c-basics">🔧 C: Basics</h2>
+
+        <h3>Initialize and Create</h3>
+        <pre><code>#include "ColorJourney.h"
+
+CJ_RGB anchor = {0.5f, 0.2f, 0.8f};
+CJ_Config config = cj_config_init();
+config.anchors[0] = anchor;
+config.anchor_count = 1;
+
+CJ_Journey *journey = cj_journey_create(&config);</code></pre>
+
+        <h3>Sample Colors</h3>
+        <pre><code>// Single sample
+CJ_RGB color = cj_journey_sample(journey, 0.5f);
+
+// Discrete palette
+CJ_RGB *palette = malloc(8 * sizeof(CJ_RGB));
+cj_journey_discrete(journey, 8, palette);
+
+// Access
+for (int i = 0; i < 8; i++) {
+    CJ_RGB color = palette[i];
+    printf("%.2f, %.2f, %.2f\n", color.r, color.g, color.b);
+}</code></pre>
+
+        <h3>Cleanup</h3>
+        <pre><code>cj_journey_destroy(journey);
+free(palette);</code></pre>
+
+        <h2 id="enums">📋 Configuration Enums</h2>
+
+        <h3>LightnessBias</h3>
+        <pre><code>.neutral     // No change
+.lighter     // Shift toward brighter
+.darker      // Shift toward darker
+.custom(weight: Float)  // [-1.0, 1.0]</code></pre>
+
+        <h3>ChromaBias (Saturation)</h3>
+        <pre><code>.neutral     // No change
+.muted       // 0.6x saturation
+.vivid       // 1.4x saturation
+.custom(multiplier: Float)  // [0.5, 2.0]</code></pre>
+
+        <h3>Contrast</h3>
+        <pre><code>.low         // ΔE ≥ 0.05
+.medium      // ΔE ≥ 0.1
+.high        // ΔE ≥ 0.15
+.custom(threshold: Float)  // Custom ΔE</code></pre>
+
+        <h3>Temperature</h3>
+        <pre><code>.neutral     // No bias
+.warm        // Reds, oranges, yellows
+.cool        // Blues, greens, purples</code></pre>
+
+        <h3>LoopMode</h3>
+        <pre><code>.open        // Start and end distinct
+.closed      // Loops back to start
+.pingPong    // Reverses at boundaries</code></pre>
+
+        <h3>Variation</h3>
+        <pre><code>.off         // No variation
+.subtle(dimensions: [.hue, .lightness], seed: UInt64)
+.noticeable(dimensions: [.hue, .chroma], seed: UInt64)</code></pre>
+
+        <h2 id="methods">🔌 Methods & Functions</h2>
+
+        <h3>Swift: ColorJourney</h3>
+        <table>
+            <tr>
+                <th>Method</th>
+                <th>Purpose</th>
+            </tr>
+            <tr>
+                <td><code>sample(at: Float)</code></td>
+                <td>Get single color at position t</td>
+            </tr>
+            <tr>
+                <td><code>discrete(count: Int)</code></td>
+                <td>Generate N distinct colors</td>
+            </tr>
+            <tr>
+                <td><code>linearGradient(stops: Int)</code></td>
+                <td>SwiftUI gradient with N stops</td>
+            </tr>
+        </table>
+
+        <h3>C: Journey Functions</h3>
+        <table>
+            <tr>
+                <th>Function</th>
+                <th>Purpose</th>
+            </tr>
+            <tr>
+                <td><code>cj_journey_create(config)</code></td>
+                <td>Create journey from config</td>
+            </tr>
+            <tr>
+                <td><code>cj_journey_sample(journey, t)</code></td>
+                <td>Get color at position t</td>
+            </tr>
+            <tr>
+                <td><code>cj_journey_discrete(journey, count, out)</code></td>
+                <td>Generate N colors into buffer</td>
+            </tr>
+            <tr>
+                <td><code>cj_journey_destroy(journey)</code></td>
+                <td>Free journey resources</td>
+            </tr>
+        </table>
+
+        <h2 id="patterns">💡 Common Patterns</h2>
+
+        <h3>Theme-Aware Palettes</h3>
+        <pre><code>// Light mode
+let lightConfig = .singleAnchor(color, style: .balanced)
+    .lightness(.lighter)
+
+// Dark mode  
+let darkConfig = .singleAnchor(color, style: .balanced)
+    .lightness(.darker)</code></pre>
+
+        <h3>UI Element Categories</h3>
+        <pre><code>let journey = ColorJourney(
+    config: .singleAnchor(baseColor, style: .balanced)
+        .contrast(.high)
+        .chroma(.vivid)
+)
+let colors = journey.discrete(count: categoryCount)</code></pre>
+
+        <h3>Smooth Gradients</h3>
+        <pre><code>let journey = ColorJourney(
+    config: .singleAnchor(baseColor, style: .balanced)
+)
+let gradient = journey.linearGradient(stops: 50)</code></pre>
+
+        <h3>Data Visualization (Cool to Warm)</h3>
+        <pre><code>let config = ColorJourneyConfig(
+    anchors: [blueColor, redColor],  // Cool to warm
+    loopMode: .open
+)
+let colorMap = ColorJourney(config: config)
+
+let lowColor = colorMap.sample(at: 0.0)   // Cool
+let midColor = colorMap.sample(at: 0.5)   // Neutral
+let highColor = colorMap.sample(at: 1.0)  // Warm</code></pre>
+
+        <h3>Seeded Variation for Consistency</h3>
+        <pre><code>let config = .singleAnchor(color, style: .balanced)
+    .variation(.subtle(
+        dimensions: [.hue, .lightness],
+        seed: 42  // Same seed = same variation
+    ))
+
+// Always produces same palette
+let palette1 = ColorJourney(config: config).discrete(count: 10)
+let palette2 = ColorJourney(config: config).discrete(count: 10)
+// palette1 == palette2 ✓</code></pre>
+
+        <h2>📚 See Also</h2>
+
+        <ul>
+            <li><a href="01-GETTING_STARTED.html">Getting Started</a></li>
+            <li><a href="03-SWIFT_INTEGRATION.html">Swift Integration Guide</a></li>
+            <li><a href="04-C_INTEGRATION.html">C Integration Guide</a></li>
+            <li><a href="../generated/swift-docc/">Full Swift API Docs</a></li>
+            <li><a href="../generated/doxygen/html/">Full C API Docs</a></li>
+        </ul>
+    </main>
+
+    <footer>
+        <p><strong>ColorJourney Documentation</strong> | <a href="../index.html">Home</a></p>
+        <p>Generated 2025-12-08</p>
+    </footer>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            line-height: 1.7;
+            color: #333;
+            background: #fff;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                color: #eee;
+                background: #1a1a1a;
+            }
+        }
+
+        header {
+            border-bottom: 1px solid #ddd;
+            background: #f9f9f9;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            header {
+                background: #242424;
+                border-bottom-color: #444;
+            }
+        }
+
+        header nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header a.logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            header a.logo {
+                color: #66b3ff;
+            }
+        }
+
+        header nav .links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        header nav a {
+            color: #333;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            header nav a {
+                color: #ccc;
+            }
+        }
+
+        header nav a:hover {
+            color: #0066cc;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #111;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            h1 {
+                color: #fff;
+            }
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 3rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .subtitle {
+                color: #aaa;
+            }
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: #111;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            h2 {
+                color: #fff;
+                border-bottom-color: #333;
+            }
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #222;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            h3 {
+                color: #ddd;
+            }
+        }
+
+        pre {
+            background: #f5f5f5;
+            border-left: 4px solid #0066cc;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            pre {
+                background: #2a2a2a;
+                border-left-color: #66b3ff;
+            }
+        }
+
+        code {
+            font-family: "Monaco", "Courier New", monospace;
+            font-size: 0.9em;
+            background: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            code {
+                background: #2a2a2a;
+            }
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        @media (prefers-color-scheme: dark) {
+
+            th,
+            td {
+                border-color: #444;
+            }
+        }
+
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            th {
+                background: #2a2a2a;
+            }
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            tr:nth-child(even) {
+                background: #222;
+            }
+        }
+
+        a {
+            color: #0066cc;
+            text-decoration: none;
+            border-bottom: 1px dotted transparent;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            a {
+                color: #66b3ff;
+            }
+        }
+
+        a:hover {
+            border-bottom-color: #0066cc;
+        }
+
+        ul,
+        ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .toc {
+            position: fixed;
+            right: 2rem;
+            top: 100px;
+            width: 250px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            font-size: 0.9rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .toc {
+                background: #242424;
+                border-color: #444;
+            }
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 0.5rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .toc h3 {
+                border-bottom-color: #444;
+            }
+        }
+
+        .toc ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .toc li {
+            margin: 0.25rem 0;
+        }
+
+        .toc a {
+            font-size: 0.85rem;
+            display: block;
+            padding: 0.25rem 0;
+        }
+
+        .toc ul ul {
+            margin-left: 1rem;
+            border-left: 1px solid #ddd;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .toc ul ul {
+                border-left-color: #444;
+            }
+        }
+
+        @media (max-width: 1400px) {
+            .toc {
+                display: none;
+            }
+        }
+
+        footer {
+            border-top: 1px solid #ddd;
+            background: #f9f9f9;
+            margin-top: 3rem;
+            padding: 2rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            footer {
+                background: #242424;
+                border-top-color: #444;
+                color: #999;
+            }
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 1.5rem 1rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            header nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            header nav .links {
+                flex-direction: column;
+                gap: 0.5rem;
+                width: 100%;
+            }
+        }
+    </style>
+</body>
+
+</html>

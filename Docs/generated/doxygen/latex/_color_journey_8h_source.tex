@@ -1,0 +1,182 @@
+\doxysection{Color\+Journey.\+h}
+\hypertarget{_color_journey_8h_source}{}\label{_color_journey_8h_source}\index{ColorJourney.h@{ColorJourney.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *\ ColorJourney\ System\ -\/\ Core\ C\ Library}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ High-\/performance\ OKLab-\/based\ color\ journey\ generation}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *\ Designed\ for\ Swift\ integration\ but\ fully\ portable\ C}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#ifndef\ COLORJOURNEY\_H}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#define\ COLORJOURNEY\_H}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <stdbool.h>}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{00014\ \textcolor{keyword}{extern}\ \textcolor{stringliteral}{"{}C"{}}\ \{}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \textcolor{comment}{/*\ ========================================================================}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ Core\ Color\ Types}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ ========================================================================\ */}}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\{}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_c_j___r_g_b_a42a21db12233ca3cc2089034028f6e03}{r}};\ \ }
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_c_j___r_g_b_ab4f535fd15467f9c46ff13371af27992}{g}};\ \ }
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_c_j___r_g_b_a2d0d62857bd0eae71de85e2c498449e3}{b}};\ \ }
+\DoxyCodeLine{00041\ \}\ \mbox{\hyperlink{struct_c_j___r_g_b}{CJ\_RGB}};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00074\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\{}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_c_j___lab_aaf7717af6d2ebb1af0bfee9584085b18}{L}};\ \ }
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_c_j___lab_a495ff66cdea559a2d15969c371b7615a}{a}};\ \ }
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_c_j___lab_aa82c860c5f09ee70facc87429fc49442}{b}};\ \ }
+\DoxyCodeLine{00078\ \}\ \mbox{\hyperlink{struct_c_j___lab}{CJ\_Lab}};}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00098\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\{}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_c_j___l_ch_ab1b93d281c05fdc18421120d6f935fcc}{L}};\ \ }
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_c_j___l_ch_a3d864ae4fdb3a9cf9d7a7a3f374eb7e7}{C}};\ \ }
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_c_j___l_ch_a653559700995b5d0529255e641ea232a}{h}};\ \ }
+\DoxyCodeLine{00102\ \}\ \mbox{\hyperlink{struct_c_j___l_ch}{CJ\_LCh}};}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \textcolor{comment}{/*\ ========================================================================}}
+\DoxyCodeLine{00105\ \textcolor{comment}{\ *\ Configuration\ Enums}}
+\DoxyCodeLine{00106\ \textcolor{comment}{\ *\ ========================================================================\ */}}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00119\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}\ \{}
+\DoxyCodeLine{00120\ \ \ \ \ CJ\_LIGHTNESS\_NEUTRAL\ =\ 0,\ \ }
+\DoxyCodeLine{00121\ \ \ \ \ CJ\_LIGHTNESS\_LIGHTER,\ \ \ \ \ \ \ }
+\DoxyCodeLine{00122\ \ \ \ \ CJ\_LIGHTNESS\_DARKER,\ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00123\ \ \ \ \ CJ\_LIGHTNESS\_CUSTOM\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00124\ \}\ CJ\_LightnessBias;}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00136\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}\ \{}
+\DoxyCodeLine{00137\ \ \ \ \ CJ\_CHROMA\_NEUTRAL\ =\ 0,\ \ }
+\DoxyCodeLine{00138\ \ \ \ \ CJ\_CHROMA\_MUTED,\ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00139\ \ \ \ \ CJ\_CHROMA\_VIVID,\ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00140\ \ \ \ \ CJ\_CHROMA\_CUSTOM\ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00141\ \}\ CJ\_ChromaBias;}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00164\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}\ \{}
+\DoxyCodeLine{00165\ \ \ \ \ CJ\_CONTRAST\_LOW\ =\ 0,\ \ \ }
+\DoxyCodeLine{00166\ \ \ \ \ CJ\_CONTRAST\_MEDIUM,\ \ \ \ }
+\DoxyCodeLine{00167\ \ \ \ \ CJ\_CONTRAST\_HIGH,\ \ \ \ \ \ }
+\DoxyCodeLine{00168\ \ \ \ \ CJ\_CONTRAST\_CUSTOM\ \ \ \ \ }
+\DoxyCodeLine{00169\ \}\ CJ\_ContrastLevel;}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00184\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}\ \{}
+\DoxyCodeLine{00185\ \ \ \ \ CJ\_TEMPERATURE\_NEUTRAL\ =\ 0,\ \ }
+\DoxyCodeLine{00186\ \ \ \ \ CJ\_TEMPERATURE\_WARM,\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00187\ \ \ \ \ CJ\_TEMPERATURE\_COOL\ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00188\ \}\ CJ\_TemperatureBias;}
+\DoxyCodeLine{00189\ }
+\DoxyCodeLine{00206\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}\ \{}
+\DoxyCodeLine{00207\ \ \ \ \ CJ\_LOOP\_OPEN\ =\ 0,\ \ \ \ }
+\DoxyCodeLine{00208\ \ \ \ \ CJ\_LOOP\_CLOSED,\ \ \ \ \ \ }
+\DoxyCodeLine{00209\ \ \ \ \ CJ\_LOOP\_PINGPONG\ \ \ \ \ }
+\DoxyCodeLine{00210\ \}\ CJ\_LoopMode;}
+\DoxyCodeLine{00211\ }
+\DoxyCodeLine{00225\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}\ \{}
+\DoxyCodeLine{00226\ \ \ \ \ CJ\_VARIATION\_NONE\ =\ 0,\ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00227\ \ \ \ \ CJ\_VARIATION\_HUE\ =\ 1\ <<\ 0,\ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00228\ \ \ \ \ CJ\_VARIATION\_LIGHTNESS\ =\ 1\ <<\ 1,\ \ \ \ }
+\DoxyCodeLine{00229\ \ \ \ \ CJ\_VARIATION\_CHROMA\ =\ 1\ <<\ 2\ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00230\ \}\ CJ\_VariationDimension;}
+\DoxyCodeLine{00231\ }
+\DoxyCodeLine{00246\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}\ \{}
+\DoxyCodeLine{00247\ \ \ \ \ CJ\_VARIATION\_SUBTLE\ =\ 0,\ \ }
+\DoxyCodeLine{00248\ \ \ \ \ CJ\_VARIATION\_NOTICEABLE,\ \ }
+\DoxyCodeLine{00249\ \ \ \ \ CJ\_VARIATION\_CUSTOM\ \ \ \ \ \ \ }
+\DoxyCodeLine{00250\ \}\ CJ\_VariationStrength;}
+\DoxyCodeLine{00251\ }
+\DoxyCodeLine{00252\ \textcolor{comment}{/*\ ========================================================================}}
+\DoxyCodeLine{00253\ \textcolor{comment}{\ *\ Journey\ Configuration}}
+\DoxyCodeLine{00254\ \textcolor{comment}{\ *\ ========================================================================\ */}}
+\DoxyCodeLine{00255\ }
+\DoxyCodeLine{00281\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\{}
+\DoxyCodeLine{00282\ \ \ \ \ \textcolor{comment}{/*\ ==========\ Anchor\ Colors\ ==========\ */}}
+\DoxyCodeLine{00283\ \ \ \ \ }
+\DoxyCodeLine{00286\ \ \ \ \ \mbox{\hyperlink{struct_c_j___r_g_b}{CJ\_RGB}}\ \mbox{\hyperlink{struct_c_j___config_a82d6e61bae965ec82aaf50e0fd1d89a7}{anchors}}[8];}
+\DoxyCodeLine{00287\ \ \ \ \ }
+\DoxyCodeLine{00289\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{struct_c_j___config_a530de20dcebf45bc1eef90bc4ad677d5}{anchor\_count}};}
+\DoxyCodeLine{00290\ \ \ \ \ }
+\DoxyCodeLine{00291\ \ \ \ \ \textcolor{comment}{/*\ ==========\ Perceptual\ Dynamics\ ==========\ */}}
+\DoxyCodeLine{00292\ \ \ \ \ }
+\DoxyCodeLine{00294\ \ \ \ \ CJ\_LightnessBias\ \mbox{\hyperlink{struct_c_j___config_a4e77fdc385d965a9ad8de24026e53c3f}{lightness\_bias}};}
+\DoxyCodeLine{00297\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_c_j___config_a5a9339710cb9a0bd3837099c84afb8d0}{lightness\_custom\_weight}};}
+\DoxyCodeLine{00298\ \ \ \ \ }
+\DoxyCodeLine{00300\ \ \ \ \ CJ\_ChromaBias\ \mbox{\hyperlink{struct_c_j___config_af83dfb49e0d4d3e8c4dfd7d6edbd4679}{chroma\_bias}};}
+\DoxyCodeLine{00303\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_c_j___config_a192e48d8647fdfcb04f331d05bca5388}{chroma\_custom\_multiplier}};}
+\DoxyCodeLine{00304\ \ \ \ \ }
+\DoxyCodeLine{00306\ \ \ \ \ CJ\_ContrastLevel\ \mbox{\hyperlink{struct_c_j___config_ac128a11abfdb8adcb5250983554dcc74}{contrast\_level}};}
+\DoxyCodeLine{00310\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_c_j___config_ac901caaa6ec51788f8106a2c30b23e6d}{contrast\_custom\_threshold}};}
+\DoxyCodeLine{00311\ \ \ \ \ }
+\DoxyCodeLine{00317\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_c_j___config_ae90e96b0647c0983ccfce9e873a9f7e9}{mid\_journey\_vibrancy}};}
+\DoxyCodeLine{00318\ \ \ \ \ }
+\DoxyCodeLine{00320\ \ \ \ \ CJ\_TemperatureBias\ \mbox{\hyperlink{struct_c_j___config_ae1c39a645ab9fa22dcbdfe4c7db746ab}{temperature\_bias}};}
+\DoxyCodeLine{00321\ \ \ \ \ }
+\DoxyCodeLine{00322\ \ \ \ \ \textcolor{comment}{/*\ ==========\ Looping\ ==========\ */}}
+\DoxyCodeLine{00323\ \ \ \ \ }
+\DoxyCodeLine{00325\ \ \ \ \ CJ\_LoopMode\ \mbox{\hyperlink{struct_c_j___config_afc2f48a411053eaf21813862dc6359ba}{loop\_mode}};}
+\DoxyCodeLine{00326\ \ \ \ \ }
+\DoxyCodeLine{00327\ \ \ \ \ \textcolor{comment}{/*\ ==========\ Variation\ Layer\ (Seeded\ Randomness)\ ==========\ */}}
+\DoxyCodeLine{00328\ \ \ \ \ }
+\DoxyCodeLine{00332\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_c_j___config_a58c41ea4e8df761eed559db283805124}{variation\_dimensions}};}
+\DoxyCodeLine{00333\ \ \ \ \ }
+\DoxyCodeLine{00335\ \ \ \ \ CJ\_VariationStrength\ \mbox{\hyperlink{struct_c_j___config_aadf5322d9ddfe21f5defc21be0419bca}{variation\_strength}};}
+\DoxyCodeLine{00338\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_c_j___config_ae4d75e831d9f6c9bfdc8be1b903c3e3f}{variation\_custom\_magnitude}};}
+\DoxyCodeLine{00339\ \ \ \ \ }
+\DoxyCodeLine{00343\ \ \ \ \ uint64\_t\ \mbox{\hyperlink{struct_c_j___config_afd678edcba2b36088a204a1328064a49}{variation\_seed}};}
+\DoxyCodeLine{00344\ \ \ \ \ }
+\DoxyCodeLine{00346\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{struct_c_j___config_adbc77fe8e8784ed97f05abfb47c327cb}{variation\_enabled}};}
+\DoxyCodeLine{00347\ \ \ \ \ }
+\DoxyCodeLine{00348\ \}\ \mbox{\hyperlink{struct_c_j___config}{CJ\_Config}};}
+\DoxyCodeLine{00349\ }
+\DoxyCodeLine{00352\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_c_j___journey___impl}{CJ\_Journey\_Impl}}*\ CJ\_Journey;}
+\DoxyCodeLine{00353\ }
+\DoxyCodeLine{00354\ \textcolor{comment}{/*\ ========================================================================}}
+\DoxyCodeLine{00355\ \textcolor{comment}{\ *\ Core\ API\ -\/\ Journey\ Creation\ \&\ Sampling}}
+\DoxyCodeLine{00356\ \textcolor{comment}{\ *\ ========================================================================\ */}}
+\DoxyCodeLine{00357\ }
+\DoxyCodeLine{00389\ \textcolor{keywordtype}{void}\ cj\_config\_init(\mbox{\hyperlink{struct_c_j___config}{CJ\_Config}}*\ config);}
+\DoxyCodeLine{00390\ }
+\DoxyCodeLine{00436\ CJ\_Journey\ cj\_journey\_create(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_c_j___config}{CJ\_Config}}*\ config);}
+\DoxyCodeLine{00437\ }
+\DoxyCodeLine{00459\ \textcolor{keywordtype}{void}\ cj\_journey\_destroy(CJ\_Journey\ journey);}
+\DoxyCodeLine{00460\ }
+\DoxyCodeLine{00503\ \mbox{\hyperlink{struct_c_j___r_g_b}{CJ\_RGB}}\ cj\_journey\_sample(CJ\_Journey\ journey,\ \textcolor{keywordtype}{float}\ t);}
+\DoxyCodeLine{00504\ }
+\DoxyCodeLine{00562\ \textcolor{keywordtype}{void}\ cj\_journey\_discrete(CJ\_Journey\ journey,\ \textcolor{keywordtype}{int}\ count,\ \mbox{\hyperlink{struct_c_j___r_g_b}{CJ\_RGB}}*\ out\_colors);}
+\DoxyCodeLine{00563\ }
+\DoxyCodeLine{00564\ \textcolor{comment}{/*\ ========================================================================}}
+\DoxyCodeLine{00565\ \textcolor{comment}{\ *\ Color\ Space\ Conversions\ (Fast\ OKLab)}}
+\DoxyCodeLine{00566\ \textcolor{comment}{\ *\ ========================================================================\ */}}
+\DoxyCodeLine{00567\ }
+\DoxyCodeLine{00609\ \mbox{\hyperlink{struct_c_j___lab}{CJ\_Lab}}\ cj\_rgb\_to\_oklab(\mbox{\hyperlink{struct_c_j___r_g_b}{CJ\_RGB}}\ c);}
+\DoxyCodeLine{00610\ }
+\DoxyCodeLine{00632\ \mbox{\hyperlink{struct_c_j___r_g_b}{CJ\_RGB}}\ cj\_oklab\_to\_rgb(\mbox{\hyperlink{struct_c_j___lab}{CJ\_Lab}}\ c);}
+\DoxyCodeLine{00633\ }
+\DoxyCodeLine{00653\ \mbox{\hyperlink{struct_c_j___l_ch}{CJ\_LCh}}\ cj\_oklab\_to\_lch(\mbox{\hyperlink{struct_c_j___lab}{CJ\_Lab}}\ c);}
+\DoxyCodeLine{00654\ }
+\DoxyCodeLine{00671\ \mbox{\hyperlink{struct_c_j___lab}{CJ\_Lab}}\ cj\_lch\_to\_oklab(\mbox{\hyperlink{struct_c_j___l_ch}{CJ\_LCh}}\ c);}
+\DoxyCodeLine{00672\ }
+\DoxyCodeLine{00706\ \textcolor{keywordtype}{float}\ cj\_delta\_e(\mbox{\hyperlink{struct_c_j___lab}{CJ\_Lab}}\ a,\ \mbox{\hyperlink{struct_c_j___lab}{CJ\_Lab}}\ b);}
+\DoxyCodeLine{00707\ }
+\DoxyCodeLine{00708\ \textcolor{comment}{/*\ ========================================================================}}
+\DoxyCodeLine{00709\ \textcolor{comment}{\ *\ Utility\ Functions}}
+\DoxyCodeLine{00710\ \textcolor{comment}{\ *\ ========================================================================\ */}}
+\DoxyCodeLine{00711\ }
+\DoxyCodeLine{00730\ \mbox{\hyperlink{struct_c_j___r_g_b}{CJ\_RGB}}\ cj\_rgb\_clamp(\mbox{\hyperlink{struct_c_j___r_g_b}{CJ\_RGB}}\ c);}
+\DoxyCodeLine{00731\ }
+\DoxyCodeLine{00758\ \textcolor{keywordtype}{bool}\ cj\_is\_readable(\mbox{\hyperlink{struct_c_j___lab}{CJ\_Lab}}\ c);}
+\DoxyCodeLine{00759\ }
+\DoxyCodeLine{00796\ \mbox{\hyperlink{struct_c_j___lab}{CJ\_Lab}}\ cj\_enforce\_contrast(\mbox{\hyperlink{struct_c_j___lab}{CJ\_Lab}}\ color,\ \mbox{\hyperlink{struct_c_j___lab}{CJ\_Lab}}\ reference,\ \textcolor{keywordtype}{float}\ min\_delta\_e);}
+\DoxyCodeLine{00797\ }
+\DoxyCodeLine{00798\ \textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{00799\ \}}
+\DoxyCodeLine{00800\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00801\ }
+\DoxyCodeLine{00802\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ COLORJOURNEY\_H\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

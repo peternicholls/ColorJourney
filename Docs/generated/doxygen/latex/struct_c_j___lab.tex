@@ -1,0 +1,67 @@
+\doxysection{CJ\+\_\+\+Lab Struct Reference}
+\hypertarget{struct_c_j___lab}{}\label{struct_c_j___lab}\index{CJ\_Lab@{CJ\_Lab}}
+
+
+Represents a color in OKLab perceptual color space.  
+
+
+
+
+{\ttfamily \#include $<$Color\+Journey.\+h$>$}
+
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{struct_c_j___lab_aaf7717af6d2ebb1af0bfee9584085b18}\label{struct_c_j___lab_aaf7717af6d2ebb1af0bfee9584085b18} 
+float {\bfseries L}
+\begin{DoxyCompactList}\small\item\em Lightness \mbox{[}0, 1\mbox{]}. Perceived brightness (0=black, 1=white). \end{DoxyCompactList}\item 
+\Hypertarget{struct_c_j___lab_a495ff66cdea559a2d15969c371b7615a}\label{struct_c_j___lab_a495ff66cdea559a2d15969c371b7615a} 
+float {\bfseries a}
+\begin{DoxyCompactList}\small\item\em Red-\/\+Green component \mbox{[}\texorpdfstring{$\sim$}{\string~}-\/0.4, \texorpdfstring{$\sim$}{\string~}0.4\mbox{]}. Negative=greenish, positive=reddish. \end{DoxyCompactList}\item 
+\Hypertarget{struct_c_j___lab_aa82c860c5f09ee70facc87429fc49442}\label{struct_c_j___lab_aa82c860c5f09ee70facc87429fc49442} 
+float {\bfseries b}
+\begin{DoxyCompactList}\small\item\em Yellow-\/\+Blue component \mbox{[}\texorpdfstring{$\sim$}{\string~}-\/0.4, \texorpdfstring{$\sim$}{\string~}0.4\mbox{]}. Negative=bluish, positive=yellowish. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Represents a color in OKLab perceptual color space. 
+
+OKLab is a perceptually uniform color space designed by Björn Ottosson. Unlike RGB, distances in OKLab space correlate with perceived color differences. This property makes OKLab ideal for journey generation, contrast enforcement, and perceptual analysis.
+
+Components\+:
+\begin{DoxyItemize}
+\item {\bfseries{L}} (Lightness)\+: Perceived brightness, range \mbox{[}0, 1\mbox{]}
+\begin{DoxyItemize}
+\item 0.\+0 = pure black
+\item \texorpdfstring{$\sim$}{\string~}0.5 = medium gray
+\item 1.\+0 = pure white
+\end{DoxyItemize}
+\item {\bfseries{a}} (Red-\/\+Green opponent)\+: Ranges approximately \mbox{[}-\/0.\+4, 0.\+4\mbox{]}
+\begin{DoxyItemize}
+\item Negative = greenish
+\item Positive = reddish
+\end{DoxyItemize}
+\item {\bfseries{b}} (Yellow-\/\+Blue opponent)\+: Ranges approximately \mbox{[}-\/0.\+4, 0.\+4\mbox{]}
+\begin{DoxyItemize}
+\item Negative = bluish
+\item Positive = yellowish
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+\begin{DoxyNote}{Note}
+All Color\+Journey math operates in OKLab space internally. 
+
+For analysis, convert to \doxylink{struct_c_j___l_ch}{CJ\+\_\+\+LCh} for hue and chroma. 
+\end{DoxyNote}
+\begin{DoxySeeAlso}{See also}
+cj\+\_\+rgb\+\_\+to\+\_\+oklab to convert from RGB 
+
+cj\+\_\+oklab\+\_\+to\+\_\+rgb to convert back to RGB 
+
+cj\+\_\+delta\+\_\+e to compute perceptual distance
+\end{DoxySeeAlso}
+{\bfseries{Reference}}\+: Ottosson, B. (2020). \href{https://bottosson.github.io/posts/oklab/}{\texttt{https\+://bottosson.\+github.\+io/posts/oklab/}} 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Color\+Journey.\+h\end{DoxyCompactItemize}

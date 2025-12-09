@@ -1,0 +1,50 @@
+\doxysection{CJ\+\_\+\+LCh Struct Reference}
+\hypertarget{struct_c_j___l_ch}{}\label{struct_c_j___l_ch}\index{CJ\_LCh@{CJ\_LCh}}
+
+
+Represents a color in OKLab cylindrical (LCh) form.  
+
+
+
+
+{\ttfamily \#include $<$Color\+Journey.\+h$>$}
+
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{struct_c_j___l_ch_ab1b93d281c05fdc18421120d6f935fcc}\label{struct_c_j___l_ch_ab1b93d281c05fdc18421120d6f935fcc} 
+float {\bfseries L}
+\begin{DoxyCompactList}\small\item\em Lightness \mbox{[}0, 1\mbox{]}. Same as OKLab L (perceived brightness). \end{DoxyCompactList}\item 
+\Hypertarget{struct_c_j___l_ch_a3d864ae4fdb3a9cf9d7a7a3f374eb7e7}\label{struct_c_j___l_ch_a3d864ae4fdb3a9cf9d7a7a3f374eb7e7} 
+float {\bfseries C}
+\begin{DoxyCompactList}\small\item\em Chroma \mbox{[}0, \texorpdfstring{$\sim$}{\string~}0.4\mbox{]}. Saturation/colorfulness magnitude. \end{DoxyCompactList}\item 
+\Hypertarget{struct_c_j___l_ch_a653559700995b5d0529255e641ea232a}\label{struct_c_j___l_ch_a653559700995b5d0529255e641ea232a} 
+float {\bfseries h}
+\begin{DoxyCompactList}\small\item\em Hue \mbox{[}0, 2π). Angular position\+: 0=red, π/2=yellow, π=cyan, 3π/2=blue. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Represents a color in OKLab cylindrical (LCh) form. 
+
+This is an alternative representation of OKLab that uses cylindrical coordinates\+: Lightness, Chroma (saturation), and Hue angle. Useful for thinking about color journeys in terms of hue rotation, saturation levels, and brightness.
+
+Conversion\+:
+\begin{DoxyItemize}
+\item L (Lightness)\+: Same as OKLab L \mbox{[}0, 1\mbox{]}
+\item C (Chroma)\+: Saturation magnitude = √(a² + b²), range \mbox{[}0, \texorpdfstring{$\sim$}{\string~}0.4\mbox{]}
+\item h (Hue)\+: Angular position = atan2(b, a), range \mbox{[}0, 2π)
+\end{DoxyItemize}
+
+\begin{DoxyNote}{Note}
+LCh is more intuitive for journey design but OKLab is more efficient for math. 
+\end{DoxyNote}
+\begin{DoxySeeAlso}{See also}
+cj\+\_\+oklab\+\_\+to\+\_\+lch to convert from OKLab 
+
+cj\+\_\+lch\+\_\+to\+\_\+oklab to convert back to OKLab 
+\end{DoxySeeAlso}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Color\+Journey.\+h\end{DoxyCompactItemize}

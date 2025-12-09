@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>ColorJourney Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+        }
+
+        body {
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                color: #eee;
+                background: #1a1a1a;
+            }
+        }
+
+        h1 {
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .subtitle {
+                color: #aaa;
+            }
+        }
+
+        .section {
+            margin: 2.5rem 0;
+        }
+
+        .section h2 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .card {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .card {
+                background: #2a2a2a;
+            }
+        }
+
+        .card h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .card p {
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .card a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .card a {
+                color: #66b3ff;
+            }
+        }
+
+        .card a:hover {
+            text-decoration: underline;
+        }
+
+        .meta {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .meta {
+                color: #999;
+            }
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-ready {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .status-ready {
+                background: #1e5631;
+                color: #95d5b2;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>📚 ColorJourney Documentation</h1>
+    <p class="subtitle">Complete documentation for the ColorJourney color generation library</p>
+
+    <div class="section">
+        <h2>🔧 Auto-Generated API References</h2>
+        <div class="card">
+            <h3><a href="generated/swift-docc/documentation/colorjourney">Swift API (DocC)</a></h3>
+            <p>Interactive Swift package documentation with cross-references and code examples.</p>
+            <p><strong>For:</strong> Swift developers using ColorJourney in iOS, macOS, or other Apple platforms</p>
+            <div class="meta">✅ 100% coverage | 489 lines of documentation | Multi-platform</div>
+        </div>
+        <div class="card">
+            <h3><a href="generated/doxygen/html/">C API (Doxygen)</a></h3>
+            <p>C core library documentation with function signatures, call graphs, and algorithm explanations.</p>
+            <p><strong>For:</strong> C developers, FFI users, and embedded systems integration</p>
+            <div class="meta">✅ 100% coverage | 56+ Doxygen tags | Cross-platform portable</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🎨 API Usage Guides (Start Here!)</h2>
+        <div class="card">
+            <h3><a href="api/usage.html">📖 API Usage Guide</a></h3>
+            <p>Complete guide to using ColorJourney: quick starts, core concepts, real-world examples, and troubleshooting.</p>
+            <p><strong>Best for:</strong> Everyone starting with ColorJourney</p>
+            <div class="meta">✅ Swift quick start | ✅ C quick start | ✅ Core concepts | ✅ 4 real-world examples</div>
+        </div>
+        <div class="card">
+            <h3><a href="api/quickref.html">⚡ Quick Reference</a></h3>
+            <p>Copy-paste snippets, cheat sheets, and parameter tables for quick lookup.</p>
+            <p><strong>Best for:</strong> Finding exact syntax while coding</p>
+            <div class="meta">✅ Code snippets | ✅ Parameter reference | ✅ Decision matrix | ✅ Bookmark-friendly</div>
+        </div>
+        <div class="card">
+            <h3><a href="api/configuration.html">⚙️ Configuration Reference</a></h3>
+            <p>Complete parameter documentation with bounds, practical combinations, and preset styles.</p>
+            <p><strong>Best for:</strong> Fine-tuning your configuration</p>
+            <div class="meta">✅ 6 preset styles | ✅ Parameter tables | ✅ Bounds & ranges | ✅ Code examples</div>
+        </div>
+        <div class="card">
+            <h3><a href="api/patterns.html">🎯 Common Patterns & Use Cases</a></h3>
+            <p>Real-world scenarios with complete working code: timelines, data viz, gradients, personalization, themes.</p>
+            <p><strong>Best for:</strong> Solving specific design problems</p>
+            <div class="meta">✅ 7 detailed use cases | ✅ Performance tips | ✅ Decision matrix | ✅ Brand systems</div>
+        </div>
+        <div class="card">
+            <h3><a href="api/troubleshooting.html">🔧 Troubleshooting Guide</a></h3>
+            <p>Solutions for common issues: muddy colors, lack of variation, performance, determinism, accessibility.</p>
+            <p><strong>Best for:</strong> Fixing problems and debugging</p>
+            <div class="meta">✅ 7 problem categories | ✅ Root causes | ✅ Step-by-step fixes | ✅ FAQ</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📖 Platform-Specific Guides</h2>
+        <div class="card">
+            <h3><a href="guides/01-GETTING_STARTED.html">🚀 Getting Started</a></h3>
+            <p>Complete introduction with 3-step quick start and common use cases.</p>
+            <div class="meta">Perfect for first-time users</div>
+        </div>
+        <div class="card">
+            <h3><a href="guides/02-API_QUICK_REFERENCE.html">⚡ API Quick Reference</a></h3>
+            <p>Fast lookup for all configuration options and API methods.</p>
+            <div class="meta">Bookmark this for quick syntax lookup</div>
+        </div>
+        <div class="card">
+            <h3><a href="guides/03-SWIFT_INTEGRATION.html">🎯 Swift Integration Guide</a></h3>
+            <p>Complete guide to using ColorJourney in Swift and SwiftUI projects.</p>
+            <div class="meta">For iOS, macOS, and other Apple platforms</div>
+        </div>
+        <div class="card">
+            <h3><a href="guides/04-C_INTEGRATION.html">🔧 C Integration Guide</a></h3>
+            <p>Complete guide to using the C core library with examples.</p>
+            <div class="meta">For embedded systems, game engines, and FFI bindings</div>
+        </div>
+        <div class="card">
+            <h3><a href="guides/05-TROUBLESHOOTING.html">🔍 Troubleshooting</a></h3>
+            <p>Solutions for common problems, error messages, and issues.</p>
+            <div class="meta">Start here if something isn't working</div>
+        </div>
+        <div class="card">
+            <h3><a href="guides/06-FAQ.html">❓ Frequently Asked Questions</a></h3>
+            <p>Answers to common questions about usage, platform support, and features.</p>
+            <div class="meta">Covers licensing, performance, and design questions</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📚 Additional Resources</h2>
+        <div class="card">
+            <h3><a href="SWIFT_DOCC_404_SOLUTION.md">Serving Documentation Locally</a> ⭐</h3>
+            <p>Solutions for viewing documentation and fixing any 404 errors.</p>
+            <div class="meta">Use this if docs aren't loading properly</div>
+        </div>
+        <div class="card">
+            <h3><a href="../Examples/">Code Examples</a></h3>
+            <p>Working examples in C and Swift showing complete, runnable patterns.</p>
+            <div class="meta">Annotated, tested, production-ready</div>
+        </div>
+        <div class="card">
+            <h3><a href="../DevDocs/guides/DOCS_QUICKREF.md">Quick Reference (1-page)</a></h3>
+            <p>One-page cheat sheet with copy-paste code snippets.</p>
+            <div class="meta">Print-friendly reference guide</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🛠️ Developer Resources</h2>
+        <div class="card">
+            <h3><a href="../DevDocs/">Developer Documentation</a></h3>
+            <p>Complete developer guide including standards, architecture, and build system.</p>
+            <div class="meta">For contributors and maintainers</div>
+        </div>
+        <div class="card">
+            <h3><a href="../DevDocs/standards/DOCUMENTATION.md">Documentation Standards</a></h3>
+            <p>Complete standards for writing documentation with terminology glossary and review checklist.</p>
+            <div class="meta">Required reading for contributors</div>
+        </div>
+        <div class="card">
+            <h3><a href="../DevDocs/standards/ARCHITECTURE.md">System Architecture</a></h3>
+            <p>System design, two-layer architecture, data flow, and design decisions.</p>
+            <div class="meta">Understand how ColorJourney works</div>
+        </div>
+        <div class="card">
+            <h3><a href="../DevDocs/guides/UNIFIED_DOCS_BUILD.md">Documentation Build System</a></h3>
+            <p>How the unified documentation build process works (C + Swift + web).</p>
+            <div class="meta">For documentation maintainers</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📊 Statistics</h2>
+        <div class="card">
+            <p><strong>API Coverage:</strong> 100% (Swift + C)</p>
+            <p><strong>Platforms:</strong> iOS, macOS, watchOS, tvOS, visionOS, Linux</p>
+            <p><strong>Documentation:</strong> 2,554 lines (guides + standards)</p>
+            <p><strong>Code Examples:</strong> 30+ runnable samples</p>
+            <p><strong>Build Status:</strong> <span class="status status-ready">✅ Production Ready</span></p>
+        </div>
+    </div>
+
+    <div class="section">
+        <p style="text-align: center; color: #666; font-size: 0.9rem;">
+            <strong>Generated:</strong> 2025-12-08 |
+            <strong>Format:</strong> Swift-DocC + Doxygen |
+            <strong>Status:</strong> ✅ Production Ready
+        </p>
+    </div>
+</body>
+
+</html>
