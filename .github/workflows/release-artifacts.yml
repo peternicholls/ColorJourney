@@ -87,7 +87,7 @@ jobs:
       - name: Create tar.gz archive
         id: tar-artifact
         run: |
-          VERSION="${GITHUB_REF#refs/tags/v}"
+          VERSION="${GITHUB_REF#refs/tags/}"
           ARTIFACT_NAME="ColorJourney-${VERSION}"
 
           # Create archive with Swift wrapper + C core + essentials
@@ -118,7 +118,7 @@ jobs:
       - name: Create zip archive
         id: zip-artifact
         run: |
-          VERSION="${GITHUB_REF#refs/tags/v}"
+          VERSION="${GITHUB_REF#refs/tags/}"
           ARTIFACT_NAME="ColorJourney-${VERSION}"
 
           # Create zip with Swift wrapper + C core + essentials
