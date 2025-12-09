@@ -57,6 +57,17 @@ When cutting a new release, create a new section following this template:
 ### Fixed
 - (upcoming fixes)
 
+## [1.0.1] - 2025-12-09
+
+### Fixed
+- Corrected artifact packaging to properly exclude generated Makefile from Docs directory
+- Ensured release artifacts contain only permitted files per FR-007 and FR-008 specifications
+
+### Notes
+- First stable public release (initially tagged as v1.0.0, re-released as v1.0.1 due to GitHub tag restrictions)
+- Swift version requirement: ≥5.9
+- Platform support: iOS 13+, macOS 10.15+, watchOS 6+, tvOS 13+, visionOS 1+, Linux, Windows
+
 ## [1.0.0] - 2025-12-09
 
 ### Added
@@ -84,5 +95,6 @@ When cutting a new release, create a new section following this template:
 - Swift version requirement: ≥5.9
 - Platform support: iOS 13+, macOS 10.15+, watchOS 6+, tvOS 13+, visionOS 1+, Linux, Windows
 
-[Unreleased]: https://github.com/peternicholls/ColorJourney/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/peternicholls/ColorJourney/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/peternicholls/ColorJourney/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/peternicholls/ColorJourney/releases/tag/v1.0.0
