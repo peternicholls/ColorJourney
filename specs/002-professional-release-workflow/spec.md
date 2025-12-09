@@ -16,6 +16,7 @@
 - Q: What happens to RC branches after promotion or abandonment? → A: Delete RC branches after promotion/abandonment; history is retained via tags and CHANGELOG.
 - Q: What goes into C library `lib/` outputs? → A: Ship static libraries (`.a`) only; no `.so`/`.dylib` prebuilds.
 - Q: Should end-user docs ship with releases? → A: Yes, include `/Docs` (end-user) in release artifacts; exclude `/DevDocs` (developer-only).
+- Q: How are Swift packages distributed? → A: Source-only SPM packages (no prebuilt binaries/xcframework); future binary delivery can be added later.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -261,7 +262,7 @@ feature/* (feature branches)
 ```
 Release v1.0.0
   ├── swift-colorjourney-1.0.0.tar.gz (Swift SPM package)
-  │   ├── Sources/
+  │   ├── Sources/ (source-only; no prebuilt binary/xcframework)
   │   ├── Package.swift
   │   ├── README.md
   │   ├── LICENSE
