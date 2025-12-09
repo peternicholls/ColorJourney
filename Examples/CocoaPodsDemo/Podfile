@@ -1,0 +1,11 @@
+platform :ios, '13.0'
+
+target 'CocoaPodsDemo' do
+  # ColorJourney pod from local path (for development/testing)
+  # For published releases, use:
+  #   pod 'ColorJourney', '~> 1.0'
+  # Or pin to exact version:
+  #   pod 'ColorJourney', '1.0.2'
+  
+  pod 'ColorJourney', :path => '../../'
+end

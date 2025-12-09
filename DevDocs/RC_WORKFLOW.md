@@ -174,6 +174,8 @@ Testing Focus:
 - [ ] CHANGELOG is updated
 - [ ] All features for this version are merged to develop
 - [ ] No pending work on develop
+- [ ] (If publishing to CocoaPods) CocoaPods CLI installed: `gem install cocoapods`
+- [ ] (If publishing to CocoaPods) Trunk token available: `pod trunk me` succeeds
 
 **Create RC branch**:
 

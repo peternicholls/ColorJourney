@@ -111,6 +111,8 @@ C99 core works everywhere (iOS, macOS, Linux, Windows, embedded). Swift wrapper 
 - [Building](#building)
   - [Xcode Project](#xcode-project)
   - [Swift Package Manager](#swift-package-manager)
+  - [CocoaPods](#cocoapods)
+  - [Make (C users)](#make-c-users)
   - [Standalone C Library](#standalone-c-library)
 - [Configuration Reference](#configuration-reference)
 - [Use Cases](#use-cases)
@@ -370,6 +372,50 @@ let package = Package(
     ]
 )
 ```
+
+### CocoaPods
+
+```ruby
+# Add to your Podfile:
+platform :ios, '13.0'
+
+target 'MyApp' do
+  pod 'ColorJourney', '~> 1.0'
+end
+```
+
+Then run:
+```bash
+pod install
+```
+
+**Version pinning options:**
+
+```ruby
+# Latest version within major version 1
+pod 'ColorJourney', '~> 1.0'
+
+# Specific version
+pod 'ColorJourney', '1.0.2'
+
+# Latest version (may have breaking changes)
+pod 'ColorJourney'
+```
+
+**Usage:**
+```swift
+import ColorJourney
+
+let journey = ColorJourney(config: .singleAnchor(baseColor, style: .balanced))
+let palette = journey.discrete(count: 8)
+```
+
+**Platform support:** iOS 13.0+, macOS 10.15+, tvOS 13.0+, watchOS 6.0+, visionOS 1.0+
+
+**Keeping up to date:**
+- Check [CHANGELOG.md](CHANGELOG.md) for breaking changes before updating
+- Use semantic versioning for safe updates: `pod 'ColorJourney', '~> 1.0'`
+- See [Quickstart](specs/003-cocoapods-release/quickstart.md) for detailed installation and troubleshooting
 
 ### Make (C users)
 

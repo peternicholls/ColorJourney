@@ -1,10 +1,10 @@
 name: Release Artifacts
 
-# Triggered when a release tag (vX.Y.Z) is pushed to main
+# Triggered when a release tag (X.Y.Z) is pushed to main
 on:
   push:
     tags:
-      - "v*.*.*"
+      - "[0-9]+.[0-9]+.[0-9]+"
 
 # Restrict permissions for security
 permissions:
@@ -25,8 +25,8 @@ jobs:
 
       - name: Verify tag format and branch alignment
         run: |
-          if [[ ! "${GITHUB_REF}" =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "ERROR: Invalid tag format. Expected vX.Y.Z"
+          if [[ ! "${GITHUB_REF}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "ERROR: Invalid tag format. Expected X.Y.Z (without 'v' prefix)"
             exit 1
           fi
 
@@ -217,9 +217,9 @@ jobs:
 
       - name: Extract release notes from CHANGELOG
         run: |
-          # Extract version from tag (e.g., v1.0.1 -> 1.0.1)
-          VERSION=${GITHUB_REF#refs/tags/v}
-          
+          # Extract version from tag (e.g., 1.0.1)
+          VERSION=${GITHUB_REF#refs/tags/}
+
           # Extract the section for this release from CHANGELOG.md
           # Finds the section starting with ## [VERSION] and stops at the next ## or EOF
           awk -v version="$VERSION" '
@@ -227,14 +227,14 @@ jobs:
             found && /^## \[/ { exit }
             found { print }
           ' CHANGELOG.md > release-notes.md
-          
+
           # Prepend a brief header with link to full CHANGELOG
           {
             echo "See [CHANGELOG.md](https://github.com/peternicholls/ColorJourney/blob/main/CHANGELOG.md) for full release history."
             echo ""
             cat release-notes.md
           } > release-notes-final.md
-          
+
           echo "Generated release notes:"
           cat release-notes-final.md
 

@@ -22,7 +22,7 @@ if [ -z "${1:-}" ]; then
 fi
 
 VERSION="$1"
-TAG="v${VERSION}"
+TAG="${VERSION}"
 RC_BRANCH_OVERRIDE="${2:-}"
 
 # Validate SemVer format (X.Y.Z)

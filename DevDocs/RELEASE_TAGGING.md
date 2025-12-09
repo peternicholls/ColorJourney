@@ -343,25 +343,25 @@ dependencies: [
 ### Implications
 
 ```
-Release v1.0.0:
-├─ from: "1.0.0" matches v1.0.0, v1.0.1, v1.1.0, v2.0.0
+Release 1.0.0:
+├─ from: "1.0.0" matches 1.0.0, 1.0.1, 1.1.0, 2.0.0
 │  (SemVer compatible up to next major version)
-└─ "1.0.0"..<"1.1.0" matches v1.0.0, v1.0.1
+└─ "1.0.0"..<"1.1.0" matches 1.0.0, 1.0.1
    (exact minor range)
 
-Release v1.0.1 (patch):
-├─ Backward compatible - all v1.0.0 users can upgrade safely
+Release 1.0.1 (patch):
+├─ Backward compatible - all 1.0.0 users can upgrade safely
 ├─ New features? NO (no MINOR bump)
 └─ Automatically picked up by from: "1.0.0"
 
-Release v1.1.0 (minor):
-├─ Backward compatible - all v1.0.0 users can upgrade safely
+Release 1.1.0 (minor):
+├─ Backward compatible - all 1.0.0 users can upgrade safely
 ├─ New features? YES (new MINOR version)
-├─ API breaking? NO (still v1.x.x)
+├─ API breaking? NO (still 1.x.x)
 └─ Automatically picked up by from: "1.0.0"
 
-Release v2.0.0 (major):
-├─ Breaking changes - v1.x.x users must update Package.swift
+Release 2.0.0 (major):
+├─ Breaking changes - 1.x.x users must update Package.swift
 ├─ API breaking? YES (new MAJOR version)
 └─ NOT picked up by from: "1.0.0" (stops at < 2.0.0)
 ```

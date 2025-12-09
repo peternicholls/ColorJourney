@@ -72,7 +72,7 @@ Before starting any release process, ensure:
 4. **Commit and push** to `develop`:
    ```bash
    git add CHANGELOG.md DevDocs/VERSION_MAPPING.md README.md
-   git commit -m "docs: prepare for release v1.0.0"
+   git commit -m "docs: prepare for release 1.0.0"
    git push origin develop
    ```
 
@@ -173,12 +173,12 @@ Before starting any release process, ensure:
 **What it does**:
 - Switches to `main` branch
 - Merges RC branch (creates merge commit)
-- Creates annotated Git tag: `v1.0.0`
+- Creates annotated Git tag: `1.0.0`
 - Pushes tag to remote (triggers release-artifacts.yml)
 
 **Verify**:
-- [ ] Tag created locally: `git tag | grep v1.0.0`
-- [ ] Tag pushed: `git ls-remote origin | grep v1.0.0`
+- [ ] Tag created locally: `git tag | grep 1.0.0`
+- [ ] Tag pushed: `git ls-remote origin | grep 1.0.0`
 - [ ] release-artifacts.yml workflow triggered: Check GitHub Actions
 
 ### 3.3 Cleanup RC Branch
@@ -227,7 +227,7 @@ Before starting any release process, ensure:
 **Steps**:
 
 1. Navigate to: `https://github.com/peternicholls/ColorJourney/releases`
-2. Find the release for `v1.0.0`
+2. Find the release for `1.0.0`
 3. Verify assets attached:
    - [ ] `ColorJourney-1.0.0.tar.gz` (Swift source package)
    - [ ] `ColorJourney-1.0.0.tar.gz.sha256` (checksum)
@@ -307,7 +307,7 @@ Before starting any release process, ensure:
 
 ### Hotfix for Released Version
 
-**Scenario**: Critical bug discovered in `v1.0.0` after release
+**Scenario**: Critical bug discovered in `1.0.0` after release
 
 **Steps**:
 
@@ -400,6 +400,162 @@ Before starting any release process, ensure:
 
 ---
 
+## Phase 6: CocoaPods Publication (Optional - Feature 003)
+
+**Purpose**: Publish ColorJourney to CocoaPods Trunk for iOS/macOS developers  
+**Roles**: Release manager + maintainers with CocoaPods Trunk access  
+**Prerequisites**: Feature 003 (CocoaPods Release) must be implemented
+
+### 6.1 Prerequisites & Credentials
+
+Before publishing to CocoaPods:
+
+1. **Local CocoaPods Setup**:
+   ```bash
+   # Install CocoaPods (if not already installed)
+   gem install cocoapods
+   
+   # Verify installation
+   pod repo update
+   ```
+
+2. **Trunk Token**:
+   - Register or log in to CocoaPods: https://trunk.cocoapods.org
+   - Generate/retrieve your trunk token from account settings
+   - Store locally (DO NOT commit):
+     ```bash
+     export COCOAPODS_TRUNK_TOKEN="your-token-here"
+     ```
+   - In CI: Add token as GitHub secret `COCOAPODS_TRUNK_TOKEN`
+
+3. **Verify Token Validity**:
+   ```bash
+   pod trunk me
+   ```
+   Should show your email and registered devices.
+
+### 6.2 Local Validation
+
+**When**: Before pushing to trunk (recommended as part of release sign-off)
+
+**Steps**:
+
+1. Run the publish helper script in dry-run mode:
+   ```bash
+   ./scripts/publish-cocoapods.sh dry-run
+   ```
+   This will:
+   - Run `pod spec lint` with verbose output
+   - Verify version parity with Package.swift
+   - Check for platform incompatibilities
+   - **NOT push to trunk**
+
+2. Fix any lint errors (typically missing headers or platform target issues)
+
+3. Verify locally with a test Podfile (optional):
+   ```bash
+   cd Examples/CocoaPodsDemo
+   pod install --repo-update
+   # Try building the demo app in Xcode
+   ```
+
+### 6.3 Push to CocoaPods Trunk
+
+**When**: After RC validation and verification of all artifacts
+
+**Steps**:
+
+1. Ensure your CocoaPods Trunk token is exported:
+   ```bash
+   export COCOAPODS_TRUNK_TOKEN="your-token"
+   ```
+
+2. Run the publish helper (with token):
+   ```bash
+   ./scripts/publish-cocoapods.sh push
+   ```
+   This will:
+   - Lint the podspec
+   - Verify version parity
+   - Push to trunk using the token
+   - Display success/failure status
+
+3. Verify publication:
+   ```bash
+   # Wait ~10 minutes for index update, then:
+   pod search ColorJourney
+   
+   # Or check directly:
+   # https://cocoapods.org/pods/ColorJourney
+   ```
+
+### 6.4 CI/CD Integration (Automated)
+
+If Feature 003 workflow updates are implemented, publication may be automated:
+
+1. **Lint Step** (in release workflow):
+   ```bash
+   pod spec lint ColorJourney.podspec --verbose
+   ```
+   - Runs before trunk push
+   - Fails release if lint fails
+   - Must pass for pod to be published
+
+2. **Push Step** (in release workflow):
+   ```bash
+   pod trunk push ColorJourney.podspec --verbose
+   ```
+   - Uses `COCOAPODS_TRUNK_TOKEN` secret
+   - Fails release if push fails
+   - Coordinated with GitHub release artifacts
+
+### 6.5 Manual Fallback (if Automation Fails)
+
+If CI/CD publication fails:
+
+1. **Check Error Logs**:
+   - Review GitHub Actions workflow logs
+   - Look for lint errors or trunk token issues
+
+2. **Lint Locally**:
+   ```bash
+   pod spec lint ColorJourney.podspec --verbose --allow-warnings=false
+   ```
+
+3. **Push Manually**:
+   ```bash
+   export COCOAPODS_TRUNK_TOKEN="your-token"
+   pod trunk push ColorJourney.podspec --verbose
+   
+   # Or with dry-run to test:
+   pod trunk push ColorJourney.podspec --dry-run --verbose
+   ```
+
+4. **Troubleshooting**:
+   - Token expired? Regenerate from https://trunk.cocoapods.org
+   - Header path issues? Verify `public_header_files` in ColorJourney.podspec
+   - Platform targets? Ensure iOS 13.0+ and macOS 10.15+ match podspec
+
+### 6.6 Verification
+
+After successful push, verify the pod is available:
+
+```bash
+# Search in CocoaPods database
+pod search ColorJourney
+
+# Install in test Podfile
+echo "pod 'ColorJourney', '~> 1.0'" > Podfile
+pod install --repo-update
+```
+
+Expected result:
+- Pod appears on CocoaPods.org within 10 minutes
+- `pod search` finds the latest version
+- `pod install` successfully downloads and integrates the pod
+
+---
+
 ## Checklists
 
 ### Pre-Release Checklist
@@ -422,6 +578,8 @@ Before starting any release process, ensure:
 - [ ] release-artifacts.yml workflow completed
 - [ ] Artifacts verified and checksums validated
 - [ ] Badges updated and accurate
+- [ ] CocoaPods podspec lint passes (if Feature 003 implemented)
+- [ ] CocoaPods pod published to trunk (if Feature 003 implemented)
 - [ ] Release announced (if applicable)
 
 ### Post-Release Checklist

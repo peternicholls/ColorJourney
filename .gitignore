@@ -29,7 +29,7 @@ Package.resolved
 
 # CocoaPods
 Pods/
-*.podspec
+# *.podspec
 
 # Carthage
 Carthage/Build/

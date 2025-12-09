@@ -1,0 +1,105 @@
+openapi: 3.1.0
+info:
+  title: ColorJourney Release Automation API
+  version: 1.0.0
+  description: Internal endpoints to validate and publish CocoaPods releases in CI.
+servers:
+  - url: https://ci.internal/colorjourney
+paths:
+  /podspec/lint:
+    post:
+      summary: Lint the ColorJourney podspec
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                podspecPath:
+                  type: string
+                  example: ColorJourney.podspec
+                platforms:
+                  type: array
+                  items:
+                    type: string
+                  example: ["ios", "osx"]
+      responses:
+        "200":
+          description: Lint succeeded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  warnings:
+                    type: array
+                    items:
+                      type: string
+        "400":
+          description: Lint failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [failure]
+                  errors:
+                    type: array
+                    items:
+                      type: string
+  /podspec/publish:
+    post:
+      summary: Publish the ColorJourney podspec to CocoaPods Trunk
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                podspecPath:
+                  type: string
+                  example: ColorJourney.podspec
+                version:
+                  type: string
+                  example: "1.2.0"
+                trunkToken:
+                  type: string
+                  description: Encrypted or injected via CI secret
+      responses:
+        "200":
+          description: Publication succeeded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  publishedVersion:
+                    type: string
+                  url:
+                    type: string
+                    example: https://cocoapods.org/pods/ColorJourney
+        "400":
+          description: Publication failed (lint must pass first)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [failure]
+                  errors:
+                    type: array
+                    items:
+                      type: string
+components: {}

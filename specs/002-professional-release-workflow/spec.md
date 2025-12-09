@@ -185,7 +185,7 @@ As a potential user, I need clear, minimal badges on the README that show releas
 ### Key Entities
 
 - **Release Candidate (RC)**: A branch (`release-candidate/X.Y.Z-rc.N`) created from `develop` that undergoes comprehensive testing before promotion to release
-- **Release Tag**: A Git tag (`vX.Y.Z`) marking a stable, versioned release on the `main` branch
+- **Release Tag**: A Git tag (`X.Y.Z`) marking a stable, versioned release on the `main` branch
 - **Semantic Version**: Version number format `MAJOR.MINOR.PATCH` (e.g., `1.0.0`) following SemVer 2.0.0 spec
 - **Build Artifact**: Language-specific package distribution (Swift SPM or C library) generated from a release
 - **Release Branch**: The `main` branch serving as the stable, released codebase
