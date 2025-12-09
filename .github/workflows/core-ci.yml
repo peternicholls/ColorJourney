@@ -59,6 +59,31 @@ jobs:
                      -skipPackagePluginValidation \
                      build
 
+  test-ios:
+    name: Build and Test for iOS
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4.1.7
+
+      - name: Cache SwiftPM
+        uses: actions/cache@v4
+        with:
+          path: .build
+          key: ${{ runner.os }}-spm-ios-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-ios-
+
+      - name: Build for iOS Simulator
+        run: |
+          xcodebuild -scheme ColorJourney \
+                     -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.1' \
+                     -sdk iphonesimulator \
+                     build
+
+      - name: Run Swift Package Tests
+        run: swift test --parallel
+
   lint:
     name: SwiftLint
     runs-on: macos-latest
