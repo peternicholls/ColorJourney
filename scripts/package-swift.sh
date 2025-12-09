@@ -48,7 +48,8 @@ mkdir -p "$TEMP_DIR/$ARTIFACT_NAME"
 
 # Copy allowed files
 echo "  • Swift sources (Sources/ColorJourney/)"
-cp -r "Sources/ColorJourney/" "$TEMP_DIR/$ARTIFACT_NAME/Sources/ColorJourney/"
+mkdir -p "$TEMP_DIR/$ARTIFACT_NAME/Sources"
+cp -r "Sources/ColorJourney" "$TEMP_DIR/$ARTIFACT_NAME/Sources/"
 
 echo "  • Package files"
 cp "Package.swift" "$TEMP_DIR/$ARTIFACT_NAME/"

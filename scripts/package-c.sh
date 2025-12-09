@@ -73,9 +73,9 @@ fi
 # Build C library (if not already built)
 echo "  • Building C library for $PLATFORM..."
 if [ ! -d "build" ]; then
-    cmake -B build -DCMAKE_BUILD_TYPE=Release
+    cmake -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=OFF
 fi
-cmake --build build --config Release
+cmake --build build --config Release --target colorjourney
 
 # Copy static library
 echo "  • Static library"
