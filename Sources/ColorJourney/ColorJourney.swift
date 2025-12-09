@@ -332,13 +332,16 @@ public struct VariationDimensions: OptionSet {
 /// - `.subtle`: Small variation (~1-2% per dimension), barely noticeable
 /// - `.noticeable`: Medium variation (~3-5% per dimension), visible but harmonious
 /// - `.custom(magnitude:)`: Custom variation strength [0.0, 1.0]
+///   Note: Magnitude feeds directly into the underlying C engine—larger values
+///   produce proportionally larger hue/lightness/chroma swings (e.g., 1.0 is
+///   intentionally very strong). Use small values (≤0.2) for subtlety.
 public enum VariationStrength {
     case subtle
     case noticeable
     /// Custom variation magnitude. Range: [0.0, 1.0]
     /// - 0.0 = no variation
-    /// - 0.5 = moderate variation (~5% per dimension)
-    /// - 1.0 = maximum variation (~10% per dimension)
+    /// - 0.1–0.2 = subtle variation (~1–5% per dimension)
+    /// - 0.5+ = pronounced variation (larger perceptual swings)
     case custom(magnitude: Float)
 }
 

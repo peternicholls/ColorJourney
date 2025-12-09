@@ -515,8 +515,8 @@ CJ_RGB cj_journey_sample(CJ_Journey journey, float t);
  * preserving the overall palette character.
  *
  * **Memory:**
- * Allocates out_colors array. Caller is responsible for freeing.
- * Example: @c free(colors) after use.
+ * Caller allocates @c out_colors and retains ownership; this function only writes
+ * into the provided buffer and never allocates or frees it.
  *
  * **Output Format:**
  * Colors are in linear sRGB [0, 1] but may be out-of-gamut. Use

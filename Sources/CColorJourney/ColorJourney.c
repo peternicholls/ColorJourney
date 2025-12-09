@@ -15,9 +15,9 @@
  *   visually distinct and perceptually balanced.
  *
  * Principle IV - Determinism:
- *   Fully deterministic: identical inputs → identical outputs across
- *   platforms. Seeded variation (xoshiro128+) enables reproducible
- *   pseudo-randomness. No floating-point nondeterminism.
+ *   Deterministic within a given build/toolchain: identical inputs →
+ *   identical outputs. Seeded variation (xoshiro-style) enables reproducible
+ *   pseudo-randomness.
  *
  * Principle V - Performance:
  *   Optimized for real-time color generation:
@@ -282,22 +282,21 @@ typedef struct CJ_Journey_Impl {
 } CJ_Journey_Impl;
 
 /* ========================================================================
- * Pseudo-random number generation (xoshiro128+)
+ * Pseudo-random number generation (xoshiro-style)
  * For deterministic variation with seed
  *
  * DETERMINISM GUARANTEE (Constitution Principle IV):
- * All seeded variation is fully deterministic. Given the same seed,
- * the same sequence of random numbers is generated every time, on every
- * platform. This enables:
- * - Reproducible palettes across build/platform changes
+ * All seeded variation is deterministic. Given the same seed, the same
+ * sequence of random numbers is generated for this build. This enables:
+ * - Reproducible palettes across runs and builds with the same toolchain
  * - Sharing seed values for consistent results in teams
  * - Testing and verification of variation behavior
  * - Predictable caching and reuse of palettes
  *
- * Implementation: xoshiro128+ PRNG
- * - 64-bit state, 128-bit period
- * - Fast, simple, good statistical properties
- * - Reference: https://prng.di.unimi.it/xoshiro128plus.c
+ * Implementation: lightweight xoshiro-inspired mixer
+ * - 64-bit state composed of two 32-bit halves
+ * - Fast and simple; not a full xoshiro128+ reference impl
+ * - Reference inspiration: https://prng.di.unimi.it/
  *
  * Usage: Callers don't call these directly; they're used internally
  * during palette generation when variation is enabled.
