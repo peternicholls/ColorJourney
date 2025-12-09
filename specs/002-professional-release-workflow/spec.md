@@ -7,6 +7,16 @@
 
 ---
 
+## Clarifications
+
+### Session 2025-12-09
+
+- Q: How should Swift vs C versions be coordinated when both change? → A: Version independently and document required C core version for each Swift release (explicit dependency mapping).
+- Q: What is "minimal documentation" in release artifacts? → A: Include README.md, LICENSE, and CHANGELOG.md only; exclude repository/developer docs.
+- Q: What happens to RC branches after promotion or abandonment? → A: Delete RC branches after promotion/abandonment; history is retained via tags and CHANGELOG.
+- Q: What goes into C library `lib/` outputs? → A: Ship static libraries (`.a`) only; no `.so`/`.dylib` prebuilds.
+- Q: Should end-user docs ship with releases? → A: Yes, include `/Docs` (end-user) in release artifacts; exclude `/DevDocs` (developer-only).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Establish Git Branching Strategy (Priority: P1)
@@ -152,9 +162,9 @@ As a potential user, I need clear, minimal badges on the README that show releas
 - **FR-004**: System MUST automatically trigger CI/CD pipelines on RC branch creation to run all unit tests, integration tests, and build verification
 - **FR-005**: System MUST support promotion of RC branches to final release versions (creating Git tags like `vX.Y.Z`)
 - **FR-006**: System MUST prevent merging back to `develop` from `main` to maintain branching separation (RC → main only, never main → develop)
-- **FR-007**: Swift package release MUST generate artifacts containing only Swift source code, Package.swift, minimal README, LICENSE, and CHANGELOG—excluding DevDocs, Dockerfile, Makefile, C sources, and examples
-- **FR-008**: C library release MUST generate artifacts with headers (`.h`), built static libraries (`.a`), C compilation examples, minimal README, LICENSE, and CHANGELOG—excluding Swift code, Package.swift, and DevDocs
-- **FR-009**: System MUST support independent versioning of Swift and C packages while maintaining a coordinated C core version reference
+- **FR-007**: Swift package release MUST generate artifacts containing Swift source code, Package.swift, README.md, LICENSE, CHANGELOG.md, and end-user `/Docs` content—excluding DevDocs, Dockerfile, Makefile, C sources, examples, and any other repository/developer docs
+- **FR-008**: C library release MUST generate artifacts with headers (`.h`), built static libraries (`.a` only), optional C examples, README.md, LICENSE, CHANGELOG.md, and end-user `/Docs` content—excluding Swift code, Package.swift, DevDocs, and other repository/developer docs
+- **FR-009**: System MUST support independent versioning of Swift and C packages while documenting the required C core version for each Swift release (explicit dependency mapping)
 - **FR-010**: System MUST implement modern CMake build system for C library compilation, supporting cross-platform builds (macOS, Linux, Windows)
 - **FR-011**: System MUST configure README to display only essential badges: version badge, build status badge, platform support, without clutter from non-critical information
 - **FR-012**: System MUST update badge information automatically when releases are published (version badge reflects latest tag)
@@ -163,6 +173,7 @@ As a potential user, I need clear, minimal badges on the README that show releas
 - **FR-015**: System MUST support re-releasing RC versions if fixes are required (e.g., rc.1 → rc.2) without manual intervention
 - **FR-016**: System MUST prevent accidental releases from non-release branches through branch protection rules and CI/CD gates
 - **FR-017**: System MUST provide a documented release playbook for maintainers detailing step-by-step processes for creating RC, approving release, and handling failures
+- **FR-018**: RC branches MUST be deleted after promotion or abandonment; release history is preserved via tags and CHANGELOG entries
 
 ### Key Entities
 
@@ -226,7 +237,7 @@ main (stable releases only)
   ↑ (merge RC when approved)
   |
 release-candidate/X.Y.Z-rc.N (testing gates)
-  ↑ (create from develop)
+  ↑ (create from develop; delete after promotion or abandonment)
   |
 develop (primary development line, renamed from main)
   ↑ (merge feature branches here)
@@ -239,7 +250,7 @@ feature/* (feature branches)
 - **C Library**: CMake 3.16+ for cross-platform builds
   - Supports macOS, Linux, Windows out of the box
   - Easy to extend for embedded/custom platforms
-  - Can output static/dynamic libraries and prebuilt binaries
+  - Outputs static libraries (`.a`) by default for releases; dynamic builds remain user-built via CMake if needed
 
 - **Swift Package**: Existing SPM system (no changes required)
 
@@ -254,15 +265,17 @@ Release v1.0.0
   │   ├── Package.swift
   │   ├── README.md
   │   ├── LICENSE
-  │   └── CHANGELOG.md
+  │   ├── CHANGELOG.md
+  │   └── Docs/ (end-user documentation)
   │
   └── libcolorjourney-1.0.0.tar.gz (C library)
       ├── include/ (headers)
-      ├── lib/ (built libraries: .a, maybe .so)
+      ├── lib/ (built static libraries: .a only)
       ├── examples/ (C usage examples)
       ├── README.md
       ├── LICENSE
-      └── CHANGELOG.md
+      ├── CHANGELOG.md
+      └── Docs/ (end-user documentation)
 ```
 
 ---
