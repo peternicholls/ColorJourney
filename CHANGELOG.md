@@ -52,6 +52,14 @@ When cutting a new release, create a new section following this template:
 ## [Unreleased]
 
 ### Added
+- (upcoming features)
+
+### Fixed
+- (upcoming fixes)
+
+## [1.0.0] - 2025-12-09
+
+### Added
 - Initial release of Color Journey System
 - OKLab-based perceptually uniform color space operations
 - Fast cube root optimization (~3-5x speedup)
@@ -68,16 +76,13 @@ When cutting a new release, create a new section following this template:
 - Comprehensive documentation and examples
 - Pure C core for maximum portability
 - Idiomatic Swift wrapper API
-
-## [1.0.0] - 2025-12-06
-
-### Added
-- Initial public release
-- Core C library with OKLab color space operations
-- Swift wrapper with type-safe configuration
 - Complete API documentation
 - Example code and usage patterns
 - Performance optimizations for real-time color generation
 
-[Unreleased]: https://github.com/yourusername/ColorJourney/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/yourusername/ColorJourney/releases/tag/v1.0.0
+### Notes
+- Swift version requirement: ≥5.9
+- Platform support: iOS 13+, macOS 10.15+, watchOS 6+, tvOS 13+, visionOS 1+, Linux, Windows
+
+[Unreleased]: https://github.com/peternicholls/ColorJourney/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/peternicholls/ColorJourney/releases/tag/v1.0.0
