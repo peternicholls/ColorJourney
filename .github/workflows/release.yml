@@ -96,9 +96,22 @@ jobs:
           echo "Publishing version: ${VERSION}"
 
           # Push with allow-warnings and verbose output for debugging
-          pod trunk push ColorJourney.podspec --allow-warnings --verbose
-
-          echo "✓ Successfully pushed to CocoaPods Trunk"
+          # Capture output to detect if version already exists
+          if output=$(pod trunk push ColorJourney.podspec --allow-warnings --verbose 2>&1); then
+            echo "$output"
+            echo "✓ Successfully pushed to CocoaPods Trunk"
+          else
+            echo "$output"
+            # Check if failure is due to duplicate entry (already published)
+            if echo "$output" | grep -q "Unable to accept duplicate entry"; then
+              echo "ℹ️  Version ${VERSION} is already published to CocoaPods"
+              echo "✓ Treating as success - no action needed"
+              exit 0
+            else
+              echo "❌ Push to CocoaPods failed"
+              exit 1
+            fi
+          fi
 
       - name: Verify publication
         run: |
