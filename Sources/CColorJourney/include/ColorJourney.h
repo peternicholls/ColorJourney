@@ -438,7 +438,7 @@ CJ_Journey cj_journey_create(const CJ_Config* config);
 /**
  * @brief Destroy a journey and free its resources.
  *
- * Deallocates the journey handle and any cached data (discrete palettes).
+ * Deallocates the journey handle and any internal resources.
  * After calling, the handle is invalid and must not be used.
  *
  * **Safety:** It is safe to pass NULL (no-op).
@@ -457,6 +457,15 @@ CJ_Journey cj_journey_create(const CJ_Config* config);
  * @see cj_journey_create
  */
 void cj_journey_destroy(CJ_Journey journey);
+
+/**
+ * @brief Default step between discrete samples when generating by index.
+ *
+ * The value maps each discrete index i → t using `t = fmod(i * spacing, 1)`. A
+ * spacing of 0.05 yields roughly 20 evenly distributed stops around the
+ * journey before wrapping.
+ */
+#define CJ_DISCRETE_DEFAULT_SPACING 0.05f
 
 /**
  * @brief Sample a continuous color from the journey at parameter t.
@@ -560,6 +569,53 @@ CJ_RGB cj_journey_sample(CJ_Journey journey, float t);
  * @see cj_enforce_contrast for the adjustment algorithm
  */
 void cj_journey_discrete(CJ_Journey journey, int count, CJ_RGB* out_colors);
+
+/**
+ * @brief Get a single discrete color at a specific index.
+ *
+ * Deterministically maps @p index to a journey position using
+ * #CJ_DISCRETE_DEFAULT_SPACING and enforces the configured contrast by
+ * computing all preceding indices from 0 up to (but not including) @p index.
+ * This ensures that the color sequence is consistent and contrast is maintained
+ * across the entire sequence.
+ *
+ * **Performance:** O(n) where n is @p index, as all prior colors are recomputed
+ * on each call. For efficient access to multiple colors, use
+ * @ref cj_journey_discrete_range or implement caching in your application if
+ * colors will be accessed repeatedly.
+ *
+ * **Determinism:** All calls with the same journey configuration and index
+ * yield the same color, making this suitable for user-side caching strategies.
+ *
+ * @param journey Journey handle
+ * @param index   Zero-based color index (must be ≥ 0)
+ * @return RGB color at the requested index; returns black if @p journey is
+ *         NULL or @p index < 0
+ */
+CJ_RGB cj_journey_discrete_at(CJ_Journey journey, int index);
+
+/**
+ * @brief Fill a range of discrete colors starting at @p start.
+ *
+ * Generates @p count colors covering indexes [start, start+count) using the
+ * same deterministic mapping as @ref cj_journey_discrete_at. Contrast is
+ * enforced against the previous index (including indexes before @p start when
+ * needed) so the range matches sequential access results.
+ *
+ * **Performance:** O(start + count) as all colors from index 0 to start+count-1
+ * are computed to ensure proper contrast enforcement. For efficient bulk access,
+ * prefer calling this once with the full range rather than multiple calls with
+ * smaller ranges.
+ *
+ * **Determinism:** Results are deterministic and match individual calls to
+ * @ref cj_journey_discrete_at, making this suitable for user-side caching.
+ *
+ * @param journey    Journey handle
+ * @param start      Zero-based start index (must be ≥ 0)
+ * @param count      Number of colors to generate (must be ≥ 1)
+ * @param out_colors Caller-provided buffer with at least @p count entries
+ */
+void cj_journey_discrete_range(CJ_Journey journey, int start, int count, CJ_RGB* out_colors);
 
 /* ========================================================================
  * Color Space Conversions (Fast OKLab)

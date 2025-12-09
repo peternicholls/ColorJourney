@@ -273,10 +273,6 @@ typedef struct CJ_Journey_Impl {
     } waypoints[16];
     int waypoint_count;
     
-    /* Precomputed discrete palette (if requested) */
-    CJ_RGB* discrete_cache;
-    int discrete_count;
-    
     /* Variation state */
     uint64_t rng_state;
 } CJ_Journey_Impl;
@@ -395,8 +391,6 @@ CJ_Journey cj_journey_create(const CJ_Config* config) {
     
     memcpy(&j->config, config, sizeof(CJ_Config));
     j->anchor_count = config->anchor_count;
-    j->discrete_cache = NULL;
-    j->discrete_count = 0;
     j->rng_state = config->variation_seed;
     
     /* Convert anchors to OKLab LCh */
@@ -414,7 +408,6 @@ CJ_Journey cj_journey_create(const CJ_Config* config) {
 void cj_journey_destroy(CJ_Journey journey) {
     if (!journey) return;
     CJ_Journey_Impl* j = (CJ_Journey_Impl*)journey;
-    free(j->discrete_cache);
     free(j);
 }
 
@@ -612,45 +605,140 @@ CJ_RGB cj_journey_sample(CJ_Journey journey, float t) {
  * Discrete Palette Generation
  * ======================================================================== */
 
-void cj_journey_discrete(CJ_Journey journey, int count, CJ_RGB* out_colors) {
-    CJ_Journey_Impl* j = (CJ_Journey_Impl*)journey;
-    
-    if (count <= 0) return;
-    
-    /* Determine contrast threshold */
-    float min_delta_e = 0.1f;
+static float discrete_min_delta_e(const CJ_Journey_Impl* j) {
     switch (j->config.contrast_level) {
         case CJ_CONTRAST_LOW:
-            min_delta_e = 0.05f;
-            break;
+            return 0.05f;
         case CJ_CONTRAST_HIGH:
-            min_delta_e = 0.15f;
-            break;
+            return 0.15f;
         case CJ_CONTRAST_CUSTOM:
-            min_delta_e = j->config.contrast_custom_threshold;
-            break;
+            return j->config.contrast_custom_threshold;
         default:
-            min_delta_e = 0.1f;
-            break;
+            return 0.1f;
     }
+}
+
+static float discrete_position_from_index(int index) {
+    if (index < 0) return 0.0f;
+
+    float t = fmodf((float)index * CJ_DISCRETE_DEFAULT_SPACING, 1.0f);
+    return t;
+}
+
+static CJ_RGB apply_minimum_contrast(CJ_RGB color,
+                                     const CJ_RGB* previous,
+                                     float min_delta_e) {
+    if (!previous) return color;
+
+    CJ_Lab prev_lab = cj_rgb_to_oklab(*previous);
+    CJ_Lab curr_lab = cj_rgb_to_oklab(color);
+
+    curr_lab = cj_enforce_contrast(curr_lab, prev_lab, min_delta_e);
+
+    float dL = curr_lab.L - prev_lab.L;
+    float da = curr_lab.a - prev_lab.a;
+    float db = curr_lab.b - prev_lab.b;
+    float achieved = sqrtf(dL * dL + da * da + db * db);
+
+    if (achieved < min_delta_e) {
+        float scale = min_delta_e / (achieved + 1e-6f);
+        dL *= scale;
+        da *= scale;
+        db *= scale;
+
+        curr_lab.L = clampf(prev_lab.L + dL, 0.0f, 1.0f);
+        curr_lab.a = prev_lab.a + da;
+        curr_lab.b = prev_lab.b + db;
+
+        dL = curr_lab.L - prev_lab.L;
+        da = curr_lab.a - prev_lab.a;
+        db = curr_lab.b - prev_lab.b;
+        achieved = sqrtf(dL * dL + da * da + db * db);
+
+        if (achieved < min_delta_e) {
+            float direction = (prev_lab.L < 0.5f) ? 1.0f : -1.0f;
+            curr_lab.L = clampf(prev_lab.L + direction * min_delta_e, 0.0f, 1.0f);
+        }
+    }
+
+    CJ_RGB adjusted = cj_oklab_to_rgb(curr_lab);
+    return cj_rgb_clamp(adjusted);
+}
+
+static CJ_RGB discrete_color_at_index(CJ_Journey_Impl* j,
+                                      int index,
+                                      const CJ_RGB* previous,
+                                      float min_delta_e) {
+    float t = discrete_position_from_index(index);
+    CJ_RGB color = cj_journey_sample((CJ_Journey)j, t);
+
+    return apply_minimum_contrast(color, previous, min_delta_e);
+}
+
+CJ_RGB cj_journey_discrete_at(CJ_Journey journey, int index) {
+    CJ_Journey_Impl* j = (CJ_Journey_Impl*)journey;
+
+    if (!j || index < 0) {
+        CJ_RGB zero = {0.0f, 0.0f, 0.0f};
+        return zero;
+    }
+
+    float min_delta_e = discrete_min_delta_e(j);
+
+    CJ_RGB previous;
+    bool has_previous = false;
+
+    for (int i = 0; i < index; i++) {
+        previous = discrete_color_at_index(j, i, has_previous ? &previous : NULL, min_delta_e);
+        has_previous = true;
+    }
+
+    return discrete_color_at_index(j, index, has_previous ? &previous : NULL, min_delta_e);
+}
+
+void cj_journey_discrete_range(CJ_Journey journey, int start, int count, CJ_RGB* out_colors) {
+    CJ_Journey_Impl* j = (CJ_Journey_Impl*)journey;
+
+    if (!j || !out_colors || count <= 0 || start < 0) return;
+
+    float min_delta_e = discrete_min_delta_e(j);
+
+    CJ_RGB previous;
+    bool has_previous = false;
+
+    for (int i = 0; i < start; i++) {
+        previous = discrete_color_at_index(j, i, has_previous ? &previous : NULL, min_delta_e);
+        has_previous = true;
+    }
+
+    for (int i = 0; i < count; i++) {
+        int index = start + i;
+        out_colors[i] = discrete_color_at_index(j, index, has_previous ? &previous : NULL, min_delta_e);
+        previous = out_colors[i];
+        has_previous = true;
+    }
+}
+
+void cj_journey_discrete(CJ_Journey journey, int count, CJ_RGB* out_colors) {
+    CJ_Journey_Impl* j = (CJ_Journey_Impl*)journey;
+
+    if (count <= 0) return;
+
+    /* Determine contrast threshold */
+    float min_delta_e = discrete_min_delta_e(j);
     
     /* Generate evenly spaced samples */
     for (int i = 0; i < count; i++) {
         float t = (float)i / (float)(count - 1);
         if (count == 1) t = 0.5f;
-        
+
         CJ_RGB color = cj_journey_sample(journey, t);
-        
+
         /* Enforce contrast with previous color */
         if (i > 0) {
-            CJ_Lab prev_lab = cj_rgb_to_oklab(out_colors[i - 1]);
-            CJ_Lab curr_lab = cj_rgb_to_oklab(color);
-            
-            curr_lab = cj_enforce_contrast(curr_lab, prev_lab, min_delta_e);
-            color = cj_oklab_to_rgb(curr_lab);
-            color = cj_rgb_clamp(color);
+            color = apply_minimum_contrast(color, &out_colors[i - 1], min_delta_e);
         }
-        
+
         out_colors[i] = color;
     }
 }
