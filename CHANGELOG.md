@@ -57,6 +57,23 @@ When cutting a new release, create a new section following this template:
 ### Fixed
 - (upcoming fixes)
 
+## [1.0.3] - 2025-12-09
+
+### Changed
+- **BREAKING**: Migrated to semantic versioning without 'v' prefix (following HexColor pattern)
+- Simplified Package.swift to minimal structure (removed explicit source paths, executable targets)
+- Streamlined package configuration for improved SPM/CocoaPods compatibility
+
+### Fixed
+- Removed 'v' prefix from git tags to align with Swift Package Manager best practices
+- CocoaPods distribution now follows industry-standard Xcode-native pattern
+
+### Notes
+- **Migration**: Old v1.0.2 tag replaced with 1.0.3 (no 'v' prefix)
+- Swift version requirement: ≥5.9
+- Platform support: iOS 13+, macOS 10.15+, watchOS 6+, tvOS 13+, visionOS 1+
+- Following [HexColor publishing pattern](https://kevinabram1000.medium.com/how-to-build-and-share-your-own-swift-library-with-swift-package-manager-1905fcc4716b)
+
 ## [1.0.2] - 2025-12-09
 
 ### Added
@@ -91,5 +108,6 @@ When cutting a new release, create a new section following this template:
 - Swift version requirement: ≥5.9
 - Platform support: iOS 13+, macOS 10.15+, watchOS 6+, tvOS 13+, visionOS 1+, Linux, Windows
 
-[Unreleased]: https://github.com/peternicholls/ColorJourney/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/peternicholls/ColorJourney/compare/1.0.3...HEAD
+[1.0.3]: https://github.com/peternicholls/ColorJourney/releases/tag/1.0.3
 [1.0.2]: https://github.com/peternicholls/ColorJourney/releases/tag/v1.0.2

@@ -1,6 +1,4 @@
 // swift-tools-version: 5.9
-// The swift-tools-version declares the minimum version of Swift required to build this package.
-
 import PackageDescription
 
 let package = Package(
@@ -17,10 +15,6 @@ let package = Package(
         .library(
             name: "ColorJourney",
             targets: ["ColorJourney"]
-        ),
-        .executable(
-            name: "SwiftExample",
-            targets: ["SwiftExample"]
         )
     ],
     dependencies: [
@@ -29,8 +23,6 @@ let package = Package(
     targets: [
         .target(
             name: "CColorJourney",
-            path: "Sources/CColorJourney",
-            sources: ["ColorJourney.c"],
             publicHeadersPath: "include",
             cSettings: [
                 .define("_GNU_SOURCE"),
@@ -39,32 +31,15 @@ let package = Package(
         ),
         .target(
             name: "ColorJourney",
-            dependencies: ["CColorJourney"],
-            path: "Sources/ColorJourney",
-            exclude: ["ColorJourney.backup.donotdelete"],
-            sources: [
-                "ColorJourney.swift",
-                "Types/ColorJourneyRGB.swift",
-                "Configuration/ConfigurationTypes.swift",
-                "Configuration/ColorJourneyConfig.swift",
-                "Configuration/JourneyStyle.swift",
-                "Configuration/ConfigurationMapper.swift",
-                "Journey/ColorJourneyClass.swift",
-                "Extensions/SwiftUIExtensions.swift"
-            ],
-            swiftSettings: [
-                .enableUpcomingFeature("BareSlashRegexLiterals")
-            ]
+            dependencies: ["CColorJourney"]
         ),
         .testTarget(
             name: "ColorJourneyTests",
             dependencies: ["ColorJourney"]
         ),
-        .executableTarget(
-            name: "SwiftExample",
-            dependencies: ["ColorJourney"],
-            path: "Examples",
-            sources: ["SwiftExample.swift"]
+        .testTarget(
+            name: "CColorJourneyTests",
+            dependencies: ["CColorJourney"]
         )
     ]
 )
