@@ -2,10 +2,10 @@
 
 # Script: tag-release.sh
 # Purpose: Promote RC to release by tagging on main
-# Usage: ./scripts/tag-release.sh <VERSION>
+# Usage: ./scripts/tag-release.sh <VERSION> [RC_BRANCH]
 # Example: ./scripts/tag-release.sh 1.0.0
 
-set -e
+set -euo pipefail
 
 # Color output
 RED='\033[0;31m'
@@ -14,15 +14,16 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Validate input
-if [ -z "$1" ]; then
+if [ -z "${1:-}" ]; then
     echo -e "${RED}Error: Version not provided${NC}"
-    echo "Usage: $0 <VERSION>"
-    echo "Example: $0 1.0.0"
+    echo "Usage: $0 <VERSION> [RC_BRANCH]"
+    echo "Example: $0 1.0.0 release-candidate/1.0.0-rc.2"
     exit 1
 fi
 
 VERSION="$1"
 TAG="v${VERSION}"
+RC_BRANCH_OVERRIDE="${2:-}"
 
 # Validate SemVer format (X.Y.Z)
 if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -34,7 +35,35 @@ fi
 echo -e "${YELLOW}Promoting release to main...${NC}"
 echo "Version: $VERSION"
 echo "Tag: $TAG"
+if [ -n "$RC_BRANCH_OVERRIDE" ]; then
+    echo "RC branch override: $RC_BRANCH_OVERRIDE"
+fi
 echo ""
+
+# Ensure clean working tree
+if [ -n "$(git status --porcelain)" ]; then
+    echo -e "${RED}Error: Working tree is dirty. Commit or stash changes first.${NC}"
+    exit 1
+fi
+
+# Determine RC branch (prefer override, otherwise highest rc.N on origin)
+resolve_rc_branch() {
+    if [ -n "$RC_BRANCH_OVERRIDE" ]; then
+        echo "$RC_BRANCH_OVERRIDE"
+        return 0
+    fi
+
+    echo "Resolving latest RC branch for $VERSION..."
+    RC_CANDIDATES=$(git ls-remote --heads origin "release-candidate/${VERSION}-rc.*" | awk '{print $2}' | sed 's@refs/heads/@@' | sort -t'.' -k4,4n)
+    if [ -z "$RC_CANDIDATES" ]; then
+        echo -e "${RED}Error: No RC branches found for version $VERSION on origin${NC}"
+        exit 1
+    fi
+    echo "$RC_CANDIDATES" | tail -n1
+}
+
+RC_BRANCH=$(resolve_rc_branch)
+echo "Using RC branch: $RC_BRANCH"
 
 # Check if tag already exists
 if git rev-parse --verify "$TAG" > /dev/null 2>&1; then
@@ -42,23 +71,25 @@ if git rev-parse --verify "$TAG" > /dev/null 2>&1; then
     exit 1
 fi
 
+# Fetch latest refs
+git fetch origin --tags
+
 # Switch to main
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 echo "Switching to main branch..."
 git checkout main
 
 # Pull latest
-echo "Pulling latest from main..."
-git pull origin main
+echo "Pulling latest from origin/main..."
+git pull --ff-only origin main
 
-# Merge RC branch (if coming from RC)
-RC_BRANCH="release-candidate/${VERSION}-rc.1"
-if git rev-parse --verify "origin/$RC_BRANCH" > /dev/null 2>&1; then
-    echo "Merging RC branch: $RC_BRANCH"
-    git merge --no-ff "origin/$RC_BRANCH" -m "Release $VERSION"
-elif [ "$CURRENT_BRANCH" != "main" ]; then
-    echo -e "${YELLOW}Note: No RC branch detected. Ensure main is up-to-date.${NC}"
+# Ensure RC branch is available locally
+if ! git show-ref --verify --quiet "refs/remotes/origin/${RC_BRANCH}"; then
+    echo -e "${RED}Error: RC branch not found on origin: ${RC_BRANCH}${NC}"
+    exit 1
 fi
+
+echo "Merging RC branch: ${RC_BRANCH}"
+git merge --ff-only "origin/${RC_BRANCH}"
 
 # Create annotated tag
 echo "Creating tag: $TAG"

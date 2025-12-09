@@ -6,6 +6,9 @@ on:
         types: [published]
     workflow_dispatch:
 
+permissions:
+    contents: write
+
 jobs:
     update-badges:
         name: Update README Badges
@@ -15,6 +18,8 @@ jobs:
             - uses: actions/checkout@v4.1.7
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
+                  ref: main
+                  fetch-depth: 0
 
             - name: Get latest release version
               id: latest-release
@@ -26,50 +31,63 @@ jobs:
                   echo "tag=${LATEST_TAG}" >> $GITHUB_OUTPUT
                   echo "Latest release: ${LATEST_TAG}"
 
-            - name: Update version badge
+            - name: Update README badge block
               run: |
                   VERSION="${{ steps.latest-release.outputs.version }}"
                   TAG="${{ steps.latest-release.outputs.tag }}"
 
-                  # Create version badge markdown
-                  BADGE="[![Version](https://img.shields.io/badge/version-${VERSION}-blue.svg)](https://github.com/${{ github.repository }}/releases/tag/${TAG})"
+                  export BUILD_BADGE="[![Build Status](https://github.com/${{ github.repository }}/actions/workflows/core-ci.yml/badge.svg?branch=develop)](https://github.com/${{ github.repository }}/actions/workflows/core-ci.yml)"
+                  export VERSION_BADGE="[![Version](https://img.shields.io/badge/version-${VERSION}-blue.svg)](https://github.com/${{ github.repository }}/releases/tag/${TAG})"
+                  export PLATFORM_BADGE="[![Platforms](https://img.shields.io/badge/platforms-iOS%2013%2B%20%7C%20macOS%2010.15%2B%20%7C%20Linux%20%7C%20Windows-informational)](README.md#platform-support)"
 
-                  echo "Version badge: ${BADGE}"
+                  python - <<'PY'
+import os
+import pathlib
 
-                  # Note: Actual badge update would use shields.io dynamic badges or similar
-                  # For now, document the pattern for future automation
+readme = pathlib.Path("README.md")
+lines = readme.read_text().splitlines()
 
-            - name: Get current build status
-              id: build-status
+new_block = [
+    os.environ["BUILD_BADGE"],
+    os.environ["VERSION_BADGE"],
+    os.environ["PLATFORM_BADGE"],
+]
+
+# Replace the first three badge lines after the title, preserving everything else
+output = []
+replaced = False
+for line in lines:
+    if not replaced and line.startswith("[![Build Status]"):
+        output.extend(new_block)
+        replaced = True
+        continue
+    if replaced and (line.startswith("[![Version]") or line.startswith("[![Platforms]")):
+        continue
+    output.append(line)
+
+if not replaced:
+    # Insert after title if badges were missing
+    for idx, line in enumerate(output):
+        if line.strip().startswith("**Programmatically"):
+            output[idx:idx+1] = [output[idx], *new_block]
+            break
+
+readme.write_text("\n".join(output) + "\n")
+PY
+
+                  echo "Updated README badges:"
+                  head -n 10 README.md
+
+            - name: Commit and push badge updates
               run: |
-                  # Check the latest workflow run status
-                  BUILD_STATUS="passing"  # Would be fetched from Actions API in production
-                  echo "status=${BUILD_STATUS}" >> $GITHUB_OUTPUT
-                  echo "Build status: ${BUILD_STATUS}"
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
 
-            - name: Create badge links
-              run: |
-                  VERSION="${{ steps.latest-release.outputs.version }}"
-                  BUILD_STATUS="${{ steps.build-status.outputs.status }}"
+                  if git diff --quiet README.md; then
+                    echo "No badge changes detected; skipping commit."
+                    exit 0
+                  fi
 
-                  cat > /tmp/badges.md << EOF
-                  ## Essential Badges
-
-                  - Version: https://img.shields.io/badge/version-${VERSION}-blue.svg
-                  - Build: https://github.com/${{ github.repository }}/actions/workflows/core-ci.yml/badge.svg
-                  - Platform: https://img.shields.io/badge/platforms-iOS%20|%20macOS%20|%20Linux%20|%20Windows-green.svg
-                  EOF
-
-                  cat /tmp/badges.md
-
-            - name: Note for README update
-              run: |
-                  echo "⚠️  Badge automation ready. To add badges to README:"
-                  echo "1. Edit README.md section with badges"
-                  echo "2. Replace badge URLs with current links from shields.io"
-                  echo "3. Commit and push"
-                  echo ""
-                  echo "Badge URLs are stable and self-updating:"
-                  echo "- Version badge pulls from latest GitHub release"
-                  echo "- Build status pulls from Actions workflow"
-                  echo "- Platform support is static content"
+                  git add README.md
+                  git commit -m "chore(badges): update badges for ${TAG}"
+                  git push origin HEAD:main

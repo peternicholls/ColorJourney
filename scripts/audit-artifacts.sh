@@ -30,6 +30,12 @@ if [ ! -f "$ARTIFACT_FILE" ]; then
     exit 1
 fi
 
+if [[ "$ARTIFACT_TYPE" != "swift" && "$ARTIFACT_TYPE" != "c" ]]; then
+    echo -e "${RED}Error: Invalid artifact type: $ARTIFACT_TYPE${NC}"
+    echo "Supported types: swift, c"
+    exit 1
+fi
+
 echo -e "${YELLOW}Auditing release artifact...${NC}"
 echo "File: $ARTIFACT_FILE"
 echo "Type: $ARTIFACT_TYPE"
