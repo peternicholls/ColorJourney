@@ -81,6 +81,9 @@ if [ "$ARTIFACT_TYPE" = "swift" ]; then
     done
     if [ "$HAS_FORBIDDEN" = "0" ]; then
         echo "    ✓ No forbidden items"
+    else
+        echo -e "${RED}Audit failed: forbidden items detected in Swift artifact${NC}"
+        exit 1
     fi
 
 elif [ "$ARTIFACT_TYPE" = "c" ]; then
@@ -116,6 +119,9 @@ elif [ "$ARTIFACT_TYPE" = "c" ]; then
     done
     if [ "$HAS_FORBIDDEN" = "0" ]; then
         echo "    ✓ No forbidden items"
+    else
+        echo -e "${RED}Audit failed: forbidden items detected in C artifact${NC}"
+        exit 1
     fi
 
 fi
