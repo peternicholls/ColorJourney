@@ -37,6 +37,17 @@ let package = Package(
             name: "ColorJourney",
             dependencies: ["CColorJourney"],
             path: "Sources/ColorJourney",
+            exclude: ["ColorJourney.backup.donotdelete"],
+            sources: [
+                "ColorJourney.swift",
+                "Types/ColorJourneyRGB.swift",
+                "Configuration/ConfigurationTypes.swift",
+                "Configuration/ColorJourneyConfig.swift",
+                "Configuration/JourneyStyle.swift",
+                "Configuration/ConfigurationMapper.swift",
+                "Journey/ColorJourneyClass.swift",
+                "Extensions/SwiftUIExtensions.swift"
+            ],
             swiftSettings: [
                 .enableUpcomingFeature("BareSlashRegexLiterals")
             ]

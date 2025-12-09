@@ -141,7 +141,7 @@ Key requirements:
  *
  * @note Deterministic: identical inputs always produce identical output.
  */
-float CJ_DeltaE(CJ_Lab a, CJ_Lab b);
+float CJ_delta_e(CJ_Lab a, CJ_Lab b);
 ```
 
 ### Swift Code
