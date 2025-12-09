@@ -92,7 +92,9 @@ install(TARGETS colorjourney
     RUNTIME DESTINATION bin
 )
 
-install(FILES Sources/CColorJourney/include/ColorJourney.h
+install(FILES
+    Sources/CColorJourney/include/ColorJourney.h
+    Sources/CColorJourney/include/colorjourney_version.h
     DESTINATION include
 )
 

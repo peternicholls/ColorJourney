@@ -43,7 +43,7 @@ When cutting a new release, create a new section following this template:
 - Use semantic versioning for all releases (MAJOR.MINOR.PATCH)
 - Tag releases as `vX.Y.Z` (e.g., `v1.0.0`)
 - Include version mapping note: "Requires C core ≥vX.Y.Z" for Swift releases
-- Link to GitHub releases: `[X.Y.Z]: https://github.com/yourusername/ColorJourney/releases/tag/vX.Y.Z`
+- Link to GitHub releases: `[X.Y.Z]: https://github.com/peternicholls/ColorJourney/releases/tag/vX.Y.Z`
 - Document breaking changes clearly in the release notes
 - For multi-language releases, separate [C] and [Swift] sections if versions differ
 

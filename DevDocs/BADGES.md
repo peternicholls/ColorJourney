@@ -92,7 +92,7 @@ The following badges **must not** appear in README (violates "clean artifacts" r
 ```markdown
 ## Status & Platforms
 
-[![Build Status](https://github.com/peternicholls/ColorJourney/actions/workflows/core-ci.yml/badge.svg?branch=main)](https://github.com/peternicholls/ColorJourney/actions/workflows/core-ci.yml)
+[![Build Status](https://github.com/peternicholls/ColorJourney/actions/workflows/core-ci.yml/badge.svg?branch=develop)](https://github.com/peternicholls/ColorJourney/actions/workflows/core-ci.yml)
 [![Version](https://img.shields.io/github/v/release/peternicholls/ColorJourney)](https://github.com/peternicholls/ColorJourney/releases)
 [![Platforms](https://img.shields.io/badge/platforms-iOS%2013%2B%20%7C%20macOS%2010.15%2B%20%7C%20Linux%20%7C%20Windows-informational)](README.md#platform-support)
 ```

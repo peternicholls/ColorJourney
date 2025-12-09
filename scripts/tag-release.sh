@@ -95,13 +95,13 @@ git merge --no-ff -m "Merge branch '${RC_BRANCH}' for release ${VERSION}" "origi
 echo "Creating tag: $TAG"
 git tag -a "$TAG" -m "Release version $VERSION"
 
-# Push tag
-echo "Pushing tag to remote..."
-git push origin "$TAG"
-
-# Try to push main (may not have commits if already up-to-date)
+# Push main branch first (keeps tag and origin/main aligned for release workflow)
 echo "Pushing main branch..."
 git push origin main || true
+
+# Push tag after main is updated
+echo "Pushing tag to remote..."
+git push origin "$TAG"
 
 echo -e "${GREEN}✓ Release tagged successfully: $TAG${NC}"
 echo ""
