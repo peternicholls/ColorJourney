@@ -303,6 +303,14 @@ ForEach(colors.indices, id: \.self) { i in
 
 Complete working examples are provided in the `Examples/` directory:
 
+**[FeaturePlayground.playground](Examples/FeaturePlayground.playground/)** — Interactive Swift Playground:
+- Hands-on exploration of all ColorJourney features
+- Visual demonstrations with ANSI color output
+- 5 comprehensive pages: Color Basics, Journey Styles, Access Patterns, Configuration, Advanced Use Cases
+- Built on SwatchDemo with reusable utilities
+- Perfect for learning, testing, and fine-tuning palettes
+- Run in Xcode with full API documentation
+
 **[CExample.c](Examples/CExample.c)** — Demonstrates the C API:
 - Single-anchor journey setup
 - Discrete palette generation
