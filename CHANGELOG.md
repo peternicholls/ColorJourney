@@ -62,9 +62,12 @@ When cutting a new release, create a new section following this template:
 ### Fixed
 - Corrected artifact packaging to properly exclude generated Makefile from Docs directory
 - Ensured release artifacts contain only permitted files per FR-007 and FR-008 specifications
+- Release assets simplified: only ColorJourney-1.0.1.zip and ColorJourney-1.0.1.tar.gz are provided
+- Both release archives now always include the C core (Sources/CColorJourney/) as essential for API functionality and straightforward user setup
 
 ### Notes
 - First stable public release (initially tagged as v1.0.0, re-released as v1.0.1 due to GitHub tag restrictions)
+- Release assets: ColorJourney-1.0.1.zip and ColorJourney-1.0.1.tar.gz only, both containing Swift wrapper and C core
 - Swift version requirement: ≥5.9
 - Platform support: iOS 13+, macOS 10.15+, watchOS 6+, tvOS 13+, visionOS 1+, Linux, Windows
 
