@@ -51,8 +51,8 @@ jobs:
                   echo "Tag version: ${VERSION}"
                   echo "Podspec version: ${PODSPEC_VERSION}"
 
-                  if [ "v${PODSPEC_VERSION}" != "${VERSION}" ]; then
-                    echo "ERROR: Version mismatch! Tag=${VERSION}, Podspec=v${PODSPEC_VERSION}"
+                  if [ "${PODSPEC_VERSION}" != "${VERSION}" ]; then
+                    echo "ERROR: Version mismatch! Tag=${VERSION}, Podspec=${PODSPEC_VERSION}"
                     exit 1
                   fi
                   echo "✓ Version parity verified"
