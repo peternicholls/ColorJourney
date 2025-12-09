@@ -57,7 +57,7 @@ When cutting a new release, create a new section following this template:
 ### Fixed
 - (upcoming fixes)
 
-## [1.0.0] - 2025-12-09
+## [1.0.2] - 2025-12-09
 
 ### Added
 - Initial release of Color Journey System
@@ -82,14 +82,14 @@ When cutting a new release, create a new section following this template:
 
 ### Fixed
 - Unified release packaging with both Swift wrapper and C core in single archive
-- Release assets simplified: ColorJourney-1.0.0.tar.gz and ColorJourney-1.0.0.zip only
+- Release assets simplified: ColorJourney-1.0.2.tar.gz and ColorJourney-1.0.2.zip only
 - Both release archives always include the C core (Sources/CColorJourney/) as essential for API functionality
 
 ### Notes
 - First stable public release
-- Release assets: ColorJourney-1.0.0.tar.gz and ColorJourney-1.0.0.zip, both containing Swift wrapper and C core
+- Release assets: ColorJourney-1.0.2.tar.gz and ColorJourney-1.0.2.zip, both containing Swift wrapper and C core
 - Swift version requirement: ≥5.9
 - Platform support: iOS 13+, macOS 10.15+, watchOS 6+, tvOS 13+, visionOS 1+, Linux, Windows
 
-[Unreleased]: https://github.com/peternicholls/ColorJourney/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/peternicholls/ColorJourney/releases/tag/v1.0.0
+[Unreleased]: https://github.com/peternicholls/ColorJourney/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/peternicholls/ColorJourney/releases/tag/v1.0.2

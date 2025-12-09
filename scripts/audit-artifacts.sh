@@ -17,8 +17,8 @@ NC='\033[0m' # No Color
 if [ -z "$1" ] || [ -z "$2" ]; then
     echo -e "${RED}Error: Arguments missing${NC}"
     echo "Usage: $0 <ARTIFACT_FILE> <TYPE>"
-    echo "Supported types: swift, c"
-    echo "Example: $0 ColorJourney-1.0.0.tar.gz swift"
+    echo "Supported types: swift, c, unified"
+    echo "Example: $0 ColorJourney-1.0.0.tar.gz unified"
     exit 1
 fi
 
@@ -30,9 +30,9 @@ if [ ! -f "$ARTIFACT_FILE" ]; then
     exit 1
 fi
 
-if [[ "$ARTIFACT_TYPE" != "swift" && "$ARTIFACT_TYPE" != "c" ]]; then
+if [[ "$ARTIFACT_TYPE" != "swift" && "$ARTIFACT_TYPE" != "c" && "$ARTIFACT_TYPE" != "unified" ]]; then
     echo -e "${RED}Error: Invalid artifact type: $ARTIFACT_TYPE${NC}"
-    echo "Supported types: swift, c"
+    echo "Supported types: swift, c, unified"
     exit 1
 fi
 
@@ -83,6 +83,37 @@ if [ "$ARTIFACT_TYPE" = "swift" ]; then
         echo "    ✓ No forbidden items"
     else
         echo -e "${RED}Audit failed: forbidden items detected in Swift artifact${NC}"
+        exit 1
+    fi
+
+elif [ "$ARTIFACT_TYPE" = "unified" ]; then
+    echo "Unified artifact requirements (Swift + C core):"
+    
+    # Required items
+    echo "  Required items:"
+    REQUIRED_ITEMS=("Sources/ColorJourney" "Sources/CColorJourney" "Package.swift" "README.md" "LICENSE" "CHANGELOG.md")
+    for item in "${REQUIRED_ITEMS[@]}"; do
+        if find "$TEMP_DIR" -path "*/$item" -o -path "*/$item/*" | grep -q .; then
+            echo "    ✓ $item"
+        else
+            echo -e "    ${RED}✗ Missing: $item${NC}"
+        fi
+    done
+    
+    # Forbidden items
+    echo "  Forbidden items:"
+    FORBIDDEN_ITEMS=("DevDocs" "Dockerfile" "Makefile" "Package.swift~" ".github" "*.backup*")
+    HAS_FORBIDDEN=0
+    for item in "${FORBIDDEN_ITEMS[@]}"; do
+        if find "$TEMP_DIR" -path "*/$item" -o -path "*/$item/*" 2>/dev/null | grep -q .; then
+            echo -e "    ${RED}✗ Found forbidden: $item${NC}"
+            HAS_FORBIDDEN=1
+        fi
+    done
+    if [ "$HAS_FORBIDDEN" = "0" ]; then
+        echo "    ✓ No forbidden items"
+    else
+        echo -e "${RED}Audit failed: forbidden items detected in unified artifact${NC}"
         exit 1
     fi
 
