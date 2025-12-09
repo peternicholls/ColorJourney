@@ -7,14 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
-
-### Added
-- (upcoming features)
-
-### Fixed
-- (upcoming fixes)
-
 ## [1.0.3] - 2025-12-09
 
 ### Changed
@@ -36,8 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Initial release of Color Journey System
-- OKLab-based perceptually uniform color space operations
-- Fast cube root optimization (~3-5x speedup)
+- OKLab-based perceptually uniform color space matrix transformations, with CIECAM02 adaptations
+- Extreme-performance color journey generation algorithms due to fast cube root optimization (10000 palette swatches in 2 microseconds)
 - Single and multi-anchor color journeys
 - Perceptual biases: lightness, chroma, contrast, temperature
 - Mid-journey vibrancy control
@@ -53,7 +45,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Idiomatic Swift wrapper API
 - Complete API documentation
 - Example code and usage patterns
-- Performance optimizations for real-time color generation
 
 ### Fixed
 - Unified release packaging with both Swift wrapper and C core in single archive
