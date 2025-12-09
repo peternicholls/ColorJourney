@@ -57,20 +57,6 @@ When cutting a new release, create a new section following this template:
 ### Fixed
 - (upcoming fixes)
 
-## [1.0.1] - 2025-12-09
-
-### Fixed
-- Corrected artifact packaging to properly exclude generated Makefile from Docs directory
-- Ensured release artifacts contain only permitted files per FR-007 and FR-008 specifications
-- Release assets simplified: only ColorJourney-1.0.1.zip and ColorJourney-1.0.1.tar.gz are provided
-- Both release archives now always include the C core (Sources/CColorJourney/) as essential for API functionality and straightforward user setup
-
-### Notes
-- First stable public release (initially tagged as v1.0.0, re-released as v1.0.1 due to GitHub tag restrictions)
-- Release assets: ColorJourney-1.0.1.zip and ColorJourney-1.0.1.tar.gz only, both containing Swift wrapper and C core
-- Swift version requirement: ≥5.9
-- Platform support: iOS 13+, macOS 10.15+, watchOS 6+, tvOS 13+, visionOS 1+, Linux, Windows
-
 ## [1.0.0] - 2025-12-09
 
 ### Added
@@ -94,10 +80,16 @@ When cutting a new release, create a new section following this template:
 - Example code and usage patterns
 - Performance optimizations for real-time color generation
 
+### Fixed
+- Unified release packaging with both Swift wrapper and C core in single archive
+- Release assets simplified: ColorJourney-1.0.0.tar.gz and ColorJourney-1.0.0.zip only
+- Both release archives always include the C core (Sources/CColorJourney/) as essential for API functionality
+
 ### Notes
+- First stable public release
+- Release assets: ColorJourney-1.0.0.tar.gz and ColorJourney-1.0.0.zip, both containing Swift wrapper and C core
 - Swift version requirement: ≥5.9
 - Platform support: iOS 13+, macOS 10.15+, watchOS 6+, tvOS 13+, visionOS 1+, Linux, Windows
 
-[Unreleased]: https://github.com/peternicholls/ColorJourney/compare/v1.0.1...HEAD
-[1.0.1]: https://github.com/peternicholls/ColorJourney/compare/v1.0.0...v1.0.1
+[Unreleased]: https://github.com/peternicholls/ColorJourney/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/peternicholls/ColorJourney/releases/tag/v1.0.0
