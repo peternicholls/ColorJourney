@@ -53,10 +53,9 @@ resolve_rc_branch() {
         return 0
     fi
 
-    echo "Resolving latest RC branch for $VERSION..."
     RC_CANDIDATES=$(git ls-remote --heads origin "release-candidate/${VERSION}-rc.*" | awk '{print $2}' | sed 's@refs/heads/@@' | sort -t'.' -k4,4n)
     if [ -z "$RC_CANDIDATES" ]; then
-        echo -e "${RED}Error: No RC branches found for version $VERSION on origin${NC}"
+        echo -e "${RED}Error: No RC branches found for version $VERSION on origin${NC}" >&2
         exit 1
     fi
     echo "$RC_CANDIDATES" | tail -n1
