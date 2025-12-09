@@ -59,6 +59,28 @@ jobs:
                      -skipPackagePluginValidation \
                      build
 
+  test-ios:
+    name: Build and Test for iOS
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4.1.7
+
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-deriveddata-test-${{ hashFiles('**/Package.swift') }}
+          restore-keys: |
+            ${{ runner.os }}-deriveddata-test-
+
+      - name: Build and Test for iOS Simulator
+        run: |
+          xcodebuild test \
+                     -scheme ColorJourney \
+                     -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+                     -skipPackagePluginValidation
+
   lint:
     name: SwiftLint
     runs-on: macos-latest
