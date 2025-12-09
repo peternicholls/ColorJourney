@@ -74,16 +74,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-spm-ios-
 
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode.app
-
-      - name: Build and Test for iOS
+      - name: Build for iOS Simulator
         run: |
-          swift test --parallel \
-                     -Xswiftc "-sdk" \
-                     -Xswiftc "$(xcrun --sdk iphonesimulator --show-sdk-path)" \
-                     -Xswiftc "-target" \
-                     -Xswiftc "arm64-apple-ios13.0-simulator"
+          xcodebuild -scheme ColorJourney \
+                     -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.0' \
+                     -sdk iphonesimulator \
+                     build
+
+      - name: Run Tests on macOS
+        run: swift test --parallel
 
   lint:
     name: SwiftLint
