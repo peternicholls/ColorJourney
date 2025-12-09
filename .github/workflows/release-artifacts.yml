@@ -1,0 +1,268 @@
+name: Release Artifacts
+
+# Triggered when a release tag (vX.Y.Z) is pushed to main
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+# Restrict permissions for security
+permissions:
+  contents: write # For creating releases
+  packages: read # For downloading dependencies
+
+jobs:
+  preflight:
+    name: Preflight: tag and branch validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4.1.7
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify tag format and branch alignment
+        run: |
+          if [[ ! "${GITHUB_REF}" =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "ERROR: Invalid tag format. Expected vX.Y.Z"
+            exit 1
+          fi
+
+          git fetch --no-tags origin main
+
+          TAG_COMMIT=$(git rev-parse HEAD)
+          MAIN_HEAD=$(git rev-parse origin/main)
+
+          echo "Tag commit:  ${TAG_COMMIT}"
+          echo "origin/main: ${MAIN_HEAD}"
+
+          if [ "${TAG_COMMIT}" != "${MAIN_HEAD}" ]; then
+            echo "ERROR: Release tags must point to the tip of origin/main."
+            exit 1
+          fi
+
+          echo "✓ Tag format valid and aligned to origin/main"
+
+  package-swift:
+    name: Package Swift Release
+    runs-on: macos-latest
+    needs: preflight
+
+    steps:
+      - uses: actions/checkout@v4.1.7
+        with:
+          ref: ${{ github.ref }}
+          # Ensure we get a clean checkout
+          persist-credentials: false
+
+      - name: Validate Swift artifact contents
+        run: |
+          # Check for forbidden files/dirs in Swift package
+          echo "Checking Swift artifact contents..."
+
+          # Allowed: Sources/, Package.swift, README.md, LICENSE, CHANGELOG.md, Docs/
+          # Forbidden: DevDocs/, Sources/CColorJourney/, Dockerfile, Makefile, .github/
+
+          if [ -d "Sources/CColorJourney" ]; then
+            echo "ERROR: C sources should not be in Swift artifact"
+            exit 1
+          fi
+
+          if [ -d "DevDocs" ]; then
+            echo "WARNING: DevDocs will be excluded from Swift artifact"
+          fi
+
+          # Check for sensitive files
+          if find . -type f \( -name "*.key" -o -name "*.pem" -o -name "*.p12" -o -name ".env" \) | grep -q .; then
+              echo "ERROR: Sensitive files detected!"
+              exit 1
+          fi
+
+          echo "✓ Swift artifact validation passed"
+
+      - name: Create Swift artifact
+        id: swift-artifact
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/v}"
+          ARTIFACT_NAME="ColorJourney-${VERSION}"
+
+          # Create archive with allowed files
+          tar --exclude=DevDocs \
+              --exclude=Sources/CColorJourney \
+              --exclude='.git*' \
+              --exclude='.github' \
+              --exclude='Tests/CColorJourneyTests' \
+              --exclude='Makefile*' \
+              --exclude='Dockerfile*' \
+              --exclude='docker-compose.yml' \
+              --exclude='scripts' \
+              --exclude='*.xcodeproj' \
+              --exclude='*.key' \
+              --exclude='*.pem' \
+              --exclude='.env*' \
+              -czf "${ARTIFACT_NAME}.tar.gz" \
+              Sources/ColorJourney/ \
+              Package.swift \
+              Package.resolved \
+              README.md \
+              LICENSE \
+              CHANGELOG.md \
+              Docs/
+
+          echo "artifact=${ARTIFACT_NAME}.tar.gz" >> $GITHUB_OUTPUT
+          echo "✓ Swift artifact created: ${ARTIFACT_NAME}.tar.gz"
+
+      - name: Audit Swift artifact
+        run: |
+          chmod +x scripts/audit-artifacts.sh
+          ./scripts/audit-artifacts.sh "${{ steps.swift-artifact.outputs.artifact }}" swift
+
+      - name: Calculate Swift artifact hash
+        id: swift-hash
+        run: |
+          HASH=$(shasum -a 256 "${{ steps.swift-artifact.outputs.artifact }}" | awk '{print $1}')
+          echo "hash=${HASH}" >> $GITHUB_OUTPUT
+          echo "Swift artifact SHA256: ${HASH}"
+
+          # Write hash to file for release notes
+          echo "${HASH}  ${{ steps.swift-artifact.outputs.artifact }}" > swift-checksums.txt
+
+      - name: Upload Swift artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: swift-release
+          path: |
+            ${{ steps.swift-artifact.outputs.artifact }}
+            swift-checksums.txt
+          retention-days: 7
+
+  package-c:
+    name: Package C Release
+    runs-on: ubuntu-latest
+    needs: preflight
+
+    steps:
+      - uses: actions/checkout@v4.1.7
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake make
+
+      - name: Validate C artifact contents
+        run: |
+          echo "Checking C artifact contents..."
+
+          # Allowed: Sources/CColorJourney/, include/ (headers), built .a files, C examples (optional), README, LICENSE, CHANGELOG, Docs/
+          # Forbidden: Swift code, Package.swift, DevDocs/, Dockerfile, Makefile
+
+          if [ -d "Sources/ColorJourney" ]; then
+            echo "WARNING: Swift sources will be excluded from C artifact"
+          fi
+
+          # Check for sensitive files
+          if find . -type f \( -name "*.key" -o -name "*.pem" -o -name "*.p12" -o -name ".env" \) | grep -q .; then
+              echo "ERROR: Sensitive files detected!"
+              exit 1
+          fi
+
+          echo "✓ C artifact validation passed"
+
+      - name: Build C library
+        run: |
+          cd Sources/CColorJourney
+          cmake -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release
+
+      - name: Create C artifact
+        id: c-artifact
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/v}"
+          ARTIFACT_NAME="libcolorjourney-${VERSION}-linux-x86_64"
+
+          mkdir -p "${ARTIFACT_NAME}/include"
+          mkdir -p "${ARTIFACT_NAME}/lib"
+          mkdir -p "${ARTIFACT_NAME}/docs"
+
+          # Copy headers
+          cp Sources/CColorJourney/include/*.h "${ARTIFACT_NAME}/include/" 2>/dev/null || true
+
+          # Copy built libraries
+          if [ -f "Sources/CColorJourney/build/libcolorjourney.a" ]; then
+            cp Sources/CColorJourney/build/libcolorjourney.a "${ARTIFACT_NAME}/lib/"
+          fi
+
+          # Copy documentation
+          cp README.md "${ARTIFACT_NAME}/" 2>/dev/null || true
+          cp LICENSE "${ARTIFACT_NAME}/" 2>/dev/null || true
+          cp CHANGELOG.md "${ARTIFACT_NAME}/" 2>/dev/null || true
+          cp -r Docs/ "${ARTIFACT_NAME}/docs/" 2>/dev/null || true
+
+          # Create archive
+          tar -czf "${ARTIFACT_NAME}.tar.gz" "${ARTIFACT_NAME}/"
+
+          echo "artifact=${ARTIFACT_NAME}.tar.gz" >> $GITHUB_OUTPUT
+          echo "✓ C artifact created: ${ARTIFACT_NAME}.tar.gz"
+
+      - name: Audit C artifact
+        run: |
+          chmod +x scripts/audit-artifacts.sh
+          ./scripts/audit-artifacts.sh "${{ steps.c-artifact.outputs.artifact }}" c
+
+      - name: Calculate C artifact hash
+        id: c-hash
+        run: |
+          HASH=$(shasum -a 256 "${{ steps.c-artifact.outputs.artifact }}" | awk '{print $1}')
+          echo "hash=${HASH}" >> $GITHUB_OUTPUT
+          echo "C artifact SHA256: ${HASH}"
+
+          # Write hash to file for release notes
+          echo "${HASH}  ${{ steps.c-artifact.outputs.artifact }}" > c-checksums.txt
+
+      - name: Upload C artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: c-release-linux
+          path: |
+            ${{ steps.c-artifact.outputs.artifact }}
+            c-checksums.txt
+          retention-days: 7
+
+  publish-release:
+    name: Publish Release
+    needs: [package-swift, package-c]
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4.1.7
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Combine checksums
+        run: |
+          cat swift-release/swift-checksums.txt c-release-linux/c-checksums.txt > checksums.txt
+          echo "Combined checksums:"
+          cat checksums.txt
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            swift-release/*.tar.gz
+            c-release-linux/*.tar.gz
+            checksums.txt
+          body_path: CHANGELOG.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

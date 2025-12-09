@@ -92,3 +92,20 @@ docs/.doctrees/
 .test/
 *.test
 *.out
+
+# Release artifacts (temporary)
+*.tar.gz
+*.zip
+checksums.txt
+*-checksums.txt
+
+# Security - Never commit these!
+*.key
+*.pem
+*.p12
+*.pfx
+*.cer
+*.crt
+*.der
+secrets/
+.secrets/

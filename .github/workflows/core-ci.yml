@@ -2,10 +2,15 @@ name: Core CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, "release-candidate/*"]
   pull_request:
     branches: [main, develop]
   workflow_dispatch:
+
+# Cancel in-progress runs for the same PR/branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-macos:
@@ -20,7 +25,8 @@ jobs:
         with:
           path: .build
           key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
-          restore-keys: ${{ runner.os }}-spm-
+          restore-keys: |
+            ${{ runner.os }}-spm-
 
       - name: Swift Version
         run: swift --version
@@ -38,6 +44,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.7
 
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-deriveddata-${{ hashFiles('**/Package.swift') }}
+          restore-keys: |
+            ${{ runner.os }}-deriveddata-
+
       - name: Build for iOS Device
         run: |
           xcodebuild -scheme ColorJourney \
@@ -53,6 +67,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.7
 
+      - name: Cache Homebrew
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-brew-swiftlint
+          restore-keys: |
+            ${{ runner.os }}-brew-
+
       - name: Install SwiftLint
         run: brew install swiftlint
 
@@ -65,6 +87,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4.1.7
+
+      - name: Cache CMake build
+        uses: actions/cache@v4
+        with:
+          path: |
+            build
+            ~/.ccache
+          key: ${{ runner.os }}-cmake-${{ hashFiles('**/CMakeLists.txt', 'Sources/CColorJourney/**') }}
+          restore-keys: |
+            ${{ runner.os }}-cmake-
 
       - name: Build and test C core
         run: |
