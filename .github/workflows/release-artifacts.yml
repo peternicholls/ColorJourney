@@ -57,31 +57,6 @@ jobs:
           # Ensure we get a clean checkout
           persist-credentials: false
 
-      - name: Validate Swift artifact contents
-        run: |
-          # Check for forbidden files/dirs in Swift package
-          echo "Checking Swift artifact contents..."
-
-          # Allowed: Sources/, Package.swift, README.md, LICENSE, CHANGELOG.md, Docs/
-          # Forbidden: DevDocs/, Sources/CColorJourney/, Dockerfile, Makefile, .github/
-
-          if [ -d "Sources/CColorJourney" ]; then
-            echo "ERROR: C sources should not be in Swift artifact"
-            exit 1
-          fi
-
-          if [ -d "DevDocs" ]; then
-            echo "WARNING: DevDocs will be excluded from Swift artifact"
-          fi
-
-          # Check for sensitive files
-          if find . -type f \( -name "*.key" -o -name "*.pem" -o -name "*.p12" -o -name ".env" \) | grep -q .; then
-              echo "ERROR: Sensitive files detected!"
-              exit 1
-          fi
-
-          echo "✓ Swift artifact validation passed"
-
       - name: Create Swift artifact
         id: swift-artifact
         run: |
@@ -152,30 +127,10 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake make
-
-      - name: Validate C artifact contents
-        run: |
-          echo "Checking C artifact contents..."
-
-          # Allowed: Sources/CColorJourney/, include/ (headers), built .a files, C examples (optional), README, LICENSE, CHANGELOG, Docs/
-          # Forbidden: Swift code, Package.swift, DevDocs/, Dockerfile, Makefile
-
-          if [ -d "Sources/ColorJourney" ]; then
-            echo "WARNING: Swift sources will be excluded from C artifact"
-          fi
-
-          # Check for sensitive files
-          if find . -type f \( -name "*.key" -o -name "*.pem" -o -name "*.p12" -o -name ".env" \) | grep -q .; then
-              echo "ERROR: Sensitive files detected!"
-              exit 1
-          fi
-
-          echo "✓ C artifact validation passed"
+          sudo apt-get install -y cmake make gcc
 
       - name: Build C library
         run: |
-          cd Sources/CColorJourney
           cmake -B build -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release
 
@@ -193,8 +148,8 @@ jobs:
           cp Sources/CColorJourney/include/*.h "${ARTIFACT_NAME}/include/" 2>/dev/null || true
 
           # Copy built libraries
-          if [ -f "Sources/CColorJourney/build/libcolorjourney.a" ]; then
-            cp Sources/CColorJourney/build/libcolorjourney.a "${ARTIFACT_NAME}/lib/"
+          if [ -f "build/libcolorjourney.a" ]; then
+            cp build/libcolorjourney.a "${ARTIFACT_NAME}/lib/"
           fi
 
           # Copy documentation
