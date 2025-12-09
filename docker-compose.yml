@@ -1,0 +1,10 @@
+services:
+  docs:
+    build: .
+    ports:
+      - "8000:80"
+    volumes:
+      - ./Docs:/usr/share/nginx/html:ro
+    environment:
+      - TZ=UTC
+    container_name: colorjourney-docs
