@@ -23,6 +23,7 @@
  */
 
 import Foundation
+import ColorJourney
 
 // MARK: - Basic Examples (US5: Core API Usage)
 
@@ -420,3 +421,6 @@ func runAllExamples() {
 
 // Uncomment to run:
 // runAllExamples()
+
+// Run by default when executed as standalone target
+runAllExamples()

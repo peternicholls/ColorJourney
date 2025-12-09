@@ -17,6 +17,10 @@ let package = Package(
         .library(
             name: "ColorJourney",
             targets: ["ColorJourney"]
+        ),
+        .executable(
+            name: "SwiftExample",
+            targets: ["SwiftExample"]
         )
     ],
     dependencies: [
@@ -55,6 +59,12 @@ let package = Package(
         .testTarget(
             name: "ColorJourneyTests",
             dependencies: ["ColorJourney"]
+        ),
+        .executableTarget(
+            name: "SwiftExample",
+            dependencies: ["ColorJourney"],
+            path: "Examples",
+            sources: ["SwiftExample.swift"]
         )
     ]
 )
