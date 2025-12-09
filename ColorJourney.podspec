@@ -51,7 +51,7 @@ Pod::Spec.new do |spec|
   spec.watchos.deployment_target = "6.0"
   spec.visionos.deployment_target = "1.0"
 
-  spec.source       = { :git => "https://github.com/peternicholls/ColorJourney.git", :tag => "v#{spec.version}" }
+  spec.source       = { :git => "https://github.com/peternicholls/ColorJourney.git", :tag => spec.version }
 
   spec.swift_version = "5.9"
 
