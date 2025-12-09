@@ -60,7 +60,7 @@ if [ "$ARTIFACT_TYPE" = "swift" ]; then
     
     # Required items
     echo "  Required items:"
-    REQUIRED_ITEMS=("Sources/ColorJourney" "Package.swift" "README.md" "LICENSE" "CHANGELOG.md")
+    REQUIRED_ITEMS=("Sources/ColorJourney" "Package.swift" "Package.resolved" "README.md" "LICENSE" "CHANGELOG.md")
     for item in "${REQUIRED_ITEMS[@]}"; do
         if find "$TEMP_DIR" -path "*/$item" -o -path "*/$item/*" | grep -q .; then
             echo "    ✓ $item"
