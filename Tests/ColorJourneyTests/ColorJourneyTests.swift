@@ -168,6 +168,59 @@ final class ColorJourneyTests: XCTestCase {
         XCTAssertEqual(palette.count, 20)
     }
 
+    func testDiscreteIndexAccess() {
+        let anchor = ColorJourneyRGB(red: 0.4, green: 0.6, blue: 0.2)
+        let config = ColorJourneyConfig.singleAnchor(anchor, style: .balanced)
+        let journey = ColorJourney(config: config)
+
+        let color = journey.discrete(at: 3)
+        let rangeColor = journey.discrete(range: 3..<4).first
+
+        XCTAssertNotNil(rangeColor)
+        XCTAssertEqual(color.red, rangeColor?.red ?? -1, accuracy: 1e-6)
+        XCTAssertEqual(color.green, rangeColor?.green ?? -1, accuracy: 1e-6)
+        XCTAssertEqual(color.blue, rangeColor?.blue ?? -1, accuracy: 1e-6)
+    }
+
+    func testDiscreteRangeMatchesIndividualCalls() {
+        let anchor = ColorJourneyRGB(red: 0.2, green: 0.5, blue: 0.8)
+        let config = ColorJourneyConfig.singleAnchor(anchor, style: .balanced)
+        let journey = ColorJourney(config: config)
+
+        let range = journey.discrete(range: 1..<5)
+        XCTAssertEqual(range.count, 4)
+
+        for (offset, color) in range.enumerated() {
+            let single = journey.discrete(at: offset + 1)
+            XCTAssertEqual(color.red, single.red, accuracy: 1e-6)
+            XCTAssertEqual(color.green, single.green, accuracy: 1e-6)
+            XCTAssertEqual(color.blue, single.blue, accuracy: 1e-6)
+        }
+    }
+
+    func testDiscreteSubscriptAndSequence() {
+        let anchor = ColorJourneyRGB(red: 0.3, green: 0.3, blue: 0.7)
+        let config = ColorJourneyConfig.singleAnchor(anchor, style: .balanced)
+        let journey = ColorJourney(config: config)
+
+        let subscriptColor = journey[2]
+        let atColor = journey.discrete(at: 2)
+
+        XCTAssertEqual(subscriptColor.red, atColor.red, accuracy: 1e-6)
+        XCTAssertEqual(subscriptColor.green, atColor.green, accuracy: 1e-6)
+        XCTAssertEqual(subscriptColor.blue, atColor.blue, accuracy: 1e-6)
+
+        let sequenceColors = Array(journey.discreteColors.prefix(3))
+        let rangeColors = journey.discrete(range: 0..<3)
+
+        XCTAssertEqual(sequenceColors.count, rangeColors.count)
+        for (lhs, rhs) in zip(sequenceColors, rangeColors) {
+            XCTAssertEqual(lhs.red, rhs.red, accuracy: 1e-6)
+            XCTAssertEqual(lhs.green, rhs.green, accuracy: 1e-6)
+            XCTAssertEqual(lhs.blue, rhs.blue, accuracy: 1e-6)
+        }
+    }
+
     func testSingleColorPalette() {
         let anchor = ColorJourneyRGB(red: 0.6, green: 0.4, blue: 0.5)
         let config = ColorJourneyConfig.singleAnchor(anchor, style: .balanced)

@@ -128,4 +128,57 @@ public final class ColorJourney {
 
         return colors.map { ColorJourneyRGB(red: $0.r, green: $0.g, blue: $0.b) }
     }
+
+    /// Get a single discrete color at the specified index.
+    ///
+    /// - Parameter index: Zero-based color index (must be ≥ 0)
+    /// - Returns: Deterministic color for the given index
+    public func discrete(at index: Int) -> ColorJourneyRGB {
+        guard let handle = handle else {
+            return ColorJourneyRGB(red: 0, green: 0, blue: 0)
+        }
+
+        let rgb = cj_journey_discrete_at(handle, Int32(index))
+        return ColorJourneyRGB(red: rgb.r, green: rgb.g, blue: rgb.b)
+    }
+
+    /// Generate discrete colors for a specific range of indexes.
+    ///
+    /// - Parameter range: Range of indexes to generate (lowerBound must be ≥ 0)
+    /// - Returns: Array of colors covering the requested range
+    public func discrete(range: Range<Int>) -> [ColorJourneyRGB] {
+        guard let handle = handle, !range.isEmpty else {
+            return []
+        }
+
+        let count = range.count
+        var colors = [CJ_RGB](repeating: CJ_RGB(r: 0, g: 0, b: 0), count: count)
+        colors.withUnsafeMutableBufferPointer { buffer in
+            cj_journey_discrete_range(
+                handle,
+                Int32(range.lowerBound),
+                Int32(count),
+                buffer.baseAddress!
+            )
+        }
+
+        return colors.map { ColorJourneyRGB(red: $0.r, green: $0.g, blue: $0.b) }
+    }
+
+    /// Convenient subscript access for discrete colors.
+    public subscript(index: Int) -> ColorJourneyRGB {
+        discrete(at: index)
+    }
+
+    /// Lazy sequence that yields discrete colors on demand.
+    public var discreteColors: AnySequence<ColorJourneyRGB> {
+        AnySequence { [weak self] in
+            var current = 0
+            return AnyIterator<ColorJourneyRGB> {
+                guard let strongSelf = self else { return nil }
+                defer { current += 1 }
+                return strongSelf.discrete(at: current)
+            }
+        }
+    }
 }
