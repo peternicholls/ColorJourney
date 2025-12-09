@@ -61,11 +61,11 @@ jobs:
         id: swift-artifact
         run: |
           VERSION="${GITHUB_REF#refs/tags/v}"
-          
+
           # Use the packaging script which properly stages files
           chmod +x scripts/package-swift.sh
           ./scripts/package-swift.sh "${VERSION}"
-          
+
           ARTIFACT_NAME="ColorJourney-${VERSION}.tar.gz"
           echo "artifact=${ARTIFACT_NAME}" >> $GITHUB_OUTPUT
 
@@ -113,11 +113,11 @@ jobs:
         id: c-artifact
         run: |
           VERSION="${GITHUB_REF#refs/tags/v}"
-          
+
           # Use the packaging script
           chmod +x scripts/package-c.sh
           ./scripts/package-c.sh "${VERSION}" linux
-          
+
           ARTIFACT_NAME="libcolorjourney-${VERSION}-linux-x86_64.tar.gz"
           echo "artifact=${ARTIFACT_NAME}" >> $GITHUB_OUTPUT
 
