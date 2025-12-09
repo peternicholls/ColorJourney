@@ -3,146 +3,146 @@ name: CocoaPods Release
 # Triggered when a release tag (X.Y.Z) is pushed to main
 # This workflow runs after release-artifacts.yml and publishes to CocoaPods
 on:
-    push:
-        tags:
-            - "[0-9]+.[0-9]+.[0-9]+"
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
 
 permissions:
-    contents: read
-    packages: read
+  contents: read
+  packages: read
 
 jobs:
-    cocoapods-lint:
-        name: "CocoaPods: Lint podspec"
-        runs-on: macos-latest
+  cocoapods-lint:
+    name: "CocoaPods: Lint podspec"
+    runs-on: macos-latest
 
-        steps:
-            - uses: actions/checkout@v4.1.7
-              with:
-                  ref: ${{ github.ref }}
-                  fetch-depth: 0
-                  persist-credentials: false
+    steps:
+      - uses: actions/checkout@v4.1.7
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+          persist-credentials: false
 
-            - name: Validate podspec exists
-              run: |
-                  if [ ! -f "ColorJourney.podspec" ]; then
-                    echo "ERROR: ColorJourney.podspec not found!"
-                    exit 1
-                  fi
-                  echo "✓ Podspec found"
+      - name: Validate podspec exists
+        run: |
+          if [ ! -f "ColorJourney.podspec" ]; then
+            echo "ERROR: ColorJourney.podspec not found!"
+            exit 1
+          fi
+          echo "✓ Podspec found"
 
-            - name: Check CocoaPods installation
-              run: |
-                  gem install cocoapods
-                  pod repo update
-                  echo "✓ CocoaPods ready"
+      - name: Check CocoaPods installation
+        run: |
+          gem install cocoapods
+          pod repo update
+          echo "✓ CocoaPods ready"
 
-            - name: Lint podspec
-              run: |
-                  echo "Running pod spec lint..."
-                  pod spec lint ColorJourney.podspec --allow-warnings
-                  echo "✓ Podspec lint passed"
+      - name: Lint podspec
+        run: |
+          echo "Running pod spec lint..."
+          pod spec lint ColorJourney.podspec --allow-warnings
+          echo "✓ Podspec lint passed"
 
-            - name: Verify version parity
-              run: |
-                  VERSION=${GITHUB_REF#refs/tags/}
-                  PODSPEC_VERSION=$(grep "^  spec.version" ColorJourney.podspec | sed 's/.*"\([^"]*\)".*/\1/')
+      - name: Verify version parity
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          PODSPEC_VERSION=$(grep "^  spec.version" ColorJourney.podspec | sed 's/.*"\([^"]*\)".*/\1/')
 
-                  echo "Tag version: ${VERSION}"
-                  echo "Podspec version: ${PODSPEC_VERSION}"
+          echo "Tag version: ${VERSION}"
+          echo "Podspec version: ${PODSPEC_VERSION}"
 
-                  if [ "${PODSPEC_VERSION}" != "${VERSION}" ]; then
-                    echo "ERROR: Version mismatch! Tag=${VERSION}, Podspec=${PODSPEC_VERSION}"
-                    exit 1
-                  fi
-                  echo "✓ Version parity verified"
+          if [ "${PODSPEC_VERSION}" != "${VERSION}" ]; then
+            echo "ERROR: Version mismatch! Tag=${VERSION}, Podspec=${PODSPEC_VERSION}"
+            exit 1
+          fi
+          echo "✓ Version parity verified"
 
-    cocoapods-push:
-        name: "CocoaPods: Push to trunk"
-        needs: cocoapods-lint
-        runs-on: macos-latest
-        if: success()
+  cocoapods-push:
+    name: "CocoaPods: Push to trunk"
+    needs: cocoapods-lint
+    runs-on: macos-latest
+    if: success()
 
-        steps:
-            - uses: actions/checkout@v4.1.7
-              with:
-                  ref: ${{ github.ref }}
-                  persist-credentials: false
+    steps:
+      - uses: actions/checkout@v4.1.7
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
 
-            - name: Setup CocoaPods
-              run: |
-                  gem install cocoapods
-                  echo "✓ CocoaPods installed"
+      - name: Setup CocoaPods
+        run: |
+          gem install cocoapods
+          echo "✓ CocoaPods installed"
 
-            - name: Configure and verify trunk token
-              env:
-                  COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
-              run: |
-                  if [ -z "$COCOAPODS_TRUNK_TOKEN" ]; then
-                    echo "ERROR: COCOAPODS_TRUNK_TOKEN secret not set!"
-                    echo "Please configure the secret in GitHub repository settings."
-                    exit 1
-                  fi
+      - name: Configure and verify trunk token
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+        run: |
+          if [ -z "$COCOAPODS_TRUNK_TOKEN" ]; then
+            echo "ERROR: COCOAPODS_TRUNK_TOKEN secret not set!"
+            echo "Please configure the secret in GitHub repository settings."
+            exit 1
+          fi
 
-                  # Verify token is valid
-                  pod trunk me
-                  echo "✓ Trunk token verified"
+          # Verify token is valid
+          pod trunk me
+          echo "✓ Trunk token verified"
 
-            - name: Push to CocoaPods trunk
-              env:
-                  COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
-              run: |
-                  VERSION=${GITHUB_REF#refs/tags/}
-                  echo "Publishing version: ${VERSION}"
+      - name: Push to CocoaPods trunk
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "Publishing version: ${VERSION}"
 
-                  # Push with allow-warnings and verbose output for debugging
-                  pod trunk push ColorJourney.podspec --allow-warnings --verbose
+          # Push with allow-warnings and verbose output for debugging
+          pod trunk push ColorJourney.podspec --allow-warnings --verbose
 
-                  echo "✓ Successfully pushed to CocoaPods Trunk"
+          echo "✓ Successfully pushed to CocoaPods Trunk"
 
-            - name: Verify publication
-              run: |
-                  VERSION=${GITHUB_REF#refs/tags/}
-                  PODSPEC_VERSION=$(grep "^  spec.version" ColorJourney.podspec | sed 's/.*"\([^"]*\)".*/\1/')
+      - name: Verify publication
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          PODSPEC_VERSION=$(grep "^  spec.version" ColorJourney.podspec | sed 's/.*"\([^"]*\)".*/\1/')
 
-                  echo "Waiting for CocoaPods index to update (up to 2 minutes)..."
+          echo "Waiting for CocoaPods index to update (up to 2 minutes)..."
 
-                  # Try to find the pod with retries
-                  for attempt in {1..24}; do
-                    if pod search ColorJourney | grep -q "ColorJourney (${PODSPEC_VERSION})"; then
-                      echo "✓ Pod found on CocoaPods: ColorJourney (${PODSPEC_VERSION})"
-                      echo "✓ Available at: https://cocoapods.org/pods/ColorJourney"
-                      exit 0
-                    fi
-                    
-                    if [ $attempt -lt 24 ]; then
-                      echo "Attempt $attempt/24: Pod not yet in index, waiting 5 seconds..."
-                      sleep 5
-                    fi
-                  done
+          # Try to find the pod with retries
+          for attempt in {1..24}; do
+            if pod search ColorJourney | grep -q "ColorJourney (${PODSPEC_VERSION})"; then
+              echo "✓ Pod found on CocoaPods: ColorJourney (${PODSPEC_VERSION})"
+              echo "✓ Available at: https://cocoapods.org/pods/ColorJourney"
+              exit 0
+            fi
+            
+            if [ $attempt -lt 24 ]; then
+              echo "Attempt $attempt/24: Pod not yet in index, waiting 5 seconds..."
+              sleep 5
+            fi
+          done
 
-                  echo "WARNING: Pod not found in search index within 2 minutes"
-                  echo "This is normal; the pod may still be propagating."
-                  echo "Check https://cocoapods.org/pods/ColorJourney after a few minutes."
+          echo "WARNING: Pod not found in search index within 2 minutes"
+          echo "This is normal; the pod may still be propagating."
+          echo "Check https://cocoapods.org/pods/ColorJourney after a few minutes."
 
-    cocoapods-failure-notify:
-        name: "CocoaPods: Failure notification"
-        needs: [cocoapods-lint, cocoapods-push]
-        runs-on: ubuntu-latest
-        if: failure()
+  cocoapods-failure-notify:
+    name: "CocoaPods: Failure notification"
+    needs: [cocoapods-lint, cocoapods-push]
+    runs-on: ubuntu-latest
+    if: failure()
 
-        steps:
-            - name: Log failure information
-              run: |
-                  echo "CocoaPods release workflow failed!"
-                  echo ""
-                  echo "Manual fallback steps:"
-                  echo "1. Export your trunk token: export COCOAPODS_TRUNK_TOKEN=your-token"
-                  echo "2. Run: pod trunk push ColorJourney.podspec --verbose"
-                  echo ""
-                  echo "For more info, see DevDocs/RELEASE_PLAYBOOK.md - Phase 6"
+    steps:
+      - name: Log failure information
+        run: |
+          echo "CocoaPods release workflow failed!"
+          echo ""
+          echo "Manual fallback steps:"
+          echo "1. Export your trunk token: export COCOAPODS_TRUNK_TOKEN=your-token"
+          echo "2. Run: pod trunk push ColorJourney.podspec --verbose"
+          echo ""
+          echo "For more info, see DevDocs/RELEASE_PLAYBOOK.md - Phase 6"
 
-            - name: Fail workflow
-              run: |
-                  echo "ERROR: CocoaPods publication failed"
-                  exit 1
+      - name: Fail workflow
+        run: |
+          echo "ERROR: CocoaPods publication failed"
+          exit 1
