@@ -2,6 +2,10 @@
 
 **Programmatically created graduated color palettes *that actually look good!***
 
+[![Build Status](https://github.com/peternicholls/ColorJourney/actions/workflows/core-ci.yml/badge.svg?branch=develop)](https://github.com/peternicholls/ColorJourney/actions/workflows/core-ci.yml)
+[![Version](https://img.shields.io/github/v/release/peternicholls/ColorJourney)](https://github.com/peternicholls/ColorJourney/releases)
+[![Platforms](https://img.shields.io/badge/platforms-iOS%2013%2B%20%7C%20macOS%2010.15%2B%20%7C%20Linux%20%7C%20Windows-informational)](README.md#platform-support)
+
 ## The Problem
 
 Let's say, you need 12 distinct colors for timeline tracks. Or 8 category labels. Or a smooth gradient that doesn't turn to mud in the middle.

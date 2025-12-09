@@ -1,0 +1,93 @@
+name: Update Badges
+
+# Triggered when a release is published
+on:
+    release:
+        types: [published]
+    workflow_dispatch:
+
+permissions:
+    contents: write
+
+jobs:
+    update-badges:
+        name: Update README Badges
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4.1.7
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  ref: main
+                  fetch-depth: 0
+
+            - name: Get latest release version
+              id: latest-release
+              run: |
+                  # Get the latest release tag
+                  LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+                  VERSION=${LATEST_TAG#v}
+                  echo "version=${VERSION}" >> $GITHUB_OUTPUT
+                  echo "tag=${LATEST_TAG}" >> $GITHUB_OUTPUT
+                  echo "Latest release: ${LATEST_TAG}"
+
+            - name: Update README badge block
+              run: |
+                  VERSION="${{ steps.latest-release.outputs.version }}"
+                  TAG="${{ steps.latest-release.outputs.tag }}"
+
+                  export BUILD_BADGE="[![Build Status](https://github.com/${{ github.repository }}/actions/workflows/core-ci.yml/badge.svg?branch=develop)](https://github.com/${{ github.repository }}/actions/workflows/core-ci.yml)"
+                  export VERSION_BADGE="[![Version](https://img.shields.io/badge/version-${VERSION}-blue.svg)](https://github.com/${{ github.repository }}/releases/tag/${TAG})"
+                  export PLATFORM_BADGE="[![Platforms](https://img.shields.io/badge/platforms-iOS%2013%2B%20%7C%20macOS%2010.15%2B%20%7C%20Linux%20%7C%20Windows-informational)](README.md#platform-support)"
+
+                  python - <<'PY'
+import os
+import pathlib
+
+readme = pathlib.Path("README.md")
+lines = readme.read_text().splitlines()
+
+new_block = [
+    os.environ["BUILD_BADGE"],
+    os.environ["VERSION_BADGE"],
+    os.environ["PLATFORM_BADGE"],
+]
+
+# Replace the first three badge lines after the title, preserving everything else
+output = []
+replaced = False
+for line in lines:
+    if not replaced and line.startswith("[![Build Status]"):
+        output.extend(new_block)
+        replaced = True
+        continue
+    if replaced and (line.startswith("[![Version]") or line.startswith("[![Platforms]")):
+        continue
+    output.append(line)
+
+if not replaced:
+    # Insert after title if badges were missing
+    for idx, line in enumerate(output):
+        if line.strip().startswith("**Programmatically"):
+            output[idx:idx+1] = [output[idx], *new_block]
+            break
+
+readme.write_text("\n".join(output) + "\n")
+PY
+
+                  echo "Updated README badges:"
+                  head -n 10 README.md
+
+            - name: Commit and push badge updates
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+
+                  if git diff --quiet README.md; then
+                    echo "No badge changes detected; skipping commit."
+                    exit 0
+                  fi
+
+                  git add README.md
+                  git commit -m "chore(badges): update badges for ${TAG}"
+                  git push origin HEAD:main
