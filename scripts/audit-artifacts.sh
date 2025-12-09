@@ -102,7 +102,7 @@ elif [ "$ARTIFACT_TYPE" = "unified" ]; then
     
     # Forbidden items
     echo "  Forbidden items:"
-    FORBIDDEN_ITEMS=("DevDocs" "Dockerfile" "Makefile" "Package.swift~" ".github" "*.backup*")
+    FORBIDDEN_ITEMS=("DevDocs" "Dockerfile" "Package.swift~" ".github" "*.backup*")
     HAS_FORBIDDEN=0
     for item in "${FORBIDDEN_ITEMS[@]}"; do
         if find "$TEMP_DIR" -path "*/$item" -o -path "*/$item/*" 2>/dev/null | grep -q .; then
@@ -110,6 +110,11 @@ elif [ "$ARTIFACT_TYPE" = "unified" ]; then
             HAS_FORBIDDEN=1
         fi
     done
+    # Check for root-level Makefile (excluding Docs/generated/doxygen/latex/Makefile which is part of docs)
+    if find "$TEMP_DIR" -maxdepth 1 -name "Makefile" -o -path "*/Makefile.serve" 2>/dev/null | grep -q .; then
+        echo -e "    ${RED}✗ Found forbidden: root-level Makefile${NC}"
+        HAS_FORBIDDEN=1
+    fi
     if [ "$HAS_FORBIDDEN" = "0" ]; then
         echo "    ✓ No forbidden items"
     else
