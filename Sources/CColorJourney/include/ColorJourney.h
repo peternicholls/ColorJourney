@@ -574,9 +574,18 @@ void cj_journey_discrete(CJ_Journey journey, int count, CJ_RGB* out_colors);
  * @brief Get a single discrete color at a specific index.
  *
  * Deterministically maps @p index to a journey position using
- * #CJ_DISCRETE_DEFAULT_SPACING and enforces the configured contrast against the
- * immediately preceding index. All calls with the same journey configuration
- * and index yield the same color.
+ * #CJ_DISCRETE_DEFAULT_SPACING and enforces the configured contrast by
+ * computing all preceding indices from 0 up to (but not including) @p index.
+ * This ensures that the color sequence is consistent and contrast is maintained
+ * across the entire sequence.
+ *
+ * **Performance:** O(n) where n is @p index, as all prior colors are recomputed
+ * on each call. For efficient access to multiple colors, use
+ * @ref cj_journey_discrete_range or implement caching in your application if
+ * colors will be accessed repeatedly.
+ *
+ * **Determinism:** All calls with the same journey configuration and index
+ * yield the same color, making this suitable for user-side caching strategies.
  *
  * @param journey Journey handle
  * @param index   Zero-based color index (must be ≥ 0)
@@ -592,6 +601,14 @@ CJ_RGB cj_journey_discrete_at(CJ_Journey journey, int index);
  * same deterministic mapping as @ref cj_journey_discrete_at. Contrast is
  * enforced against the previous index (including indexes before @p start when
  * needed) so the range matches sequential access results.
+ *
+ * **Performance:** O(start + count) as all colors from index 0 to start+count-1
+ * are computed to ensure proper contrast enforcement. For efficient bulk access,
+ * prefer calling this once with the full range rather than multiple calls with
+ * smaller ranges.
+ *
+ * **Determinism:** Results are deterministic and match individual calls to
+ * @ref cj_journey_discrete_at, making this suitable for user-side caching.
  *
  * @param journey    Journey handle
  * @param start      Zero-based start index (must be ≥ 0)

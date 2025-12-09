@@ -619,10 +619,9 @@ static float discrete_min_delta_e(const CJ_Journey_Impl* j) {
 }
 
 static float discrete_position_from_index(int index) {
-    if (index <= 0) return 0.0f;
+    if (index < 0) return 0.0f;
 
     float t = fmodf((float)index * CJ_DISCRETE_DEFAULT_SPACING, 1.0f);
-    if (t < 0.0f) t += 1.0f;
     return t;
 }
 
