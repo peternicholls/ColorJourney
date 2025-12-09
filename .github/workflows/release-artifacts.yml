@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   preflight:
-    name: Preflight: tag and branch validation
+    name: "Preflight: tag and branch validation"
     runs-on: ubuntu-latest
 
     steps:

@@ -41,39 +41,39 @@ jobs:
                   export PLATFORM_BADGE="[![Platforms](https://img.shields.io/badge/platforms-iOS%2013%2B%20%7C%20macOS%2010.15%2B%20%7C%20Linux%20%7C%20Windows-informational)](README.md#platform-support)"
 
                   python - <<'PY'
-import os
-import pathlib
+                  import os
+                                    import pathlib
 
-readme = pathlib.Path("README.md")
-lines = readme.read_text().splitlines()
+                  readme = pathlib.Path("README.md")
+                  lines = readme.read_text().splitlines()
 
-new_block = [
-    os.environ["BUILD_BADGE"],
-    os.environ["VERSION_BADGE"],
-    os.environ["PLATFORM_BADGE"],
-]
+                  new_block = [
+                      os.environ["BUILD_BADGE"],
+                      os.environ["VERSION_BADGE"],
+                      os.environ["PLATFORM_BADGE"],
+                  ]
 
-# Replace the first three badge lines after the title, preserving everything else
-output = []
-replaced = False
-for line in lines:
-    if not replaced and line.startswith("[![Build Status]"):
-        output.extend(new_block)
-        replaced = True
-        continue
-    if replaced and (line.startswith("[![Version]") or line.startswith("[![Platforms]")):
-        continue
-    output.append(line)
+                  # Replace the first three badge lines after the title, preserving everything else
+                  output = []
+                  replaced = False
+                  for line in lines:
+                      if not replaced and line.startswith("[![Build Status]"):
+                          output.extend(new_block)
+                          replaced = True
+                          continue
+                      if replaced and (line.startswith("[![Version]") or line.startswith("[![Platforms]")):
+                          continue
+                      output.append(line)
 
-if not replaced:
-    # Insert after title if badges were missing
-    for idx, line in enumerate(output):
-        if line.strip().startswith("**Programmatically"):
-            output[idx:idx+1] = [output[idx], *new_block]
-            break
+                  if not replaced:
+                      # Insert after title if badges were missing
+                      for idx, line in enumerate(output):
+                          if line.strip().startswith("**Programmatically"):
+                              output[idx:idx+1] = [output[idx], *new_block]
+                              break
 
-readme.write_text("\n".join(output) + "\n")
-PY
+                  readme.write_text("\n".join(output) + "\n")
+                  PY
 
                   echo "Updated README badges:"
                   head -n 10 README.md
