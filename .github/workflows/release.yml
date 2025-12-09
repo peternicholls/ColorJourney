@@ -46,7 +46,7 @@ jobs:
             - name: Verify version parity
               run: |
                   VERSION=${GITHUB_REF#refs/tags/}
-                  PODSPEC_VERSION=$(grep "spec.version" ColorJourney.podspec | sed 's/.*"\([^"]*\)".*/\1/')
+                  PODSPEC_VERSION=$(grep "^  spec.version" ColorJourney.podspec | sed 's/.*"\([^"]*\)".*/\1/')
 
                   echo "Tag version: ${VERSION}"
                   echo "Podspec version: ${PODSPEC_VERSION}"
@@ -103,7 +103,7 @@ jobs:
             - name: Verify publication
               run: |
                   VERSION=${GITHUB_REF#refs/tags/}
-                  PODSPEC_VERSION=$(grep "spec.version" ColorJourney.podspec | sed 's/.*"\([^"]*\)".*/\1/')
+                  PODSPEC_VERSION=$(grep "^  spec.version" ColorJourney.podspec | sed 's/.*"\([^"]*\)".*/\1/')
 
                   echo "Waiting for CocoaPods index to update (up to 2 minutes)..."
 
