@@ -1,0 +1,4 @@
+module CColorJourney {
+    header "ColorJourney.h"
+    export *
+}

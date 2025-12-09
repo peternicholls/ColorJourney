@@ -55,11 +55,11 @@ Pod::Spec.new do |spec|
 
   spec.swift_version = "5.9"
 
-  # Source files: Swift wrapper and C core
-  spec.source_files = "Sources/ColorJourney/**/*.swift", "Sources/CColorJourney/**/*.c"
+  # Source files
+  spec.source_files = "Sources/ColorJourney/**/*.swift", "Sources/CColorJourney/**/*.{c,h}"
   
-  # Public headers for C core (required for module bridging)
-  spec.public_header_files = "Sources/CColorJourney/include/**/*.h"
+  # Public headers for C core
+  spec.public_header_files = "Sources/CColorJourney/include/ColorJourney.h"
   
   # Preserve header directory structure
   spec.preserve_paths = "Sources/CColorJourney/include"
@@ -69,7 +69,7 @@ Pod::Spec.new do |spec|
     "SWIFT_INCLUDE_PATHS" => "$(PODS_TARGET_SRCROOT)/Sources/CColorJourney/include",
     "GCC_PREPROCESSOR_DEFINITIONS" => "_GNU_SOURCE",
     "CLANG_ENABLE_OBJC_ARC" => "YES",
-    "GCC_OPTIMIZATION_LEVEL" => "3"  # Enable O3 optimization for release builds
+    "GCC_OPTIMIZATION_LEVEL" => "3"
   }
 
   spec.user_target_xcconfig = {
