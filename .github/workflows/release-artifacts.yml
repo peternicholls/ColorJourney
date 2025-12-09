@@ -61,33 +61,13 @@ jobs:
         id: swift-artifact
         run: |
           VERSION="${GITHUB_REF#refs/tags/v}"
-          ARTIFACT_NAME="ColorJourney-${VERSION}"
-
-          # Create archive with allowed files
-          tar --exclude=DevDocs \
-              --exclude=Sources/CColorJourney \
-              --exclude='.git*' \
-              --exclude='.github' \
-              --exclude='Tests/CColorJourneyTests' \
-              --exclude='Makefile*' \
-              --exclude='Dockerfile*' \
-              --exclude='docker-compose.yml' \
-              --exclude='scripts' \
-              --exclude='*.xcodeproj' \
-              --exclude='*.key' \
-              --exclude='*.pem' \
-              --exclude='.env*' \
-              --exclude='*.backup*' \
-              -czf "${ARTIFACT_NAME}.tar.gz" \
-              Sources/ColorJourney/ \
-              Package.swift \
-              README.md \
-              LICENSE \
-              CHANGELOG.md \
-              Docs/
-
-          echo "artifact=${ARTIFACT_NAME}.tar.gz" >> $GITHUB_OUTPUT
-          echo "✓ Swift artifact created: ${ARTIFACT_NAME}.tar.gz"
+          
+          # Use the packaging script which properly stages files
+          chmod +x scripts/package-swift.sh
+          ./scripts/package-swift.sh "${VERSION}"
+          
+          ARTIFACT_NAME="ColorJourney-${VERSION}.tar.gz"
+          echo "artifact=${ARTIFACT_NAME}" >> $GITHUB_OUTPUT
 
       - name: Audit Swift artifact
         run: |
@@ -129,40 +109,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y cmake make gcc
 
-      - name: Build C library
-        run: |
-          cmake -B build -DCMAKE_BUILD_TYPE=Release
-          cmake --build build --config Release
-
       - name: Create C artifact
         id: c-artifact
         run: |
           VERSION="${GITHUB_REF#refs/tags/v}"
-          ARTIFACT_NAME="libcolorjourney-${VERSION}-linux-x86_64"
-
-          mkdir -p "${ARTIFACT_NAME}/include"
-          mkdir -p "${ARTIFACT_NAME}/lib"
-          mkdir -p "${ARTIFACT_NAME}/docs"
-
-          # Copy headers
-          cp Sources/CColorJourney/include/*.h "${ARTIFACT_NAME}/include/" 2>/dev/null || true
-
-          # Copy built libraries
-          if [ -f "build/libcolorjourney.a" ]; then
-            cp build/libcolorjourney.a "${ARTIFACT_NAME}/lib/"
-          fi
-
-          # Copy documentation
-          cp README.md "${ARTIFACT_NAME}/" 2>/dev/null || true
-          cp LICENSE "${ARTIFACT_NAME}/" 2>/dev/null || true
-          cp CHANGELOG.md "${ARTIFACT_NAME}/" 2>/dev/null || true
-          cp -r Docs/ "${ARTIFACT_NAME}/docs/" 2>/dev/null || true
-
-          # Create archive
-          tar -czf "${ARTIFACT_NAME}.tar.gz" "${ARTIFACT_NAME}/"
-
-          echo "artifact=${ARTIFACT_NAME}.tar.gz" >> $GITHUB_OUTPUT
-          echo "✓ C artifact created: ${ARTIFACT_NAME}.tar.gz"
+          
+          # Use the packaging script
+          chmod +x scripts/package-c.sh
+          ./scripts/package-c.sh "${VERSION}" linux
+          
+          ARTIFACT_NAME="libcolorjourney-${VERSION}-linux-x86_64.tar.gz"
+          echo "artifact=${ARTIFACT_NAME}" >> $GITHUB_OUTPUT
 
       - name: Audit C artifact
         run: |

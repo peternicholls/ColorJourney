@@ -23,11 +23,18 @@ if [ -z "$1" ]; then
 fi
 
 VERSION="$1"
-PLATFORM="${2:-macos}"
+PLATFORM="${2:-linux}"
 
-# Validate platform
+# Determine architecture
 case "$PLATFORM" in
-    macos|linux|windows)
+    macos)
+        ARCH="universal"
+        ;;
+    linux)
+        ARCH="x86_64"
+        ;;
+    windows)
+        ARCH="x86_64"
         ;;
     *)
         echo -e "${RED}Error: Unsupported platform: $PLATFORM${NC}"
@@ -36,7 +43,7 @@ case "$PLATFORM" in
         ;;
 esac
 
-ARTIFACT_NAME="libcolorjourney-${VERSION}-${PLATFORM}"
+ARTIFACT_NAME="libcolorjourney-${VERSION}-${PLATFORM}-${ARCH}"
 ARTIFACT_FILE="${ARTIFACT_NAME}.tar.gz"
 
 echo -e "${YELLOW}Packaging C release...${NC}"
@@ -65,17 +72,15 @@ fi
 
 # Build C library (if not already built)
 echo "  • Building C library for $PLATFORM..."
-cd "Sources/CColorJourney"
 if [ ! -d "build" ]; then
     cmake -B build -DCMAKE_BUILD_TYPE=Release
 fi
 cmake --build build --config Release
-cd - > /dev/null
 
 # Copy static library
 echo "  • Static library"
-if [ -f "Sources/CColorJourney/build/libcolorjourney.a" ]; then
-    cp "Sources/CColorJourney/build/libcolorjourney.a" "$TEMP_DIR/$ARTIFACT_NAME/lib/"
+if [ -f "build/libcolorjourney.a" ]; then
+    cp "build/libcolorjourney.a" "$TEMP_DIR/$ARTIFACT_NAME/lib/"
 else
     echo -e "${YELLOW}Warning: Static library not found (build may have failed)${NC}"
 fi
