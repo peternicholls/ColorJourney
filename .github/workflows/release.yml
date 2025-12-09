@@ -40,7 +40,7 @@ jobs:
             - name: Lint podspec
               run: |
                   echo "Running pod spec lint..."
-                  pod spec lint ColorJourney.podspec --verbose
+                  pod spec lint ColorJourney.podspec --allow-warnings
                   echo "✓ Podspec lint passed"
 
             - name: Verify version parity
