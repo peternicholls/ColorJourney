@@ -40,6 +40,24 @@
 #endif
 
 /* ========================================================================
+ * Algorithm Configuration Constants
+ * ======================================================================== */
+
+/**
+ * Minimum palette size for applying periodic chroma pulse enhancement.
+ * Palettes with more colors than this threshold get a cosine wave pattern
+ * applied to their chroma to create intentional "rhythm" in saturation.
+ */
+#define CJ_CHROMA_PULSE_MIN_COLORS 20
+
+/**
+ * Maximum iterations for iterative contrast enforcement algorithm.
+ * Each iteration applies a L nudge and chroma boost to increase perceptual
+ * distance (ΔE) between adjacent colors until minimum contrast is met.
+ */
+#define CJ_CONTRAST_MAX_ITERATIONS 5
+
+/* ========================================================================
  * Fast Math Helpers
  * ======================================================================== */
 
@@ -77,9 +95,8 @@
  * - Principle II (Perceptual Integrity): Maximum precision for best output
  * - Principle IV (Determinism): IEEE 754 guarantees consistent behavior
  */
-static inline double precise_cbrt(double x) {
-    return cbrt(x);  // Standard C library, hardware-accelerated
-}
+/* Use standard C library cbrt directly - no wrapper needed */
+#define oklab_cbrt(x) cbrt(x)
 
 static inline float clampf(float x, float min, float max) {
     return x < min ? min : (x > max ? max : x);
@@ -132,9 +149,9 @@ CJ_Lab cj_rgb_to_oklab(CJ_RGB c) {
      * Apply cube root to compress the range, simulating human perception.
      * Uses precise_cbrt for IEEE 754 double precision accuracy.
      */
-    double l_ = precise_cbrt(l);
-    double m_ = precise_cbrt(m);
-    double s_ = precise_cbrt(s);
+    double l_ = oklab_cbrt(l);
+    double m_ = oklab_cbrt(m);
+    double s_ = oklab_cbrt(s);
 
     /* Stage 3: LMS' → OKLab (opponent encoding)
      * Transform to opponent color space (red-green and yellow-blue).
@@ -693,8 +710,8 @@ static CJ_RGB apply_minimum_contrast(CJ_RGB color,
     CJ_Lab prev_lab = cj_rgb_to_oklab(*previous);
     CJ_Lab curr_lab = cj_rgb_to_oklab(color);
     
-    /* Iterative refinement (up to 5 iterations) */
-    const int max_iterations = 5;
+    /* Iterative refinement (up to CJ_CONTRAST_MAX_ITERATIONS) */
+    const int max_iterations = CJ_CONTRAST_MAX_ITERATIONS;
     for (int iter = 0; iter < max_iterations; iter++) {
         float dE = cj_delta_e(curr_lab, prev_lab);
         
@@ -818,9 +835,10 @@ void cj_journey_discrete(CJ_Journey journey, int count, CJ_RGB* out_colors) {
     }
     
     /* ========== PERIODIC CHROMA PULSE (WASM Enhancement) ==========
-     * For large palettes (>20 colors), apply a periodic chroma modulation
-     * to create intentional "rhythm" in saturation across the palette.
-     * This produces more "musical" color spacing that feels more curated.
+     * For large palettes (>CJ_CHROMA_PULSE_MIN_COLORS), apply a periodic
+     * chroma modulation to create intentional "rhythm" in saturation across
+     * the palette. This produces more "musical" color spacing that feels
+     * more curated.
      * 
      * Formula: chroma_pulse = 1.0 + 0.1 * cos(i * π/5)
      * 
@@ -829,7 +847,7 @@ void cj_journey_discrete(CJ_Journey journey, int count, CJ_RGB* out_colors) {
      * 
      * Reference: ALGORITHM_COMPARISON_ANALYSIS.md - WASM chroma modulation
      */
-    if (count > 20) {
+    if (count > CJ_CHROMA_PULSE_MIN_COLORS) {
         for (int i = 0; i < count; i++) {
             /* Convert to OKLab to access chroma */
             CJ_Lab lab = cj_rgb_to_oklab(out_colors[i]);
