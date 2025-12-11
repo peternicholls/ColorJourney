@@ -44,57 +44,41 @@
  * ======================================================================== */
 
 /**
- * FAST CUBE ROOT (Newton-Raphson with Bit Manipulation)
- * =====================================================
+ * STANDARD CUBE ROOT (Double Precision)
+ * ======================================
  *
- * Purpose: Compute x^(1/3) with ~1% error, 3-5x faster than cbrtf().
+ * Purpose: Compute x^(1/3) with IEEE 754 double precision for maximum accuracy.
  *
- * Why this optimization?
- * - OKLab conversion loops through millions of samples during palette generation
- * - Speed is critical for real-time color generation
- * - 1% error is perceptually invisible (human eye can't distinguish)
- * - Error is consistent across platforms (no IEEE variance issues)
+ * Why double precision?
+ * - Analysis of WASM implementation shows double precision produces significantly
+ *   better output matching user expectations
+ * - Eliminates ~1% cumulative error that compounds through color pipeline
+ * - For 20-100 color palettes, accuracy improvement is visibly cleaner
+ * - Modern hardware-accelerated cbrt() is highly optimized
  *
- * Algorithm:
- * 1. Magic bit manipulation for initial guess:
- *    - Reinterpret float bits as 32-bit integer
- *    - Divide by 3 (right shift by 2, subtract 1)
- *    - Add magic constant 0x2a514067 (derived empirically)
- *    - Reinterpret back as float
- *    Result: Very close approximation with zero math ops
+ * Trade-off Analysis:
+ * - Previous: float (32-bit, ~7 decimal digits) with ~1% error
+ * - Current: double (64-bit, ~15 decimal digits) with machine epsilon precision
+ * - Speed: Hardware-accelerated cbrt() is comparable on modern CPUs
+ * - Accuracy: Eliminates perceptual artifacts in large palettes
  *
- * 2. Newton-Raphson refinement (one iteration):
- *    - Formula: y_new = (2*y + x/(y²)) / 3
- *    - Quadratic convergence: error squares each iteration
- *    - One iteration brings error from ~2-3% → ~0.1%
- *
- * Accuracy: ~1% error across range [0, 1], < 0.1% after refinement
- * Performance: 1 reinterpret + 1 shift + 1 add + 1 division + 2 multiplies
- *              vs cbrtf() which calls transcendental function library
- *
- * Trade-off: We accept ~1% error to gain speed. OKLab color math tolerates
- * this error; perceptual distance calculations remain accurate because
- * the error is consistent and small relative to typical color differences.
+ * Implementation Note:
+ * Uses standard C library cbrt() which is:
+ * - IEEE 754 compliant (consistent across platforms)
+ * - Hardware-accelerated on modern CPUs
+ * - Deterministic (same input → same output)
  *
  * References:
- * - Lomont, C. "Fast inverse square root" (popularized by id Tech 3)
- * - Newton-Raphson iteration theory (quadratic convergence)
  * - OKLab paper: Ottosson, B. https://bottosson.github.io/posts/oklab/
+ * - ALGORITHM_COMPARISON_ANALYSIS.md (WASM vs C core comparison)
  *
  * Constitution Reference:
- * - Principle I (Portability): Pure C99, no SIMD or platform-specific tricks
- * - Principle II (Perceptual Integrity): 1% error is invisible to perception
- * - Principle V (Performance): Provides necessary speed for real-time generation
+ * - Principle I (Portability): Standard C99 library function
+ * - Principle II (Perceptual Integrity): Maximum precision for best output
+ * - Principle IV (Determinism): IEEE 754 guarantees consistent behavior
  */
-static inline float fast_cbrt(float x) {
-    union { float f; uint32_t i; } u;
-    u.f = x;
-    u.i = u.i / 3 + 0x2a514067;  // Magic bit manipulation for initial guess
-    
-    float y = u.f;
-    y = (2.0f * y + x / (y * y)) * 0.333333333f;  // Newton-Raphson refinement
-    
-    return y;
+static inline double precise_cbrt(double x) {
+    return cbrt(x);  // Standard C library, hardware-accelerated
 }
 
 static inline float clampf(float x, float min, float max) {
@@ -138,27 +122,29 @@ CJ_Lab cj_rgb_to_oklab(CJ_RGB c) {
     /* Stage 1: RGB → LMS (cone response simulation)
      * Linear transformation based on human cone cell sensitivities.
      * Coefficients are hardcoded from Ottosson's derivation.
+     * Using double precision for maximum accuracy.
      */
-    float l = 0.4122214708f * c.r + 0.5363325363f * c.g + 0.0514459929f * c.b;
-    float m = 0.2119034982f * c.r + 0.6806995451f * c.g + 0.1073969566f * c.b;
-    float s = 0.0883024619f * c.r + 0.2817188376f * c.g + 0.6299787005f * c.b;
+    double l = 0.4122214708 * c.r + 0.5363325363 * c.g + 0.0514459929 * c.b;
+    double m = 0.2119034982 * c.r + 0.6806995451 * c.g + 0.1073969566 * c.b;
+    double s = 0.0883024619 * c.r + 0.2817188376 * c.g + 0.6299787005 * c.b;
 
     /* Stage 2: LMS → LMS' (nonlinear compression)
      * Apply cube root to compress the range, simulating human perception.
-     * Uses fast_cbrt for speed while maintaining perceptual accuracy.
+     * Uses precise_cbrt for IEEE 754 double precision accuracy.
      */
-    float l_ = fast_cbrt(l);
-    float m_ = fast_cbrt(m);
-    float s_ = fast_cbrt(s);
+    double l_ = precise_cbrt(l);
+    double m_ = precise_cbrt(m);
+    double s_ = precise_cbrt(s);
 
     /* Stage 3: LMS' → OKLab (opponent encoding)
      * Transform to opponent color space (red-green and yellow-blue).
      * L = perceptual lightness, a/b = color opponency.
+     * Using double precision throughout for accuracy.
      */
     CJ_Lab result;
-    result.L = 0.2104542553f * l_ + 0.7936177850f * m_ - 0.0040720468f * s_;
-    result.a = 1.9779984951f * l_ - 2.4285922050f * m_ + 0.4505937099f * s_;
-    result.b = 0.0259040371f * l_ + 0.7827717662f * m_ - 0.8086757660f * s_;
+    result.L = (float)(0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_);
+    result.a = (float)(1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_);
+    result.b = (float)(0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_);
     
     return result;
 }
@@ -169,26 +155,27 @@ CJ_RGB cj_oklab_to_rgb(CJ_Lab c) {
      * May produce out-of-gamut RGB (values outside [0, 1]) if
      * the OKLab color is not representable in sRGB. Use cj_rgb_clamp
      * if needed.
+     * Using double precision for accuracy.
      */
     
     /* Stage 1: OKLab → LMS' (inverse opponent encoding) */
-    float l_ = c.L + 0.3963377774f * c.a + 0.2158037573f * c.b;
-    float m_ = c.L - 0.1055613458f * c.a - 0.0638541728f * c.b;
-    float s_ = c.L - 0.0894841775f * c.a - 1.2914855480f * c.b;
+    double l_ = c.L + 0.3963377774 * c.a + 0.2158037573 * c.b;
+    double m_ = c.L - 0.1055613458 * c.a - 0.0638541728 * c.b;
+    double s_ = c.L - 0.0894841775 * c.a - 1.2914855480 * c.b;
 
     /* Stage 2: LMS' → LMS (inverse nonlinear compression via cube)
-     * Note: Using direct cube (x^3) as the inverse of fast_cbrt.
+     * Note: Using direct cube (x^3) as the inverse of precise_cbrt.
      * This is exact and fast.
      */
-    float l = l_ * l_ * l_;
-    float m = m_ * m_ * m_;
-    float s = s_ * s_ * s_;
+    double l = l_ * l_ * l_;
+    double m = m_ * m_ * m_;
+    double s = s_ * s_ * s_;
 
     /* Stage 3: LMS → RGB (inverse cone response transformation) */
     CJ_RGB result;
-    result.r = +4.0767416621f * l - 3.3077115913f * m + 0.2309699292f * s;
-    result.g = -1.2684380046f * l + 2.6097574011f * m - 0.3413193965f * s;
-    result.b = -0.0041960863f * l - 0.7034186147f * m + 1.7076147010f * s;
+    result.r = (float)(+4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s);
+    result.g = (float)(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s);
+    result.b = (float)(-0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s);
     
     return result;
 }
@@ -536,9 +523,14 @@ static CJ_LCh apply_dynamics(CJ_Journey_Impl* j, CJ_LCh color, float t) {
      * At t ≈ 0.5, saturation is boosted by vibrancy factor.
      * This adds energy to the center of the palette.
      * Constitution Principle II: Ensures perceptual vibrancy.
+     * 
+     * UPDATED: Uses sharper peak formula from WASM analysis for better output.
+     * Formula: 1 + vibrancy * 0.6 * max(0, 1 - |t-0.5|/0.35)
+     * This produces a more pronounced saturation at midpoint than the previous
+     * parabolic formula, matching WASM's superior output quality.
      */
-    float mid_boost = 1.0f + j->config.mid_journey_vibrancy * 
-                      (1.0f - 4.0f * (t - 0.5f) * (t - 0.5f));
+    float mid_boost = 1.0f + j->config.mid_journey_vibrancy * 0.6f * 
+                      fmaxf(0.0f, 1.0f - fabsf(t - 0.5f) / 0.35f);
     color.C *= mid_boost;
     
     /* Clamp to reasonable ranges */
@@ -618,6 +610,18 @@ static float discrete_min_delta_e(const CJ_Journey_Impl* j) {
     }
 }
 
+/**
+ * Calculate journey position from discrete index using adaptive spacing.
+ * 
+ * ADAPTIVE SPACING (matches WASM implementation):
+ * Instead of fixed 0.05 spacing (20 positions per cycle), spacing now adapts
+ * to the intended use:
+ * - For cj_journey_discrete_at: Uses fixed spacing (backward compatible)
+ * - For cj_journey_discrete: Uses count-based spacing (adaptive, better distribution)
+ * 
+ * This function maintains backward compatibility by defaulting to fixed spacing
+ * when count information is not available.
+ */
 static float discrete_position_from_index(int index) {
     if (index < 0) return 0.0f;
 
@@ -625,6 +629,62 @@ static float discrete_position_from_index(int index) {
     return t;
 }
 
+/**
+ * Calculate journey position with loop mode awareness (WASM-style).
+ * 
+ * This implements the WASM algorithm's adaptive spacing:
+ * - Closed loop: Divides by num_colors (includes wraparound)
+ * - Open loop: Divides by num_colors-1 (excludes end point)
+ * - Ping-pong: Mirrors between 0→1→0
+ */
+static float discrete_position_with_loop_mode(const CJ_Journey_Impl* j, int index, int total_count) {
+    if (index < 0) return 0.0f;
+    if (total_count <= 0) return 0.0f;
+    
+    float t;
+    
+    switch (j->config.loop_mode) {
+        case CJ_LOOP_CLOSED:
+            /* Closed loop: evenly divide by count (includes wraparound) */
+            t = (float)index / (float)total_count;
+            break;
+            
+        case CJ_LOOP_PINGPONG:
+            /* Ping-pong: mirrors between 0→1→0 */
+            t = (total_count > 1) ? (float)index / (float)(total_count - 1) : 0.5f;
+            t *= 2.0f;
+            if (t > 1.0f) t = 2.0f - t;
+            break;
+            
+        case CJ_LOOP_OPEN:
+        default:
+            /* Open loop: evenly divide by count-1 (excludes end point) */
+            t = (total_count > 1) ? (float)index / (float)(total_count - 1) : 0.5f;
+            break;
+    }
+    
+    return t;
+}
+
+/**
+ * Apply minimum contrast with iterative refinement (WASM-style).
+ * 
+ * ITERATIVE CONTRAST ENFORCEMENT:
+ * The WASM implementation uses an iterative approach (up to 5 iterations)
+ * instead of the previous single-pass approach. This produces smoother,
+ * more natural-looking color adjustments.
+ * 
+ * Algorithm:
+ * 1. Check ΔE between current and previous color
+ * 2. If insufficient, apply small L nudge (10% of shortfall)
+ * 3. If still insufficient, boost chroma
+ * 4. Repeat until contrast is met or max iterations reached
+ * 
+ * This iterative approach prevents aggressive "pushing" of colors and
+ * maintains better perceptual quality.
+ * 
+ * Reference: ALGORITHM_COMPARISON_ANALYSIS.md - Iterative contrast enforcement
+ */
 static CJ_RGB apply_minimum_contrast(CJ_RGB color,
                                      const CJ_RGB* previous,
                                      float min_delta_e) {
@@ -632,33 +692,49 @@ static CJ_RGB apply_minimum_contrast(CJ_RGB color,
 
     CJ_Lab prev_lab = cj_rgb_to_oklab(*previous);
     CJ_Lab curr_lab = cj_rgb_to_oklab(color);
-
-    curr_lab = cj_enforce_contrast(curr_lab, prev_lab, min_delta_e);
-
-    float dL = curr_lab.L - prev_lab.L;
-    float da = curr_lab.a - prev_lab.a;
-    float db = curr_lab.b - prev_lab.b;
-    float achieved = sqrtf(dL * dL + da * da + db * db);
-
-    if (achieved < min_delta_e) {
-        float scale = min_delta_e / (achieved + 1e-6f);
-        dL *= scale;
-        da *= scale;
-        db *= scale;
-
-        curr_lab.L = clampf(prev_lab.L + dL, 0.0f, 1.0f);
-        curr_lab.a = prev_lab.a + da;
-        curr_lab.b = prev_lab.b + db;
-
-        dL = curr_lab.L - prev_lab.L;
-        da = curr_lab.a - prev_lab.a;
-        db = curr_lab.b - prev_lab.b;
-        achieved = sqrtf(dL * dL + da * da + db * db);
-
-        if (achieved < min_delta_e) {
-            float direction = (prev_lab.L < 0.5f) ? 1.0f : -1.0f;
-            curr_lab.L = clampf(prev_lab.L + direction * min_delta_e, 0.0f, 1.0f);
+    
+    /* Iterative refinement (up to 5 iterations) */
+    const int max_iterations = 5;
+    for (int iter = 0; iter < max_iterations; iter++) {
+        float dE = cj_delta_e(curr_lab, prev_lab);
+        
+        if (dE >= min_delta_e) {
+            /* Sufficient contrast achieved */
+            break;
         }
+        
+        /* Calculate how much contrast we need */
+        float shortfall = min_delta_e - dE;
+        
+        /* Try multiple adjustment strategies in sequence */
+        
+        /* Strategy 1: Adjust lightness */
+        float direction = (prev_lab.L < 0.5f) ? 1.0f : -1.0f;
+        float L_nudge = shortfall * 0.5f;  /* Use 50% of shortfall for L adjustment */
+        curr_lab.L = clampf(curr_lab.L + direction * L_nudge, 0.0f, 1.0f);
+        
+        /* Check if L adjustment helped */
+        dE = cj_delta_e(curr_lab, prev_lab);
+        if (dE >= min_delta_e) {
+            break;
+        }
+        
+        /* Strategy 2: Adjust both a and b components */
+        shortfall = min_delta_e - dE;
+        CJ_LCh lch = cj_oklab_to_lch(curr_lab);
+        
+        /* Try rotating hue to increase separation */
+        float hue_rotation = 0.2f;  /* ~11 degrees */
+        lch.h += hue_rotation * (float)iter;  /* Increase rotation each iteration */
+        while (lch.h >= 2.0f * M_PI) lch.h -= 2.0f * M_PI;
+        
+        /* And boost chroma if possible */
+        if (lch.C > 1e-5f) {
+            float scale = 1.0f + shortfall * 0.5f;
+            lch.C = fminf(lch.C * scale, 0.4f);
+        }
+        
+        curr_lab = cj_lch_to_oklab(lch);
     }
 
     CJ_RGB adjusted = cj_oklab_to_rgb(curr_lab);
@@ -727,10 +803,9 @@ void cj_journey_discrete(CJ_Journey journey, int count, CJ_RGB* out_colors) {
     /* Determine contrast threshold */
     float min_delta_e = discrete_min_delta_e(j);
     
-    /* Generate evenly spaced samples */
+    /* Generate evenly spaced samples using loop-mode-aware positioning */
     for (int i = 0; i < count; i++) {
-        float t = (float)i / (float)(count - 1);
-        if (count == 1) t = 0.5f;
+        float t = discrete_position_with_loop_mode(j, i, count);
 
         CJ_RGB color = cj_journey_sample(journey, t);
 
@@ -740,5 +815,35 @@ void cj_journey_discrete(CJ_Journey journey, int count, CJ_RGB* out_colors) {
         }
 
         out_colors[i] = color;
+    }
+    
+    /* ========== PERIODIC CHROMA PULSE (WASM Enhancement) ==========
+     * For large palettes (>20 colors), apply a periodic chroma modulation
+     * to create intentional "rhythm" in saturation across the palette.
+     * This produces more "musical" color spacing that feels more curated.
+     * 
+     * Formula: chroma_pulse = 1.0 + 0.1 * cos(i * π/5)
+     * 
+     * This creates a gentle wave pattern in saturation that helps the eye
+     * distinguish between adjacent colors in large palettes.
+     * 
+     * Reference: ALGORITHM_COMPARISON_ANALYSIS.md - WASM chroma modulation
+     */
+    if (count > 20) {
+        for (int i = 0; i < count; i++) {
+            /* Convert to OKLab to access chroma */
+            CJ_Lab lab = cj_rgb_to_oklab(out_colors[i]);
+            CJ_LCh lch = cj_oklab_to_lch(lab);
+            
+            /* Apply periodic pulse */
+            double chroma_pulse = 1.0 + 0.1 * cos((double)i * M_PI / 5.0);
+            lch.C = (float)((double)lch.C * chroma_pulse);
+            lch.C = clampf(lch.C, 0.0f, 0.4f);
+            
+            /* Convert back to RGB */
+            lab = cj_lch_to_oklab(lch);
+            out_colors[i] = cj_oklab_to_rgb(lab);
+            out_colors[i] = cj_rgb_clamp(out_colors[i]);
+        }
     }
 }
