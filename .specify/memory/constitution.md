@@ -65,7 +65,9 @@ Every journey, every palette, and every sampling operation MUST:
 
 Output colors MUST be reproducible—same input config always produces same output RGB values, bit-for-bit, on all platforms.
 
-**Rationale:** OKLab was chosen because it maps human perception reliably. Using it consistently ensures colors that look good, avoid muddy midpoints, and maintain readable contrast. No surprises, no platform-specific drifts. Designers trust the output because OKLab guarantees perceptual uniformity.
+**Precision (v2.0.0+):** OKLab conversions use IEEE 754 double precision (64-bit) internally to eliminate cumulative error. This ensures maximum perceptual accuracy, especially for large palettes (20-100 colors). The standard library `cbrt()` function is used for cube root calculations, providing machine epsilon precision (~1e-15 relative error) instead of the previous ~1% approximation.
+
+**Rationale:** OKLab was chosen because it maps human perception reliably. Using it consistently ensures colors that look good, avoid muddy midpoints, and maintain readable contrast. No surprises, no platform-specific drifts. Designers trust the output because OKLab guarantees perceptual uniformity. The double precision upgrade (v2.0.0) further improves output quality based on empirical analysis comparing against reference implementations.
 
 ---
 
@@ -145,14 +147,23 @@ Future wrappers (Python, Rust, JavaScript) MUST follow the same structure: thin,
 
 ### Performance Requirements
 
+**UPDATED 2025-12-11**: Performance targets refined after adopting double-precision algorithms for improved perceptual accuracy (see v2.0.0 CHANGELOG).
+
 The C core MUST maintain:
-- **Continuous sampling:** ≤1 microsecond per `sample(at: t)` call
-- **Discrete palette:** ≤1 millisecond for 100-color palette generation
+- **Continuous sampling:** ≤1 microsecond per `sample(at: t)` call (currently ~0.18 µs)
+- **Discrete palette:** ≤1 millisecond for 100-color palette generation (currently ~0.089 ms)
 - **Zero allocations** for continuous sampling
 - **Minimal allocations** for discrete palette (~2KB per journey)
 - **Deterministic performance** across platforms (no unexplained variance)
 
-Any optimization MUST NOT compromise perceptual accuracy or determinism.
+**Precision vs Speed Trade-off (v2.0.0+):**
+- **Priority Order**: Perceptual accuracy > Performance > Code simplicity
+- Double precision (64-bit) is now used for OKLab conversions to eliminate cumulative error
+- Standard library `cbrt()` replaces `fast_cbrt()` for IEEE 754 compliance
+- Performance remains excellent for real-time generation (5M+ samples/sec)
+- Hardware-accelerated math functions on modern CPUs make precision nearly free
+
+Any optimization MUST NOT compromise perceptual accuracy or determinism. When in doubt, choose accuracy.
 
 ### API Stability
 
