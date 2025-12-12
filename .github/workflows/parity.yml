@@ -1,0 +1,115 @@
+name: C Algorithm Parity Testing
+
+on:
+    push:
+        branches: [develop, main, "release/**"]
+    pull_request:
+        branches: [develop, main]
+    workflow_dispatch:
+        inputs:
+            corpus_version:
+                description: "Corpus version to run (e.g., v20251212.1)"
+                required: false
+            artifact_policy:
+                description: "Artifact retention policy: all, failures, none"
+                required: false
+                default: "failures"
+
+jobs:
+    parity-check:
+        name: Run Parity Suite
+        runs-on: macos-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  submodules: recursive
+
+            - name: Install dependencies
+              run: |
+                  brew install coreutils
+
+            - name: Build parity runner
+              run: |
+                  cd specs/005-c-algo-parity/tools/parity-runner
+                  make clean
+                  make all
+
+            - name: Capture build provenance
+              id: provenance
+              run: |
+                  echo "c_commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+                  echo "wasm_commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+                  echo "platform=macos-ci-$(uname -m)" >> $GITHUB_OUTPUT
+                  echo "run_id=ci-${{ github.run_id }}-${{ github.run_attempt }}" >> $GITHUB_OUTPUT
+
+            - name: Run parity suite
+              id: parity
+              run: |
+                  cd specs/005-c-algo-parity/tools/parity-runner
+                  CORPUS="${{ github.event.inputs.corpus_version || 'corpus/default.json' }}"
+                  POLICY="${{ github.event.inputs.artifact_policy || 'failures' }}"
+                  ARTIFACTS_DIR="../../artifacts/${{ steps.provenance.outputs.run_id }}"
+
+                  ./parity-runner \
+                    --corpus "../../${CORPUS}" \
+                    --tolerances "../../config/tolerances.example.json" \
+                    --artifacts "${ARTIFACTS_DIR}" \
+                    --c-commit "${{ steps.provenance.outputs.c_commit }}" \
+                    --wasm-commit "${{ steps.provenance.outputs.wasm_commit }}" \
+                    --platform "${{ steps.provenance.outputs.platform }}" \
+                    --run-id "${{ steps.provenance.outputs.run_id }}" \
+                    --artifact-policy "${POLICY}" \
+                    --pass-gate 0.95 \
+                    --max-duration-ms 600000
+              continue-on-error: true
+
+            - name: Check parity results
+              run: |
+                  REPORT="specs/005-c-algo-parity/artifacts/${{ steps.provenance.outputs.run_id }}/report.json"
+                  if [ ! -f "${REPORT}" ]; then
+                    echo "::error::Parity report not found at ${REPORT}"
+                    exit 1
+                  fi
+
+                  PASS_RATE=$(jq -r '.passRate' "${REPORT}")
+                  WITHIN_GATE=$(jq -r '.withinPassGate' "${REPORT}")
+                  WITHIN_DURATION=$(jq -r '.withinDuration' "${REPORT}")
+                  TOTAL=$(jq -r '.summary.totalCases' "${REPORT}")
+                  PASSED=$(jq -r '.summary.passed' "${REPORT}")
+                  FAILED=$(jq -r '.summary.failed' "${REPORT}")
+
+                  echo "### Parity Test Results" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+                  echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+                  echo "| Total Cases | ${TOTAL} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| Passed | ${PASSED} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| Failed | ${FAILED} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| Pass Rate | ${PASS_RATE} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| Within Gate | ${WITHIN_GATE} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| Within Duration | ${WITHIN_DURATION} |" >> $GITHUB_STEP_SUMMARY
+
+                  if [ "${WITHIN_GATE}" != "true" ] || [ "${WITHIN_DURATION}" != "true" ]; then
+                    echo "::error::Parity check failed: pass rate ${PASS_RATE}, gate check ${WITHIN_GATE}, duration check ${WITHIN_DURATION}"
+                    exit 1
+                  fi
+
+            - name: Upload artifacts on failure
+              if: failure()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: parity-artifacts-${{ steps.provenance.outputs.run_id }}
+                  path: specs/005-c-algo-parity/artifacts/${{ steps.provenance.outputs.run_id }}/
+                  retention-days: 30
+                  if-no-files-found: warn
+
+            - name: Upload report summary
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: parity-report-${{ steps.provenance.outputs.run_id }}
+                  path: specs/005-c-algo-parity/artifacts/${{ steps.provenance.outputs.run_id }}/report.json
+                  retention-days: 90
+                  if-no-files-found: error

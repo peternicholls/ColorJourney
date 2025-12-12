@@ -1,3 +1,4 @@
+#include "color_journey_runner.h"
 #include "oklab.h"
 #include <stdlib.h>
 #include <stdint.h>
@@ -11,30 +12,6 @@
 #define EXPORT
 #endif
 // --- Data Structures ---
-typedef struct {
-    double lightness;
-    double chroma;
-    double contrast;
-    double vibrancy;
-    double warmth;
-    double bezier_light[2];
-    double bezier_chroma[2];
-    uint32_t seed;
-    int num_colors;
-    int num_anchors;
-    int loop_mode; // 0: open, 1: closed, 2: ping-pong
-    int variation_mode; // 0: off, 1: subtle, 2: noticeable
-    bool enable_color_circle;
-    double arc_length;
-    char curve_style[16];
-    int curve_dimensions; // bitflags: 1=L, 2=C, 4=H, 8=all
-    double curve_strength;
-} CJ_Config;
-typedef struct {
-    oklab ok;
-    srgb_u8 rgb;
-    int enforcement_iters;
-} CJ_ColorPoint;
 // --- Helper Functions ---
 static uint32_t rng_state;
 void seed_rng(uint32_t seed) { rng_state = seed == 0 ? 1 : seed; }

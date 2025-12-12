@@ -99,6 +99,7 @@ docs/.doctrees/
 *.zip
 checksums.txt
 *-checksums.txt
+swift-release/
 
 # Security - Never commit these!
 *.key

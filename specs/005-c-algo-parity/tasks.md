@@ -51,19 +51,21 @@ description: "Tasks for C Algorithm Parity Testing"
 
 ### Implementation for User Story 1
 
-- [ ] T011 [P] Add default corpus cases (baseline, boundary, seeded) in specs/005-c-algo-parity/corpus/default.json
-- [ ] T012 [P] Build C reference JSON emitter binary (wrap ColorJourney.c) in Tests/Parity/parity_c_runner.c
-- [ ] T013 [P] Build alternate C binary from Sources/wasm as plain C (matching flags) in Tests/Parity/parity_wasm_as_c_runner.c
-- [ ] T014 [P] Implement execution wrapper for canonical C binary (spawn parity_c_runner, parse JSON) in specs/005-c-algo-parity/tools/parity-runner/src/exec_c.c
-- [ ] T015 [P] Implement execution wrapper for wasm-sources-as-C binary in specs/005-c-algo-parity/tools/parity-runner/src/exec_c_alt.c
-- [ ] T016 Normalize both outputs to OKLab double precision and compare with tolerances in specs/005-c-algo-parity/tools/parity-runner/src/compare.c
-- [ ] T017 Generate run report with summary totals and per-case results in specs/005-c-algo-parity/tools/parity-runner/src/report.c
-- [ ] T018 Wire CLI flow to run corpus, collect results, and write artifacts under specs/005-c-algo-parity/artifacts/<runId>/ in specs/005-c-algo-parity/tools/parity-runner/src/main.c
-- [ ] T033 Add edge-case corpus fixtures (extremes, malformed inputs with expected rejections, platform-flag notes) in specs/005-c-algo-parity/corpus/edge-cases.json
-- [ ] T034 Capture run provenance (corpus version, commits, build flags, platform) in report header and artifacts in specs/005-c-algo-parity/tools/parity-runner/src/report.c
-- [ ] T035 Enforce pass-rate gate (>=95%) and fail runs below threshold in specs/005-c-algo-parity/tools/parity-runner/src/report.c
-- [ ] T036 Measure total runtime; fail or flag runs exceeding 10 minutes and record duration in report summary in specs/005-c-algo-parity/tools/parity-runner/src/main.c
-- [ ] T037 [P] Compute summary statistics (mean/stddev/p50/p95/p99/max) and histograms for ΔE and per-channel OKLab deltas in C; optionally export JSON for Python postprocessing in specs/005-c-algo-parity/tools/stats/
+- [X] T011 [P] Add default corpus cases (baseline, boundary, seeded) in specs/005-c-algo-parity/corpus/default.json
+- [X] T012 [P] Build C reference JSON emitter binary (wrap ColorJourney.c) in Tests/Parity/parity_c_runner.c
+- [X] T013 [P] Build alternate C binary from Sources/wasm as plain C (matching flags) in Tests/Parity/parity_wasm_as_c_runner.c
+- [X] T014 [P] Implement execution wrapper for canonical C binary (spawn parity_c_runner, parse JSON) in specs/005-c-algo-parity/tools/parity-runner/src/exec_c.c
+- [X] T015 [P] Implement execution wrapper for wasm-sources-as-C binary in specs/005-c-algo-parity/tools/parity-runner/src/exec_c_alt.c
+- [X] T016 Normalize both outputs to OKLab double precision and compare with tolerances in specs/005-c-algo-parity/tools/parity-runner/src/compare.c
+- [X] T017 Generate run report with summary totals and per-case results in specs/005-c-algo-parity/tools/parity-runner/src/report.c
+- [X] T018 Wire CLI flow to run corpus, collect results, and write artifacts under specs/005-c-algo-parity/artifacts/<runId>/ in specs/005-c-algo-parity/tools/parity-runner/src/main.c
+- [X] T033 Add edge-case corpus fixtures (extremes, malformed inputs with expected rejections, platform-flag notes) in specs/005-c-algo-parity/corpus/edge-cases.json
+- [X] T034 Capture run provenance (corpus version, commits, build flags, platform) in report header and artifacts in specs/005-c-algo-parity/tools/parity-runner/src/report.c
+- [X] T035 Enforce pass-rate gate (>=95%) and fail runs below threshold in specs/005-c-algo-parity/tools/parity-runner/src/report.c
+- [X] T036 Measure total runtime; fail or flag runs exceeding 10 minutes and record duration in report summary in specs/005-c-algo-parity/tools/parity-runner/src/main.c
+- [X] T037 [P] Compute summary statistics (mean/stddev/p50/p95/p99/max) and histograms for ΔE and per-channel OKLab deltas in C; optionally export JSON for Python postprocessing in specs/005-c-algo-parity/tools/stats/
+- [X] T042 Align alternate runner outputs and/or tolerance defaults so fixture corpus meets the configured pass gate in specs/005-c-algo-parity/tools/parity-runner (runners, tolerances fixtures)
+- [X] T043 Capture build flags for both runners in provenance and include them in report outputs in specs/005-c-algo-parity/tools/parity-runner/src/report.c and artifacts
 
 **Checkpoint**: P1 MVP delivers deterministic parity report and artifacts.
 
@@ -77,11 +79,11 @@ description: "Tasks for C Algorithm Parity Testing"
 
 ### Implementation for User Story 2
 
-- [ ] T019 [P] Add stage/parameter mapping metadata (e.g., channel labels, stage names) in specs/005-c-algo-parity/tools/parity-runner/src/stage_map.c
-- [ ] T020 [P] Compute per-case top contributors (OKLab components, ΔE, RGB deltas) with directionality in specs/005-c-algo-parity/tools/parity-runner/src/analysis.c
-- [ ] T021 Annotate failing cases with stage/parameter hints and include in report output in specs/005-c-algo-parity/tools/parity-runner/src/report.c
-- [ ] T022 Add focused artifact bundle per failing case (inputs, both outputs, deltas, hints) in specs/005-c-algo-parity/artifacts/<runId>/<caseId>/metadata.json
-- [ ] T038 [P] Highlight statistically significant contributors (e.g., highest ΔE/z-score channels/stages) in failure hints in specs/005-c-algo-parity/tools/parity-runner/src/analysis.c
+- [X] T019 [P] Add stage/parameter mapping metadata (e.g., channel labels, stage names) in specs/005-c-algo-parity/tools/parity-runner/src/stage_map.c
+- [X] T020 [P] Compute per-case top contributors (OKLab components, ΔE, RGB deltas) with directionality in specs/005-c-algo-parity/tools/parity-runner/src/analysis.c
+- [X] T021 Annotate failing cases with stage/parameter hints and include in report output in specs/005-c-algo-parity/tools/parity-runner/src/report.c
+- [X] T022 Add focused artifact bundle per failing case (inputs, both outputs, deltas, hints) in specs/005-c-algo-parity/artifacts/<runId>/<caseId>/metadata.json
+- [X] T038 [P] Highlight statistically significant contributors (e.g., highest ΔE/z-score channels/stages) in failure hints in specs/005-c-algo-parity/tools/parity-runner/src/analysis.c
 
 **Checkpoint**: P2 delivers actionable hints per failure.
 
@@ -95,16 +97,16 @@ description: "Tasks for C Algorithm Parity Testing"
 
 ### Implementation for User Story 3
 
-- [ ] T023 Add CLI options for corpus filters, tolerance overrides, and artifact retention policy in specs/005-c-algo-parity/tools/parity-runner/src/main.c
-- [ ] T024 [P] Ensure CI workflow runs C parity binary and persists provenance (commits, build flags, platform, corpus version) alongside uploaded artifacts in .github/workflows/parity.yml
-- [ ] T025 [P] Add CI workflow to run parity suite and upload artifacts on failure in .github/workflows/parity.yml
-- [ ] T026 Persist artifacts directory structure with .gitkeep and README in specs/005-c-algo-parity/artifacts/.gitkeep
+- [X] T023 Add CLI options for corpus filters, tolerance overrides, and artifact retention policy in specs/005-c-algo-parity/tools/parity-runner/src/main.c
+- [X] T024 [P] Ensure CI workflow runs C parity binary and persists provenance (commits, build flags, platform, corpus version) alongside uploaded artifacts in .github/workflows/parity.yml
+- [X] T025 [P] Add CI workflow to run parity suite and upload artifacts on failure in .github/workflows/parity.yml
+- [X] T026 Persist artifacts directory structure with .gitkeep and README in specs/005-c-algo-parity/artifacts/.gitkeep
 
 **Checkpoint**: P3 enables regression prevention with artifacts.
 
 ---
 
-## Phase N: Polish & Cross-Cutting Concerns
+## Phase 6: Polish & Cross-Cutting Concerns
 
 **Purpose**: Shared improvements across stories.
 
@@ -112,6 +114,25 @@ description: "Tasks for C Algorithm Parity Testing"
 - [ ] T028 [P] Add tolerance configuration docs and examples in specs/005-c-algo-parity/config/README.md
 - [ ] T029 [P] Add schema and API references to specs/005-c-algo-parity/contracts/README.md
 - [ ] T030 Run end-to-end dry run over full corpus and capture sample report in specs/005-c-algo-parity/artifacts/sample-run/README.md
+
+---
+
+## Phase 7: Run The Parity Suite 
+**Purpose**: Execute the parity suite on the full corpus to validate implementation.
+
+- [ ] T044 Run end-to-end parity suite over the full corpus using default tolerances and capture report/artifacts in full report.
+- [ ] T045 Make sure tests are comprehensive.
+
+---
+
+## Phase 8: Review & Document Findings
+**Purpose**: Analyze results and document findings from the parity run.
+
+- [ ] T046 Review generated report for summary and inspect per-case artifacts for failures
+- [ ] T047 Analyze results and document any discrepancies or areas for improvement
+- [ ] T048 Write a summary of findings and next steps in specs/005-c-algo-parity/review.md
+- [ ] T049 Share results with the team for feedback and discussion
+- [ ] T050 Plan follow-up actions based on parity run outcomes, make preliminary evaluations of the parity between both C engine implementations
 
 ---
 
