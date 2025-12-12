@@ -110,29 +110,29 @@ description: "Tasks for C Algorithm Parity Testing"
 
 **Purpose**: Shared improvements across stories.
 
-- [ ] T027 [P] Update operator docs with C CLI usage and report formats in specs/005-c-algo-parity/quickstart.md
-- [ ] T028 [P] Add tolerance configuration docs and examples in specs/005-c-algo-parity/config/README.md
-- [ ] T029 [P] Add schema and API references to specs/005-c-algo-parity/contracts/README.md
-- [ ] T030 Run end-to-end dry run over full corpus and capture sample report in specs/005-c-algo-parity/artifacts/sample-run/README.md
+- [X] T027 [P] Update operator docs with C CLI usage and report formats in specs/005-c-algo-parity/quickstart.md
+- [X] T028 [P] Add tolerance configuration docs and examples in specs/005-c-algo-parity/config/README.md
+- [X] T029 [P] Add schema and API references to specs/005-c-algo-parity/contracts/README.md
+- [X] T030 Run end-to-end dry run over full corpus and capture sample report in specs/005-c-algo-parity/artifacts/sample-run/README.md
 
 ---
 
 ## Phase 7: Run The Parity Suite 
 **Purpose**: Execute the parity suite on the full corpus to validate implementation.
 
-- [ ] T044 Run end-to-end parity suite over the full corpus using default tolerances and capture report/artifacts in full report.
-- [ ] T045 Make sure tests are comprehensive.
+- [X] T044 Run end-to-end parity suite over the full corpus using default tolerances and capture report/artifacts in full report.
+- [X] T045 Make sure tests are comprehensive.
 
 ---
 
 ## Phase 8: Review & Document Findings
 **Purpose**: Analyze results and document findings from the parity run.
 
-- [ ] T046 Review generated report for summary and inspect per-case artifacts for failures
-- [ ] T047 Analyze results and document any discrepancies or areas for improvement
-- [ ] T048 Write a summary of findings and next steps in specs/005-c-algo-parity/review.md
-- [ ] T049 Share results with the team for feedback and discussion
-- [ ] T050 Plan follow-up actions based on parity run outcomes, make preliminary evaluations of the parity between both C engine implementations
+- [X] T046 Review generated report for summary and inspect per-case artifacts for failures
+- [X] T047 Analyze results and document any discrepancies or areas for improvement
+- [X] T048 Write a summary of findings and next steps in specs/005-c-algo-parity/review.md
+- [X] T049 Share results with the team for feedback and discussion
+- [X] T050 Plan follow-up actions based on parity run outcomes, make preliminary evaluations of the parity between both C engine implementations
 
 ---
 
