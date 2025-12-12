@@ -62,6 +62,8 @@ Examples/                # C + Swift example programs
 - C core API changes → must update Swift wrapper immediately
 - New C functions → must expose in Swift wrapper
 - Breaking changes → increment major version in CHANGELOG.md per semantic versioning
+- **Playground sync**: New public APIs → add demonstrations to FeaturePlayground
+- **Example sync**: SwatchDemo and Playground must reflect current API
 - Failure to sync = broken library contract
 
 ### 2. Testing Discipline (Non-negotiable)
@@ -104,6 +106,8 @@ Examples/                # C + Swift example programs
 ### Documentation
 - Keep DevDocs organized, precise, concise (no duplication)
 - Update README.md and CHANGELOG.md for user-facing changes
+- **Playground updates**: When adding/changing public APIs, update relevant Playground pages
+- **Feature inventory**: Update FEATURE_INVENTORY.md when APIs change
 - Write commit messages following [Conventional Commits](https://www.conventionalcommits.org/)
 - For complex algorithms or decisions, add comments explaining *why*, not just *what*
 
