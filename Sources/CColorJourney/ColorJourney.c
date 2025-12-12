@@ -147,7 +147,7 @@ CJ_Lab cj_rgb_to_oklab(CJ_RGB c) {
 
     /* Stage 2: LMS → LMS' (nonlinear compression)
      * Apply cube root to compress the range, simulating human perception.
-     * Uses precise_cbrt for IEEE 754 double precision accuracy.
+     * Uses oklab_cbrt for IEEE 754 double precision accuracy.
      */
     double l_ = oklab_cbrt(l);
     double m_ = oklab_cbrt(m);
