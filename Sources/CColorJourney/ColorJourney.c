@@ -181,7 +181,7 @@ CJ_RGB cj_oklab_to_rgb(CJ_Lab c) {
     double s_ = c.L - 0.0894841775 * c.a - 1.2914855480 * c.b;
 
     /* Stage 2: LMS' → LMS (inverse nonlinear compression via cube)
-     * Note: Using direct cube (x^3) as the inverse of precise_cbrt.
+     * Note: Using direct cube (x^3) as the inverse of oklab_cbrt.
      * This is exact and fast.
      */
     double l = l_ * l_ * l_;
