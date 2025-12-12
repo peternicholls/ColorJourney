@@ -1,0 +1,23 @@
+{
+    "toleranceVersion": "v20251212.0",
+    "description": "Fixture tolerances for unit tests",
+    "abs": {
+        "l": 0.0001,
+        "a": 0.0001,
+        "b": 0.0001,
+        "deltaE": 0.5
+    },
+    "rel": {
+        "l": 0.001,
+        "a": 0.001,
+        "b": 0.001
+    },
+    "policy": {
+        "failThreshold": 0.5,
+        "notes": "Fixture policy"
+    },
+    "provenance": {
+        "source": "tests/fixtures/test-tolerances.json",
+        "updated": "2025-12-12T00:00:00Z"
+    }
+}
