@@ -1,0 +1,234 @@
+{
+ "runId": "run-1765515073",
+ "corpusVersion": "v20251212.1",
+ "durationMs": 1.9,
+ "passRate": 1,
+ "withinPassGate": true,
+ "withinDuration": true,
+ "artifactPolicy": "all",
+ "provenance": {
+  "cCommit": "unknown",
+  "wasmCommit": "unknown",
+  "platform": "macOS",
+  "artifactsRoot": "tests/output/integration",
+  "cBuildFlags": "-std=c99 -Wall -Wextra -pedantic -Iinclude -Ivendor/cjson -I../stats",
+  "altBuildFlags": "-std=c99 -Wall -Wextra -pedantic -Iinclude -Ivendor/cjson -I../stats",
+  "appliedTolerances": {
+   "abs": {
+    "l": 0.0001,
+    "a": 0.0001,
+    "b": 0.0001,
+    "deltaE": 0.5
+   },
+   "rel": {
+    "l": 0.001,
+    "a": 0.001,
+    "b": 0.001
+   }
+  }
+ },
+ "summary": {
+  "totalCases": 2,
+  "passed": 2,
+  "failed": 0,
+  "deltaE": {
+   "mean": 0,
+   "stddev": 0,
+   "p50": 0,
+   "p95": 0,
+   "p99": 0,
+   "min": 0,
+   "max": 0
+  },
+  "l": {
+   "mean": 0,
+   "stddev": 0,
+   "p50": 0,
+   "p95": 0,
+   "p99": 0,
+   "min": 0,
+   "max": 0
+  },
+  "a": {
+   "mean": 0,
+   "stddev": 0,
+   "p50": 0,
+   "p95": 0,
+   "p99": 0,
+   "min": 0,
+   "max": 0
+  },
+  "b": {
+   "mean": 0,
+   "stddev": 0,
+   "p50": 0,
+   "p95": 0,
+   "p99": 0,
+   "min": 0,
+   "max": 0
+  },
+  "rgbR": {
+   "mean": 0,
+   "stddev": 0,
+   "p50": 0,
+   "p95": 0,
+   "p99": 0,
+   "min": 0,
+   "max": 0
+  },
+  "rgbG": {
+   "mean": 0,
+   "stddev": 0,
+   "p50": 0,
+   "p95": 0,
+   "p99": 0,
+   "min": 0,
+   "max": 0
+  },
+  "rgbB": {
+   "mean": 0,
+   "stddev": 0,
+   "p50": 0,
+   "p95": 0,
+   "p99": 0,
+   "min": 0,
+   "max": 0
+  },
+  "deltaEHistogram": {
+   "min": 0,
+   "max": 1,
+   "bucketSize": 0.05,
+   "counts": [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  }
+ },
+ "cases": [{
+   "inputCaseId": "case-baseline",
+   "passed": true,
+   "maxDeltaE": 0,
+   "samples": [{
+     "index": 0,
+     "delta": {
+      "l": 0,
+      "a": 0,
+      "b": 0
+     },
+     "deltaE": 0,
+     "rgbDelta": {
+      "r": 0,
+      "g": 0,
+      "b": 0
+     },
+     "canonical": {
+      "l": 0.623203217983246,
+      "a": 0.014000221155583858,
+      "b": 0.011440243571996689
+     },
+     "alternate": {
+      "l": 0.623203217983246,
+      "a": 0.014000221155583858,
+      "b": 0.011440243571996689
+     }
+    }, {
+     "index": 1,
+     "delta": {
+      "l": 0,
+      "a": 0,
+      "b": 0
+     },
+     "deltaE": 0,
+     "rgbDelta": {
+      "r": 0,
+      "g": 0,
+      "b": 0
+     },
+     "canonical": {
+      "l": 0.024414775893092155,
+      "a": 0.0087426295503973961,
+      "b": 0.0048928782343864441
+     },
+     "alternate": {
+      "l": 0.024414775893092155,
+      "a": 0.0087426295503973961,
+      "b": 0.0048928782343864441
+     }
+    }],
+   "topContributors": [{
+     "metric": "deltaE",
+     "magnitude": 0,
+     "direction": "flat",
+     "stage": "Comparison/Scoring",
+     "parameter": "overall-delta",
+     "zScore": 0,
+     "significant": false
+    }, {
+     "metric": "oklab.l",
+     "magnitude": 0,
+     "direction": "flat",
+     "stage": "OKLab normalization",
+     "parameter": "lightness",
+     "zScore": 0,
+     "significant": false
+    }, {
+     "metric": "oklab.a",
+     "magnitude": 0,
+     "direction": "flat",
+     "stage": "OKLab normalization",
+     "parameter": "chroma-a",
+     "zScore": 0,
+     "significant": false
+    }]
+  }, {
+   "inputCaseId": "case-edge",
+   "passed": true,
+   "maxDeltaE": 0,
+   "samples": [{
+     "index": 0,
+     "delta": {
+      "l": 0,
+      "a": 0,
+      "b": 0
+     },
+     "deltaE": 0,
+     "rgbDelta": {
+      "r": 0,
+      "g": 0,
+      "b": 0
+     },
+     "canonical": {
+      "l": 0.086497865617275238,
+      "a": 0.00319902109913528,
+      "b": 0.017642272636294365
+     },
+     "alternate": {
+      "l": 0.086497865617275238,
+      "a": 0.00319902109913528,
+      "b": 0.017642272636294365
+     }
+    }],
+   "topContributors": [{
+     "metric": "deltaE",
+     "magnitude": 0,
+     "direction": "flat",
+     "stage": "Comparison/Scoring",
+     "parameter": "overall-delta",
+     "zScore": 0,
+     "significant": false
+    }, {
+     "metric": "oklab.l",
+     "magnitude": 0,
+     "direction": "flat",
+     "stage": "OKLab normalization",
+     "parameter": "lightness",
+     "zScore": 0,
+     "significant": false
+    }, {
+     "metric": "oklab.a",
+     "magnitude": 0,
+     "direction": "flat",
+     "stage": "OKLab normalization",
+     "parameter": "chroma-a",
+     "zScore": 0,
+     "significant": false
+    }]
+  }]
+}

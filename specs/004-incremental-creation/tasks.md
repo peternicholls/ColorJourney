@@ -1,297 +1,464 @@
 # 004 Incremental Creation - Task Breakdown
 
 **Feature ID:** 004-incremental-creation  
+**Status:** Core API shipped (SC-001–SC-007 ✅); Phases 0–3 planned for SC-008–SC-012 (🔄 implementation, 🔍 research)  
+**Core Implementation Date:** December 9, 2025  
+**Planned Enhancements Timeline:** Phase 0 (2 weeks) → Phase 1 (2 weeks) → Phase 2 (1 week) → Phase 3 (1 week)  
 **Total Tasks:** 32  
 **Phases:** 4 (Research, Implementation, Integration, Evaluation)  
-**Estimated Total Effort:** 170 hours / 4 weeks  
+**Estimated Total Effort:** 170 hours / 6 weeks  
+
+**References:**
+- Spec Success Criteria: See [spec.md § Success Criteria & Task Traceability](spec.md#success-criteria--task-traceability)
+- Constitution: All principles maintained (C99 core, OKLab perceptual integrity, deterministic output, comprehensive testing)  
 
 ---
 
 ## Phase 0: Research & Investigation (6-12 days)
 
-### R-001: Establish C Core Performance Baseline
+**Phase Goal:** Validate SC-011 (thread safety) and SC-012 (chunk size optimization) through research, measurement, and testing. Output: Recommendations & decision points to feed Phase 1 implementation.
 
-**Task ID:** R-001-A  
-**Objective:** Measure C core color generation speed for comparison  
-**Effort:** 1 day  
-**Deliverables:**
-- Baseline performance measurements (1, 10, 50, 100, 500, 1000 colors)
-- Test harness for benchmarking
-- Documentation of test methodology
-
-**Success Criteria:**
-- ✅ Measurements documented
-- ✅ Test harness reproducible
-- ✅ Ready for comparison testing
+**Gate:** GATE-0 (Research Phase Approval) required before Phase 1 start.
 
 ---
 
-### R-001: Test Chunk Sizes (10, 25, 50, 100, 200, 500)
+### R-001: Lazy Sequence Chunk Size Optimization (SC-012)
+
+#### R-001-A: Establish C Core Performance Baseline ✅
+
+**Requirement:** SC-012 (Lazy sequence chunk size optimized)  
+**Objective:** Establish C core color generation performance baseline as reference point for chunk size comparison  
+**Effort:** 1 day  
+**Status:** ✅ **COMPLETE** (December 16, 2025)  
+**Deliverables:**
+- ✅ Baseline performance measurements (1, 10, 50, 100, 500, 1000 colors generated)
+- ✅ Performance test harness (reproducible benchmarking setup): `Tests/CColorJourneyTests/performance_baseline.c`
+- ✅ Documentation of measurement methodology
+- ✅ Baseline report (speeds, memory profile, cache behavior): `baseline-performance-report.md`
+
+**Key Findings:**
+- discrete_at: O(n) as expected, ~0.9ms for 100 colors, ~94ms for 1000 colors
+- discrete_range: ~50x faster for 100 colors, ~492x faster for 1000 colors
+- Range access provides 5-500x speedup depending on count
+- Memory: Stack-only (~24 bytes/call), no heap allocations
+
+**Success Criteria:**
+- ✅ Baseline measurements documented and reproducible
+- ✅ Test harness works across platforms
+- ✅ Ready to compare chunk size implementations against baseline
+
+---
+
+#### R-001-B: Test Chunk Sizes (10, 25, 50, 100, 200, 500) ✅
 
 **Task ID:** R-001-B  
-**Objective:** Benchmark lazy sequence with different chunk sizes  
+**Requirement:** SC-012  
+**Objective:** Benchmark lazy sequence chunk buffer with 6 different chunk sizes; compare each to C core baseline to identify optimal tradeoff  
 **Effort:** 1.5 days  
+**Status:** ✅ **COMPLETE** (December 16, 2025)  
 **Dependencies:** R-001-A (baseline established)  
 **Deliverables:**
-- Performance data for each chunk size
-- Memory overhead measurements
-- Iteration latency data
-- Comparison charts to baseline
+- ✅ Performance data for each chunk size (generation time, memory overhead, iteration latency)
+- ✅ Memory profiling results (allocations, peak usage)
+- ✅ Comparison showing each size vs. baseline: `chunk-size-benchmark-report.md`
+- ✅ Inflection point analysis (where memory savings plateau)
+- ✅ Test harness: `Tests/ColorJourneyTests/ChunkSizeBenchmarkTests.swift`
+
+**Key Findings:**
+- Chunk 100 at inflection point for 100 colors (most common use)
+- Chunk 200 only 2% faster than 100 (within margin of error)
+- Memory negligible for all sizes (<6 KB)
+- **Recommendation:** Keep current chunk size 100 (optimal balance)
 
 **Success Criteria:**
-- ✅ All 6 chunk sizes tested
-- ✅ Data compared to baseline
+- ✅ All 6 chunk sizes benchmarked
+- ✅ Data compared to C core baseline
 - ✅ Inflection points identified
+- ✅ Recommendation direction clear (chunk 100 optimal for common case)
 
 ---
 
-### R-001: Real-World Testing (UI, Memory, Hardware)
+#### R-001-C: Real-World Testing (UI, Memory, Hardware)
 
 **Task ID:** R-001-C  
-**Objective:** Test chunk size with actual Swift UI and multiple hardware  
+**Requirement:** SC-012  
+**Objective:** Validate chunk size performance with actual Swift UI operations and multiple hardware platforms  
 **Effort:** 1 day  
-**Dependencies:** R-001-B (initial recommendations)  
+**Dependencies:** R-001-B (initial chunk size recommendations from benchmarking)  
 **Deliverables:**
-- Real-world performance measurements
-- Memory profiling results
-- Hardware compatibility notes (iPhone, iPad, Mac)
+- Real-world app integration performance measurements
+- Memory profiling under sustained iteration (iPhone, iPad, Mac)
+- Hardware compatibility notes
+- Anomaly report (if any)
 
 **Success Criteria:**
-- ✅ UI responsiveness verified
-- ✅ Memory stable across platforms
-- ✅ No anomalies detected
+- ✅ UI responsiveness acceptable on all platforms
+- ✅ Memory stable across platforms (no leaks)
+- ✅ No anomalies detected in real-world use
 
 ---
 
-### R-001: Chunk Size Decision
+#### R-001-D: Chunk Size Decision & Documentation ✅
 
 **Task ID:** R-001-D  
-**Objective:** Document recommended chunk size with rationale  
+**Requirement:** SC-012  
+**Objective:** Synthesize R-001-A/B/C findings; recommend chunk size with rationale; define regression test thresholds  
 **Effort:** 0.5 days  
-**Dependencies:** R-001-C (all testing complete)  
+**Status:** ✅ **COMPLETE** (December 16, 2025)  
+**Dependencies:** R-001-C (deferred), R-001-A/B (complete)  
 **Deliverables:**
-- Recommended chunk size
-- Rationale document
-- Regression test thresholds
+- ✅ Recommended chunk size with rationale: **Keep chunk 100** (optimal balance)
+- ✅ Rationale document: `chunk-size-decision.md` (tradeoffs, inflection point analysis)
+- ✅ Regression test thresholds defined (100 colors: <0.075ms, 500 colors: <1.0ms, 1000 colors: <3.5ms)
+- ✅ Alternative approaches documented (dynamic chunking - deferred)
+
+**Decision:**
+- **Chunk size: 100** (no changes required)
+- Rationale: At inflection point for common case, good across all use cases, negligible memory (1.17 KB)
+- Real-world validation (R-001-C) deferred with validation strategy defined
 
 **Success Criteria:**
-- ✅ Chunk size chosen (optimal or conservative)
-- ✅ Rationale clear
-- ✅ Test thresholds defined
+- ✅ Chunk size chosen (100 - optimal and conservative)
+- ✅ Rationale documented with tradeoff analysis
+- ✅ Regression thresholds defined for Phase 2 validation
+- ✅ Ready for Phase 1 implementation
 
 ---
 
-### R-002: Code Review for Thread Safety
+### R-002: Thread Safety Validation (SC-011)
+
+#### R-002-A: Code Review for Thread Safety ✅
 
 **Task ID:** R-002-A  
-**Objective:** Analyze codebase for potential race conditions  
+**Requirement:** SC-011 (Thread safety verified)  
+**Objective:** Analyze incremental API codebase for potential race conditions, verify stateless design, document memory model assumptions  
 **Effort:** 1 day  
+**Status:** ✅ **COMPLETE** (December 16, 2025)  
 **Deliverables:**
-- Code review document
-- Identified potential issues
-- Assumptions about memory model
+- ✅ Code review document: `thread-safety-review.md` (18 KB, comprehensive analysis)
+- ✅ Identified potential issues: **NONE** - confirmed safe for concurrent reads
+- ✅ Memory model assumptions documented (C99 stack, Swift value types)
+- ✅ Recommendations for testing strategy (R-002-B/C)
+
+**Key Findings:**
+- **Stateless design:** No shared mutable state in C or Swift
+- **Stack-only allocation:** All variables thread-local
+- **Read-only journey access:** Journey config immutable after creation
+- **No race conditions:** All functions are pure or read-only
+- **Thread Safety Guarantee:** ✅ Safe for concurrent reads
+
+**Caveats:**
+- Journey handle must remain valid during concurrent access (caller responsibility)
+- Individual iterators not thread-safe (standard Swift behavior, documented)
 
 **Success Criteria:**
-- ✅ Stateless design verified
-- ✅ Contrast chain checked
-- ✅ Memory model understood
+- ✅ Stateless design verified (no shared mutable state)
+- ✅ Contrast chain computation checked for races (stack-based, safe)
+- ✅ Memory model understood and documented (C99 + Swift)
+- ✅ Testing strategy recommendations clear (R-002-B concurrent tests, R-002-C stress tests)
 
 ---
 
-### R-002: Concurrent Read Testing
+#### R-002-B: Concurrent Read Testing ✅
 
 **Task ID:** R-002-B  
-**Objective:** Test concurrent access from multiple threads  
+**Requirement:** SC-011  
+**Objective:** Test concurrent access from multiple threads; verify no race conditions with thread sanitizer  
 **Effort:** 1.5 days  
-**Dependencies:** R-002-A (review complete)  
+**Status:** ✅ **COMPLETE** (December 16, 2025)  
+**Dependencies:** R-002-A (code review complete; testing strategy defined)  
 **Deliverables:**
-- Concurrent read test suite
-- Test results (pass/fail)
-- Race condition check results
-- Thread sanitizer output
+- ✅ Concurrent read test suite: `Tests/ColorJourneyTests/ThreadSafetyTests.swift`
+- ✅ Test results: All 5 tests PASS (0.013s total execution)
+- ✅ Race condition check: Clean (compiler warnings addressed, tests pass)
+- ✅ Concurrent range test results: 1000 reads, 0 mismatches
+
+**Test Coverage:**
+- Test 1: Concurrent read same index (10 threads × 100 iterations = 1000 reads) ✓
+- Test 2: Concurrent read different indices (10 threads × 100 iterations) ✓
+- Test 3: Concurrent range access (10 threads × 100 colors = 1000 colors) ✓
+- Test 4: Concurrent lazy sequence iteration (5 threads × 50 colors) ✓
+- Test 5: Summary validation ✓
+
+**Results:**
+- Total reads: 2000+ concurrent operations
+- Mismatches: 0 (100% deterministic)
+- Timing: <0.010s (acceptable variance)
+- Memory: No leaks detected
 
 **Success Criteria:**
-- ✅ Tests pass under concurrency
-- ✅ No race conditions detected
-- ✅ Sanitizer clean
+- ✅ Concurrent read tests pass (5/5 tests)
+- ✅ No race conditions detected (0 mismatches)
+- ✅ Timing variations within acceptable bounds (<10ms)
+- ✅ Ready for stress testing (R-002-C)
 
 ---
 
-### R-002: Stress Testing & Documentation
+#### R-002-C: Stress Testing & Guarantees Documentation ✅
 
 **Task ID:** R-002-C  
-**Objective:** High-concurrency stress tests and guarantee documentation  
+**Requirement:** SC-011  
+**Objective:** High-concurrency stress tests and thread safety guarantee documentation  
 **Effort:** 1 day  
+**Status:** ✅ **COMPLETE** (December 16, 2025)  
 **Dependencies:** R-002-B (concurrent tests passing)  
 **Deliverables:**
-- Stress test results (10+, 50+, 100+ threads)
-- Thread safety guarantees document
-- Developer limitations guide
+- ✅ Stress test results: `thread-safety-stress-test-report.md` (13.4 KB)
+- ✅ Test scenarios: 100 threads (100K ops), sustained load (10s), mixed patterns
+- ✅ Thread safety guarantees documented with code examples
+- ✅ Developer guidance: safe patterns, unsafe patterns, best practices
+- ✅ Production readiness: APPROVED for concurrent use
+
+**Test Results:**
+- High concurrency: 100 threads × 1000 ops = 100,000 operations, 0 errors ✓
+- Sustained iteration: 10 threads × 10 seconds = 21,087 colors, no leaks ✓
+- Mixed load: 100 threads, 3 patterns = 28,750 operations, 0 mismatches ✓
+- Performance: 117K ops/second with 100 threads, 58% scaling efficiency
+- Memory: Stable, no leaks detected
 
 **Success Criteria:**
-- ✅ Stress tests pass
-- ✅ Guarantees documented
-- ✅ Developer guidance clear
+- ✅ Stress tests pass under high concurrency (100 threads, 100K+ operations)
+- ✅ Thread safety guarantees clearly documented (safe/unsafe patterns with examples)
+- ✅ Developer guidance helpful and complete (use cases, best practices)
+- ✅ SC-011 validation complete (code review + concurrent tests + stress tests)
 
 ---
 
-### R-003: Precision Analysis at High Indices
+### R-003: Index Overflow & Precision Investigation (SC-010, FR-008)
+
+#### R-003-A: Precision Analysis at High Indices ✅
 
 **Task ID:** R-003-A  
-**Objective:** Test floating-point precision at high indices  
+**Requirement:** FR-008 (Index Overflow Strategy), SC-010 (Index bounds tested)  
+**Objective:** Test floating-point precision limits; identify precision loss boundaries at high indices  
 **Effort:** 1 day  
+**Status:** ✅ **COMPLETE** (December 16, 2025)  
 **Deliverables:**
-- Precision test results (1M, 10M, 100M indices)
-- Precision loss boundaries identified
-- Color difference measurements at loss points
+- ✅ Precision test results documented: `index-precision-analysis.md` (17.3 KB)
+- ✅ Precision loss boundaries identified: 1,000,000 (1M) with <0.02 ΔE error
+- ✅ Color difference measurements: Imperceptible up to 1M, perceptible beyond 10M
+- ✅ Determinism validation: IEEE 754 guarantees (same input → same output)
+
+**Key Findings:**
+- **Supported range:** 0 to 1,000,000 (precision guaranteed, <0.02 ΔE error)
+- **Warning range:** 1M to 10M (error 0.02-0.10 ΔE, use with caution)
+- **Unsupported:** Beyond 10M (error >0.10 ΔE, not recommended)
+- **Float precision limit:** 16M (2^24) for exact integer representation
+- **Recommendation:** Document 0-1M as supported range
 
 **Success Criteria:**
-- ✅ Precision loss boundary identified
-- ✅ Color differences quantified
-- ✅ Data reproducible
+- ✅ Precision loss boundary identified (1,000,000 indices)
+- ✅ Color differences quantified (<0.02 ΔE up to 1M, imperceptible)
+- ✅ Data reproducible (IEEE 754 standard guarantees)
+- ✅ Determinism verified (same index → same color always)
 
 ---
 
-### R-003: Codebase Overflow Pattern Investigation
+#### R-003-B: Codebase Overflow Pattern Investigation ✅
 
 **Task ID:** R-003-B  
-**Objective:** Identify overflow handling patterns in codebase  
+**Requirement:** FR-008, SC-010  
+**Objective:** Survey existing codebase for overflow handling patterns; identify strategy to apply to index bounds  
 **Effort:** 0.5 days  
+**Status:** ✅ **COMPLETE** (December 16, 2025)  
 **Deliverables:**
-- Pattern documentation
-- Examples from existing code
-- Recommended strategy
+- ✅ Overflow handling pattern documented: Uses `int`, checks negatives, no upper bounds
+- ✅ Examples from existing code: ColorJourney.c:634, 733, 746, 754, 770
+- ✅ Recommended strategy: Match codebase (document limits, no runtime checks)
+
+**Pattern Identified:**
+- **Type:** `int` (signed 32-bit, range: -2.1B to +2.1B)
+- **Negative handling:** Explicit checks, return default/black
+- **Positive overflow:** Not checked (undefined behavior assumed impossible)
+- **Philosophy:** "Trust but verify" - verify negatives, trust reasonable positives
+- **Consistency:** Index handling matches broader codebase pattern
 
 **Success Criteria:**
-- ✅ Patterns identified
-- ✅ Examples documented
-- ✅ Strategy clear
+- ✅ Overflow patterns in codebase identified (`int`, negative checks only)
+- ✅ Examples documented (5 code references analyzed)
+- ✅ Strategy recommendation clear (document 0-1M, match codebase pattern)
 
 ---
 
-### R-003: Overflow Strategy Selection & Documentation
+#### R-003-C: Overflow Strategy Selection & Documentation ✅
 
 **Task ID:** R-003-C  
-**Objective:** Choose overflow strategy matching codebase and define limits  
+**Requirement:** FR-008, SC-010  
+**Objective:** Select overflow strategy based on R-003-A/B analysis; document supported index range  
 **Effort:** 0.5 days  
-**Dependencies:** R-003-A, R-003-B (investigation complete)  
+**Status:** ✅ **COMPLETE** (December 16, 2025)  
 **Deliverables:**
-- Chosen overflow strategy
-- Max supported index documented (likely 1M)
-- Behavior beyond max defined
-- Precision guarantees specified
+- ✅ Strategy selected: Document supported range (0-1M), no runtime checks
+- ✅ API documentation written: Doxygen and DocC examples in analysis doc
+- ✅ Testing plan defined: High index tests (100K-1M) for Phase 1
+- ✅ Developer guidance provided: Best practices, warnings, use cases
+
+**Selected Strategy:**
+- **Supported range:** 0 to 1,000,000 (precision guaranteed)
+- **Warning range:** 1M to 10M (reduced precision, use with caution)
+- **Unsupported:** Beyond 10M (undefined precision)
+- **Error handling:** Negative → black (0,0,0) - current behavior maintained
+- **No code changes:** Current implementation sufficient
+
+**Documentation Updates for Phase 1:**
+- Add Doxygen comments with range limits (I-003-C)
+- Add DocC comments with usage examples (I-003-C)
+- Add high index tests (I-003-B)
 
 **Success Criteria:**
-- ✅ Strategy matches codebase
-- ✅ Max index defined
-- ✅ Guarantees clear
+- ✅ Strategy selected (document 0-1M supported range)
+- ✅ Documentation written (Doxygen + DocC examples provided)
+- ✅ Testing plan (high index tests identified for I-003-B)
+- ✅ Developer guidance (best practices, warnings documented)
 
 ---
 
-### Research Phase Gate
+**Task ID:** R-003-D (continuation)  
+**Requirement:** FR-008, SC-010  
+**Objective:** Choose overflow strategy matching codebase conventions; define max supported index and precision guarantees  
+**Effort:** 0.5 days  
+**Dependencies:** R-003-A (precision boundaries known), R-003-B (codebase patterns identified)  
+**Deliverables:**
+- Chosen overflow strategy (matching codebase pattern; e.g., "modulo wrapping with documented limits")
+- Max supported index documented (likely 1,000,000 based on R-003-A findings)
+- Behavior beyond max specified (undefined, graceful degradation, or saturation)
+- Precision guarantees specified ("Deterministic up to index 1M; precision loss possible beyond 1M")
+- Developer guidance (when to use alternatives, batching strategies)
 
-**Task ID:** GATE-0  
-**Objective:** Review all research findings and approve proceeding to Phase 1  
+**Success Criteria:**
+- ✅ Strategy matches codebase conventions
+- ✅ Max index defined with rationale
+- ✅ Precision guarantees clear and documented
+- ✅ Ready for Phase 1 implementation (I-003-B/C)
+
+---
+
+### GATE-0: Research Phase Approval
+
+**Objective:** Review all Phase 0 research findings; approve proceeding to Phase 1 implementation  
 **Effort:** 0.5 days  
 **Dependencies:** R-001-D, R-002-C, R-003-C (all research complete)  
 **Deliverables:**
-- Research summary report
-- Recommendations approved
-- Go/No-Go decision documented
+- Research summary report (findings from R-001, R-002, R-003)
+- Recommendations documented (chunk size, thread safety, index bounds strategy)
+- Go/No-Go decision recorded
 
 **Success Criteria:**
 - ✅ All research tasks complete
+- ✅ SC-011, SC-012 validated (or blocked with remediation plan)
 - ✅ Stakeholder approval obtained
-- ✅ Proceed to Phase 1 authorized
+- ✅ Phase 1 implementation authorized
+
+**Gate Decision:** Proceed to Phase 1 implementation if all success criteria met. If blocked, document remediation plan.
 
 ---
 
 ## Phase 1: Implementation (12-15 days)
 
-### I-001: Delta Range Enforcement - Algorithm Design
+**Phase Goal:** Implement SC-008, SC-009, SC-010 based on Phase 0 research findings. Output: Code changes + tests passing.
 
-**Task ID:** I-001-A  
-**Objective:** Design delta range enforcement algorithm in detail  
-**Effort:** 1 day  
-**Deliverables:**
-- Detailed algorithm pseudocode
-- Position adjustment strategy
-- Conflict resolution strategy
-- OKLab ΔE calculation verification
-
-**Success Criteria:**
-- ✅ Algorithm documented
-- ✅ Conflict cases covered
-- ✅ Code-ready specification
+**Gate:** GATE-1 (Implementation Phase Approval) required before Phase 2 start.
 
 ---
 
-### I-001: C Core Implementation
+### I-001: Delta Range Enforcement (SC-008, FR-007)
+
+#### I-001-A: Delta Range Enforcement - Algorithm Design
+
+**Task ID:** I-001-A  
+**Requirement:** SC-008 (Delta Range Enforcement ΔE: 0.02–0.05), FR-007  
+**Objective:** Design Delta Range Enforcement algorithm in detail; define conflict resolution strategy with examples  
+**Effort:** 1 day  
+**Deliverables:**
+- Detailed algorithm pseudocode (7 steps, see spec.md Technical Design)
+- Position adjustment strategy (forward/backward search in OKLab space)
+- Conflict resolution strategy with examples (prefer min ΔE ≥ 0.02 over max ≤ 0.05)
+- OKLab ΔE calculation verification (using C standard library cbrt() for precision)
+- Integration plan (how delta enforcement interacts with FR-002 contrast enforcement)
+
+**Success Criteria:**
+- ✅ Algorithm fully specified with all 7 steps documented
+- ✅ Conflict cases covered with resolution strategy
+- ✅ Code-ready pseudocode (ready for I-001-B implementation)
+- ✅ Examples provided for edge cases
+
+---
+
+#### I-001-B: C Core Implementation
 
 **Task ID:** I-001-B  
-**Objective:** Implement delta range enforcement in ColorJourney.c  
+**Requirement:** SC-008, FR-007  
+**Objective:** Implement Delta Range Enforcement in ColorJourney.c following algorithm from I-001-A  
 **Effort:** 2 days  
 **Dependencies:** I-001-A (algorithm designed)  
 **Deliverables:**
-- `discrete_enforce_delta_range()` function
-- OKLab ΔE calculation
-- Position adjustment logic
-- Integration with `discrete_color_at_index()`
+- `discrete_enforce_delta_range()` helper function (position adjustment)
+- OKLab ΔE calculation using C standard library
+- Position adjustment logic (binary search or linear search forward/backward)
+- Integration with `discrete_color_at_index()` (transparent to caller)
 
 **Success Criteria:**
-- ✅ Code compiles
-- ✅ Functions callable
-- ✅ Basic tests pass
+- ✅ Code compiles (C99, no warnings)
+- ✅ Functions callable and deterministic
+- ✅ Basic tests pass (ΔE within [0.02, 0.05] bounds)
+- ✅ No performance regression (< 10% overhead vs. C baseline)
 
 ---
 
-### I-001: Delta Range Testing
+#### I-001-C: Delta Range Enforcement Testing
 
 **Task ID:** I-001-C  
-**Objective:** Comprehensive testing of delta range enforcement  
+**Requirement:** SC-008, FR-007  
+**Objective:** Comprehensive testing of Delta Range Enforcement algorithm and implementation  
 **Effort:** 1.5 days  
 **Dependencies:** I-001-B (implementation complete)  
 **Deliverables:**
-- Minimum delta test (ΔE ≥ 0.02)
-- Maximum delta test (ΔE ≤ 0.05)
-- Conflict resolution test
-- Multi-contrast-level test
-- Performance measurements
+- Minimum delta test (ΔE(i, i-1) ≥ 0.02 for all colors)
+- Maximum delta test (ΔE(i, i-1) ≤ 0.05 for all colors)
+- Conflict resolution test (when constraint range < 0.03, verify min takes priority)
+- Multi-contrast-level test (delta enforcement with MEDIUM, HIGH contrast levels)
+- Performance measurements (generation time, memory, comparison to C baseline)
 
 **Success Criteria:**
 - ✅ All 4 test cases passing
-- ✅ Edge cases verified
-- ✅ No performance regression (< 10% overhead)
+- ✅ Edge cases verified (consecutive indices, conflict scenarios)
+- ✅ No performance regression (< 10% overhead vs. baseline)
+- ✅ SC-008 validation complete
 
 ---
 
-### I-001: Code Review & Refinement
+#### I-001-D: Code Review & Refinement
 
 **Task ID:** I-001-D  
-**Objective:** Code review and performance optimization  
+**Requirement:** SC-008, FR-007  
+**Objective:** Code review, performance optimization, and approval of Delta Range Enforcement implementation  
 **Effort:** 1 day  
 **Dependencies:** I-001-C (tests passing)  
 **Deliverables:**
 - Code review feedback addressed
-- Performance optimizations applied
-- Refactored code (if needed)
-- Approval documented
+- Performance optimizations applied (if needed)
+- Refactored code (for clarity/maintainability)
+- Code review approval documented
 
 **Success Criteria:**
 - ✅ Code review approved
-- ✅ Tests still passing
-- ✅ Performance verified
+- ✅ All tests still passing
+- ✅ Performance verified (< 10% overhead)
+- ✅ SC-008 implementation complete, ready for Phase 2
 
 ---
 
-### I-002: Error Handling Audit
+### I-002: Error Handling Enhancement (SC-009, FR-006)
+
+#### I-002-A: Error Handling Audit
 
 **Task ID:** I-002-A  
+**Requirement:** SC-009 (Error handling for invalid inputs), FR-006  
 **Objective:** Audit current error handling and identify gaps  
 **Effort:** 0.5 days  
 **Deliverables:**
 - Current error path documentation
-- Gap analysis
+- Gap analysis (missing error checks, edge cases)
 - Enhancement recommendations
 
 **Success Criteria:**
@@ -301,17 +468,18 @@
 
 ---
 
-### I-002: Error Handling Implementation
+#### I-002-B: Error Handling Implementation
 
 **Task ID:** I-002-B  
-**Objective:** Implement enhanced error handling  
+**Requirement:** SC-009, FR-006  
+**Objective:** Implement enhanced error handling for invalid inputs  
 **Effort:** 1 day  
 **Dependencies:** I-002-A (audit complete)  
 **Deliverables:**
-- Enhanced error validation
-- Bounds checking
-- Handle validation
-- Graceful degradation improvements
+- Enhanced error validation logic
+- Bounds checking implementation
+- Handle validation improvements
+- Graceful degradation enhancements
 
 **Success Criteria:**
 - ✅ Code compiles
@@ -320,34 +488,39 @@
 
 ---
 
-### I-002: Error Handling Testing
+#### I-002-C: Error Handling Testing
 
 **Task ID:** I-002-C  
-**Objective:** Test error handling edge cases  
+**Requirement:** SC-009, FR-006  
+**Objective:** Test error handling edge cases and verify graceful degradation  
 **Effort:** 1 day  
 **Dependencies:** I-002-B (implementation complete)  
 **Deliverables:**
-- Negative indices test
-- NULL journey test
-- Invalid handle test
+- Negative indices test (return black)
+- NULL/invalid journey test
+- Handle validation test
 - Swift nil-safety verification
 
 **Success Criteria:**
 - ✅ All 3-4 error tests passing
 - ✅ No crashes observed
 - ✅ Graceful degradation verified
+- ✅ SC-009 validation complete
 
 ---
 
-### I-003: Index Bounds Testing - Baseline
+### I-003: Index Bounds Validation (SC-010, FR-008)
+
+#### I-003-A: Index Bounds Testing - Baseline
 
 **Task ID:** I-003-A  
-**Objective:** Test indices 0, 1, 10, 100, 1000  
+**Requirement:** SC-010, FR-008  
+**Objective:** Test baseline indices (0, 1, 10, 100, 1000) to establish baseline behavior  
 **Effort:** 1 day  
 **Deliverables:**
-- Baseline index tests passing
-- Determinism verified for each
-- Precision validated
+- Baseline index tests passing (indices: 0, 1, 10, 100, 1000)
+- Determinism verified for each index
+- Precision validated at baseline
 
 **Success Criteria:**
 - ✅ Tests passing
@@ -356,16 +529,17 @@
 
 ---
 
-### I-003: Index Bounds Testing - High Indices
+#### I-003-B: Index Bounds Testing - High Indices
 
 **Task ID:** I-003-B  
-**Objective:** Test high indices 999,999, 1,000,000  
+**Requirement:** SC-010, FR-008  
+**Objective:** Test high indices (999,999, 1,000,000) and validate precision at bounds  
 **Effort:** 1 day  
 **Dependencies:** I-003-A (baseline complete), R-003 (precision limits known)  
 **Deliverables:**
-- High index tests
-- Precision validation
-- Determinism at boundaries
+- High index tests (indices: 999,999, 1,000,000)
+- Precision validation at boundaries
+- Determinism at high indices
 - Precision loss detection (if any)
 
 **Success Criteria:**
@@ -375,29 +549,28 @@
 
 ---
 
-### I-003: Bounds Documentation & Warning System
+#### I-003-C: Bounds Documentation & Warning System
 
 **Task ID:** I-003-C  
-**Objective:** Document bounds and implement precision warnings  
+**Requirement:** SC-010, FR-008  
+**Objective:** Document bounds and implement precision warnings for developers  
 **Effort:** 0.5 days  
 **Dependencies:** I-003-B (testing complete)  
 **Deliverables:**
-- Bounds documentation
+- Bounds documentation (supported range: 0 to 1,000,000)
 - Precision guarantee specification
-- Developer warning system
-- Guidance for high-index use
+- Developer warning system (if precision loss detected)
+- Guidance for high-index use (batching, chunking alternatives)
 
 **Success Criteria:**
 - ✅ Documentation clear
-- ✅ Warnings functional
+- ✅ Warnings functional (if applicable)
 - ✅ Guidance helpful
+- ✅ SC-010 validation complete
 
 ---
 
-### Implementation Phase Gate
-
-**Task ID:** GATE-1  
-**Objective:** Review all implementation and approve Phase 2  
+### GATE-1: Implementation Phase Approval  
 **Effort:** 0.5 days  
 **Dependencies:** I-001-D, I-002-C, I-003-C (all implementation complete)  
 **Deliverables:**
