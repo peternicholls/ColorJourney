@@ -101,6 +101,13 @@ var discreteColors: AnySequence<ColorJourneyRGB>
 - **MUST** return black (0,0,0) for NULL journey
 - **SHALL** handle edge cases gracefully
 
+### FR-007: Delta Range Enforcement
+- **MUST** enforce minimum delta of 0.02 between consecutive colors (default)
+- **MUST** enforce maximum delta of 0.05 between consecutive colors (default)
+- **SHALL** accept explicit overrides for min/max delta (future enhancement)
+- **Note:** Range 0.02-0.05 to be confirmed during research phase
+- **Status:** Override API deferred to future sprint (TODO)
+
 ---
 
 ## Technical Design
@@ -119,6 +126,7 @@ static float discrete_position_from_index(int index) {
 - Fixed spacing of 0.05 yields ~20 colors per full journey cycle
 - Modulo wrapping creates infinite cyclic sequence
 - Deterministic: same index always maps to same position
+- **Delta constraints:** Minimum 0.02, maximum 0.05 (defaults, overridable in future)
 
 ### Contrast Enforcement
 
@@ -132,7 +140,14 @@ for i from 0 to index-1:
 return compute_color_at(index, with_contrast_to: previous_color)
 ```
 
-**Implication:** Index access requires computing all preceding colors to maintain contrast chain.
+**Delta Range Constraints:**
+- Minimum delta: 0.02 (ensures sufficient distinctness)
+- Maximum delta: 0.05 (prevents excessive variation)
+- Default behavior: Enforced automatically
+- Future: API for explicit override (TODO)
+- Research needed: Confirm optimal range for perceptual balance
+
+**Implication:** Index access requires computing all preceding colors to maintain contrast chain and delta constraints.
 
 ### Memory Model
 
@@ -152,6 +167,14 @@ return compute_color_at(index, with_contrast_to: previous_color)
    - `discrete_position_from_index()` - Position calculation helper
    - `discrete_color_at_index()` - Color generation with contrast
    - `discrete_min_delta_e()` - Contrast threshold helper
+
+### Pending Implementation 🔄
+
+1. **Delta Range Enforcement** (FR-007)
+   - Minimum delta: 0.02 (default, prevents colors too similar)
+   - Maximum delta: 0.05 (default, prevents excessive jumps)
+   - Research phase: Confirm optimal perceptual range
+   - Future API: Allow explicit min/max override (TODO)
 
 2. **C Header** ([ColorJourney.h](../../Sources/CColorJourney/include/ColorJourney.h))
    - Public API declarations with Doxygen documentation
@@ -320,5 +343,6 @@ for (index, color) in journey.discreteColors.enumerated() {
 - ✅ **SC-005:** Backward compatibility maintained
 - ✅ **SC-006:** Documentation complete (Doxygen + DocC)
 - ✅ **SC-007:** Performance characteristics documented
+- 🔄 **SC-008:** Delta range enforcement implemented (min: 0.02, max: 0.05)
 
-**Status:** All success criteria met ✅
+**Status:** SC-001 to SC-007 met ✅ | SC-008 requires implementation 🔄
