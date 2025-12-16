@@ -210,17 +210,34 @@ static void test_conflict_resolution(void) {
  * Tests delta enforcement across different contrast levels (LOW, MEDIUM, HIGH).
  * Verifies that delta range [0.02, 0.05] and contrast requirements interact correctly.
  * 
+ * Implementation details (discrete_min_delta_e and discrete_color_at_index):
+ * - discrete_min_delta_e() returns: LOW=0.05, MEDIUM=0.10 (default), HIGH=0.15
+ * - discrete_color_at_index() applies contrast adjustment only when:
+ *   min_delta_e > CJ_DELTA_MAX (0.05)
+ * 
+ * Effective guarantees:
+ * - LOW (0.05):    0.05 > 0.05 is FALSE → delta enforcement [0.02, 0.05] only
+ * - MEDIUM (0.10): 0.10 > 0.05 is TRUE → delta enforcement + contrast ≥ 0.10
+ * - HIGH (0.15):   0.15 > 0.05 is TRUE → delta enforcement + contrast ≥ 0.15
+ * 
+ * API-guaranteed minimums (what tests should validate):
+ * - LOW:    ΔE ≥ 0.02 (delta min, not contrast value)
+ * - MEDIUM: ΔE ≥ 0.10 (contrast adjustment applied)
+ * - HIGH:   ΔE ≥ 0.15 (contrast adjustment applied)
+ * 
  * Success Criteria:
- * - Delta range enforced regardless of contrast level
- * - When contrast > delta max, tighter constraint applies
- * - All colors satisfy both delta and contrast requirements
+ * - All contrast levels satisfy their respective minimum guarantees
+ * - No violations of the effective minimum for each level
  */
 static void test_multi_contrast_levels(void) {
     printf("T017: Multi-Contrast-Level Delta Test...\n");
     
     CJ_ContrastLevel levels[] = {CJ_CONTRAST_LOW, CJ_CONTRAST_MEDIUM, CJ_CONTRAST_HIGH};
     const char* level_names[] = {"LOW", "MEDIUM", "HIGH"};
-    const float contrast_mins[] = {0.02f, 0.04f, 0.10f};  /* Expected minimum ΔE per level */
+    /* API-guaranteed minimums based on actual implementation behavior */
+    /* LOW: only delta enforcement applies (min_delta_e == delta_max, condition false) */
+    /* MEDIUM/HIGH: contrast adjustment applies (min_delta_e > delta_max) */
+    const float guaranteed_mins[] = {0.02f, 0.10f, 0.15f};  /* LOW=delta_min, MEDIUM/HIGH=contrast */
     
     for (int level_idx = 0; level_idx < 3; level_idx++) {
         printf("  Testing contrast level: %s\n", level_names[level_idx]);
@@ -236,26 +253,35 @@ static void test_multi_contrast_levels(void) {
         
         const int count = 50;
         int violations = 0;
-        float expected_min = contrast_mins[level_idx];
+        float expected_min = guaranteed_mins[level_idx];
         
-        /* For LOW and MEDIUM, delta range [0.02, 0.05] may apply */
-        /* For HIGH, contrast min (0.10) is higher than delta max (0.05) */
+        /* All guaranteed minimums are >= DELTA_MIN (0.02), but check anyway */
         if (expected_min < DELTA_MIN) {
-            expected_min = DELTA_MIN;  /* Delta min overrides */
+            expected_min = DELTA_MIN;  /* Delta min is absolute floor */
         }
+        
+        /* Cache previous color for efficiency
+         * Note: cj_journey_discrete_at() has O(n) complexity per call since it
+         * recomputes colors from index 0. This test intentionally uses small count
+         * to avoid O(n²) performance impact. For production use with large indices,
+         * use cj_journey_discrete_range() which caches intermediate results.
+         * (Addresses PR review comment C2 about O(n²) performance)
+         */
+        CJ_RGB color_prev = cj_journey_discrete_at(journey, 0);
         
         for (int i = 1; i < count; i++) {
             CJ_RGB color_curr = cj_journey_discrete_at(journey, i);
-            CJ_RGB color_prev = cj_journey_discrete_at(journey, i - 1);
             
             CJ_Lab lab_curr = cj_rgb_to_oklab(color_curr);
             CJ_Lab lab_prev = cj_rgb_to_oklab(color_prev);
             float delta_e = cj_delta_e(lab_curr, lab_prev);
             
-            /* Check that minimum (tighter of delta or contrast) is satisfied */
+            /* Check that API-guaranteed minimum is satisfied */
             if (delta_e < expected_min - DELTA_TOLERANCE) {
                 violations++;
             }
+            
+            color_prev = color_curr;  /* Cache for next iteration */
         }
         
         printf("    Minimum violations: %d (expected 0)\n", violations);
