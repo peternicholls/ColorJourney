@@ -184,6 +184,21 @@ make test-c
 
 ---
 
+## Future Enhancements (Post-GATE-2)
+
+**Performance Optimization: Caching Layer (Feature 005, Pending)**
+
+A forward-planning spec for optional caching layer is available at [specs/005-performance-caching/](../005-performance-caching/DRAFT_caching_spec.md). This feature is currently forward-planning and will be evaluated after Phase 2 performance benchmarking (GATE-2) to determine if optimization is warranted.
+
+**What it provides (draft):**
+- sRGB8→Linear LUT (always-on, 256 entries, removes transfer-function cost)
+- Optional OKLab memo cache (caller-owned, direct-mapped, opt-in)
+- Determinism contract: caching never changes numerical results
+
+**Decision point:** Post-Phase 2 performance evaluation (GATE-2). If benchmarking reveals need for optimization, feature 005 will be created with this spec as foundation.
+
+---
+
 ## Version History
 
 - **v2.0.0** (December 2025) - Initial implementation

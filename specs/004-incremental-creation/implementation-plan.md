@@ -9,11 +9,41 @@
 
 ## Executive Summary
 
-This document outlines the execution plan for completing feature 004 (Incremental Color Swatch Generation). The core API is already implemented (SC-001 to SC-007). This plan addresses:
-- **Implementation:** Delta range enforcement, error handling, index bounds (SC-008 to SC-010)
-- **Research:** Thread safety, chunk size optimization (SC-011 to SC-012)
-- **Sequencing:** Dependencies between tasks
-- **Success metrics:** Clear completion criteria
+This document outlines the execution plan for completing feature 004 (Incremental Color Swatch Generation). The core API is already implemented (SC-001 to SC-007 ✅ shipped Dec 9, 2025). This plan addresses:
+- **Phase 0 (Research):** Thread safety investigation (SC-011), chunk size optimization (SC-012)
+- **Phase 1 (Implementation):** Delta Range Enforcement (SC-008), error handling (SC-009), index bounds (SC-010)
+- **Phase 2 (Integration):** Comprehensive testing, performance regression validation
+- **Phase 3 (Evaluation):** Effectiveness assessment, rollout decision for Delta Range Enforcement
+- **Sequencing:** 4 phases, clear phase gates, dependencies documented
+- **Success metrics:** Clear completion criteria linked to spec success criteria (SC-008 to SC-012)
+
+**Traceability:** Each phase and task maps to specific functional requirements (FR-*) and success criteria (SC-*) in [spec.md](spec.md). See [Success Criteria & Task Traceability](#task-to-requirement-traceability) table below.
+
+---
+
+## Phase Overview & Requirement Traceability
+
+| Phase | Focus | Success Criteria | Spec Requirements | Estimated Duration |
+|-------|-------|------------------|------------------|-------------------|
+| **Phase 0** | Research & Investigation | SC-011, SC-012 validated; recommendations documented | R-001 (chunk size), R-002 (thread safety), R-003 (overflow) | 2 weeks |
+| **Phase 1** | Implementation | SC-008, SC-009, SC-010 complete; all tests passing | FR-007 (Delta Range), FR-006 (Errors), FR-008 (Bounds) | 2 weeks |
+| **Phase 2** | Integration & Testing | All 86 tests passing; performance within <10% baseline | SC-008, SC-009, SC-010 verified via test suite | 1 week |
+| **Phase 3** | Evaluation & Decision | Effectiveness assessed; rollout decision made | SC-008 effectiveness evaluation; rollout recommendation (general vs. incremental-only) | 1 week |
+
+**Total:** ~6 weeks for complete feature delivery with evaluation and rollout decision
+
+---
+
+## Task-to-Requirement Traceability
+
+| Spec Requirement | Phase | Task(s) | Description |
+|---|---|---|---|
+| **SC-011: Thread Safety** | Phase 0 | R-002-A, R-002-B, R-002-C | Code review → concurrent testing → stress testing & documentation |
+| **SC-012: Chunk Size Optimization** | Phase 0 | R-001-A, R-001-B, R-001-D | Baseline measurement → benchmark chunk sizes → decision & rationale |
+| **FR-008: Index Overflow Strategy** | Phase 0 → 1 | R-003-A, R-003-B, R-003-C → I-003-B, I-003-C | Precision analysis → codebase investigation → strategy selection → high index testing |
+| **FR-007: Delta Range Enforcement** | Phase 1 → 3 | I-001-A, I-001-B, I-001-C, I-001-D → E-001-A, E-001-B, E-001-D | Algorithm design → C implementation → testing → code review → real-world evaluation → rollout decision |
+| **FR-006: Error Handling** | Phase 1 → 2 | I-002-A, I-002-B, I-002-C → T-001-C | Error audit → implementation → testing → integration |
+| **FR-008 (Bounds):** Index Bounds Validation | Phase 1 → 2 | I-003-A, I-003-B, I-003-C → T-001-D | Baseline testing → high index testing → documentation → integration |
 
 ---
 

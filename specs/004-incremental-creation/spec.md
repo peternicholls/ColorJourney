@@ -1,9 +1,10 @@
 # Incremental Color Swatch Generation Specification
 
 **Feature ID:** 004-incremental-creation  
-**Status:** Implemented & Merged  
-**Branch:** `004-incremental-creation`  
-**Implementation Date:** December 9, 2025  
+**Status:** Partially Implemented (SC-001 to SC-007 ✅ shipped Dec 9; SC-008 to SC-012 🔄 planned)  
+**Branch:** `004-incremental-creation` (core API) + `005-c-algo-parity` (planned enhancements)  
+**Core Implementation Date:** December 9, 2025  
+**Planned Enhancements:** See Phase 1–3 in [implementation-plan.md](implementation-plan.md)  
 
 ---
 
@@ -108,13 +109,14 @@ var discreteColors: AnySequence<ColorJourneyRGB>
 - **TODO:** Investigate error code or status return mechanism for C API
 
 ### FR-007: Delta Range Enforcement (Incremental Workflow)
-- **MUST** enforce minimum perceptual delta (ΔE in OKLab) of 0.02 between consecutive colors (default)
-- **MUST** enforce maximum perceptual delta (ΔE in OKLab) of 0.05 between consecutive colors (default)
-- **SHALL** accept explicit overrides for min/max delta (future enhancement)
-- **Scope:** Applies to incremental creation workflow only; effectiveness will determine general rollout
+- **MUST** enforce minimum perceptual delta (Delta ΔE in OKLab) of 0.02 between consecutive colors (default)
+- **MUST** enforce maximum perceptual delta (Delta ΔE in OKLab) of 0.05 between consecutive colors (default)
+- **SHALL** accept explicit overrides for min/max delta (future enhancement, SC-013+)
+- **Scope:** Applies to incremental creation workflow only; effectiveness evaluation determines general rollout (Phase 3, E-001)
 - **Color Space:** All perceptual measurements use OKLab color space
-- **Note:** Range 0.02-0.05 to be confirmed during research phase
-- **Status:** Override API deferred to future sprint (TODO)
+- **Research Status:** Range 0.02-0.05 validation in progress (R-001, Phase 0)
+- **Implementation Status:** Core delta enforcement (I-001, Phase 1); evaluation (E-001, Phase 3)
+- **Override API:** Deferred to SC-013+ (post-evaluation sprint)
 
 ---
 
@@ -156,20 +158,26 @@ return compute_color_at(index, with_contrast_to: previous_color)
 - Future: API for explicit override (TODO)
 - Research needed: Confirm optimal range for perceptual balance
 
-**Delta Enforcement Algorithm:**
-1. Compute base color at position t = index × 0.05
-2. Calculate ΔE(base, previous) in OKLab space
-3. If ΔE < 0.02: Adjust position forward until ΔE ≥ 0.02
-4. If ΔE > 0.05: Adjust position backward until ΔE ≤ 0.05
-5. If constraints conflict (available range < 0.03): Prefer minimum over maximum
-6. Apply standard contrast enforcement (FR-002) after delta adjustment
+**Delta Range Enforcement Algorithm:**
+
+*Definition:* "Available range" = color space positions between index-1 and index where both ΔE(base, prev) ≥ 0.02 AND ΔE(base, prev) ≤ 0.05 can be satisfied.
+
+1. Compute base color at position t = index × 0.05 in OKLab space
+2. Calculate ΔE(base, previous) where previous = color at index−1
+3. **If ΔE < 0.02 (too similar):** Adjust position forward (increase t) until ΔE ≥ 0.02
+4. **If ΔE > 0.05 (too different):** Adjust position backward (decrease t) until ΔE ≤ 0.05
+5. **If constraints conflict** (e.g., no position exists where both ≥ 0.02 and ≤ 0.05): Prefer enforcing minimum ΔE ≥ 0.02 over maximum ≤ 0.05 (perceptual distinctness takes priority)
+   - *Example:* If only positions ≤ 0.01 or ≥ 0.06 exist, enforce ≤ 0.01 to stay below threshold (accept higher perceptual distance rather than collapse into undistinguishable colors)
+6. Apply standard contrast enforcement (FR-002) after delta adjustment (tighter bound applies)
+7. Return final adjusted position and computed color
 
 **Relationship to FR-002 (Contrast):**
-- FR-002: Minimum contrast (user-configured: LOW/MEDIUM/HIGH)
-- FR-007: Delta range (0.02-0.05, fixed for incremental workflow)
-- Both measured as ΔE in OKLab
-- Delta range provides tighter bounds within contrast requirements
-- Evaluation: Assess effectiveness before general rollout
+- FR-002: Minimum contrast enforcement (user-configured: LOW/MEDIUM/HIGH, e.g., 0.04–0.10 ΔE for MEDIUM)
+- FR-007: Delta Range Enforcement (fixed 0.02–0.05 ΔE for incremental workflow)
+- Both measured as ΔE in OKLab color space
+- Delta Range Enforcement provides tighter perceptual bounds: If both apply, enforce intersection (e.g., MEDIUM contrast [0.04–0.10] ∩ delta range [0.02–0.05] = [0.04–0.05])
+- Conflict Resolution: Prefer tighter lower bound (minimum) over maximum if ranges conflict (see I-001-A algorithm design in tasks.md)
+- Evaluation: Assess effectiveness in Phase 3 (E-001) before considering general rollout
 
 **Implication:** Index access requires computing all preceding colors to maintain contrast chain and delta constraints.
 
@@ -423,20 +431,27 @@ for (index, color) in journey.discreteColors.enumerated() {
 
 ---
 
-## Success Criteria
+## Success Criteria & Task Traceability
 
-- ✅ **SC-001:** Index access returns deterministic colors
-- ✅ **SC-002:** Range access matches individual calls
-- ✅ **SC-003:** Contrast enforcement works identically to batch API
-- ✅ **SC-004:** All tests passing (100% pass rate)
-- ✅ **SC-005:** Backward compatibility maintained
-- ✅ **SC-006:** Documentation complete (Doxygen + DocC)
-- ✅ **SC-007:** Performance characteristics documented
-- 🔄 **SC-008:** Delta range enforcement (ΔE: 0.02-0.05 in OKLab, incremental workflow)
-- 🔄 **SC-009:** Error handling for invalid inputs (black return, graceful degradation)
-- 🔄 **SC-010:** Index bounds tested (0 to 1,000,000)
-- 🔍 **SC-011:** Thread safety verified (research, investigation, testing)
-- 🔍 **SC-012:** Lazy sequence chunk size optimized (research: compare to C core performance)
+| Success Criterion | Status | Task(s) | Notes |
+|---|---|---|---|
+| **SC-001:** Index access returns deterministic colors | ✅ | (Core API) | Shipped Dec 9, 2025 |
+| **SC-002:** Range access matches individual calls | ✅ | (Core API) | Shipped Dec 9, 2025 |
+| **SC-003:** Contrast enforcement works identically to batch API | ✅ | (Core API) | Shipped Dec 9, 2025 |
+| **SC-004:** All tests passing (100% pass rate) | ✅ | (Core API) | Shipped Dec 9, 2025 |
+| **SC-005:** Backward compatibility maintained | ✅ | (Core API) | Shipped Dec 9, 2025 |
+| **SC-006:** Documentation complete (Doxygen + DocC) | ✅ | (Core API) | Shipped Dec 9, 2025 |
+| **SC-007:** Performance characteristics documented | ✅ | (Core API) | Shipped Dec 9, 2025 |
+| **SC-008:** Delta Range Enforcement (ΔE: 0.02–0.05 in OKLab) | 🔄 | I-001-B, I-001-C | Phase 1 implementation; Phase 3 evaluation (E-001) |
+| **SC-009:** Error handling for invalid inputs | 🔄 | I-002-A, I-002-B, I-002-C | Phase 1 implementation |
+| **SC-010:** Index bounds tested (0 to 1,000,000) | 🔄 | I-003-A, I-003-B, I-003-C | Phase 1 implementation; depends on R-003 research |
+| **SC-011:** Thread safety verified | 🔍 | R-002-A, R-002-B, R-002-C | Phase 0 research; no rollout decision yet |
+| **SC-012:** Lazy sequence chunk size optimized | 🔍 | R-001-A, R-001-B, R-001-D | Phase 0 research; decision in R-001-D |
+
+**Legend:**
+- ✅ Completed & verified (shipped in core API)
+- 🔄 Implementation required (Phase 1–2)
+- 🔍 Research/investigation required (Phase 0) before rollout decision
 
 **Legend:**
 - ✅ Completed and verified
