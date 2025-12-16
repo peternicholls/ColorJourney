@@ -25,7 +25,7 @@ This document outlines the execution plan for completing feature 004 (Incrementa
 
 | Phase | Focus | Success Criteria | Spec Requirements | Estimated Duration |
 |-------|-------|------------------|------------------|-------------------|
-| **Phase 0** | Research & Investigation | SC-011, SC-012 validated; recommendations documented | R-001 (chunk size), R-002 (thread safety), R-003 (overflow) | 2 weeks |
+| **Phase 0** | Research & Investigation | SC-011, SC-012 validated; recommendations documented | R-001 (chunk size), R-002 (thread safety), R-003 (index overflow/precision) | 2 weeks |
 | **Phase 1** | Implementation | SC-008, SC-009, SC-010 complete; all tests passing | FR-007 (Delta Range), FR-006 (Errors), FR-008 (Bounds) | 2 weeks |
 | **Phase 2** | Integration & Testing | All 86 tests passing; performance within <10% baseline | SC-008, SC-009, SC-010 verified via test suite | 1 week |
 | **Phase 3** | Evaluation & Decision | Effectiveness assessed; rollout decision made | SC-008 effectiveness evaluation; rollout recommendation (general vs. incremental-only) | 1 week |

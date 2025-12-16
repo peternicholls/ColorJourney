@@ -2,9 +2,9 @@
 
 **Feature ID:** 004-incremental-creation  
 **Status:** Partially Implemented (SC-001 to SC-007 ✅ shipped Dec 9; SC-008 to SC-012 🔄 planned)  
-**Branch:** `004-incremental-creation` (core API) + `005-c-algo-parity` (planned enhancements)  
+**Branch:** `004-incremental-creation` (core API implementation and enhancements)  
 **Core Implementation Date:** December 9, 2025  
-**Planned Enhancements:** See Phase 1–3 in [implementation-plan.md](implementation-plan.md)  
+**Planned Enhancements:** See Phase 1–3 in [plan.md](plan.md)  
 
 ---
 
@@ -105,8 +105,9 @@ var discreteColors: AnySequence<ColorJourneyRGB>
 - **MUST** return black (0,0,0) for NULL journey
 - **MUST** handle invalid journey handles gracefully (Swift: return black, no crash)
 - **SHALL** handle edge cases gracefully (overflow, precision loss)
-- **Note:** Error vs. legitimate black color distinction to be addressed in future error reporting enhancement
-- **TODO:** Investigate error code or status return mechanism for C API
+- **Strategy:** "Return black" approach matches existing codebase patterns (consistent with `cj_journey_discrete()` and other APIs)
+- **Rationale:** Simple, predictable, no new error handling mechanisms required; maintains API simplicity and backward compatibility
+- **Note:** Error vs. legitimate black color distinction deferred to future error reporting enhancement (post-1.0)
 
 ### FR-007: Delta Range Enforcement (Incremental Workflow)
 - **MUST** enforce minimum perceptual delta (Delta ΔE in OKLab) of 0.02 between consecutive colors (default)
@@ -114,8 +115,8 @@ var discreteColors: AnySequence<ColorJourneyRGB>
 - **SHALL** accept explicit overrides for min/max delta (future enhancement, SC-013+)
 - **Scope:** Applies to incremental creation workflow only; effectiveness evaluation determines general rollout (Phase 3, E-001)
 - **Color Space:** All perceptual measurements use OKLab color space
-- **Research Status:** Range 0.02-0.05 validation in progress (R-001, Phase 0)
-- **Implementation Status:** Core delta enforcement (I-001, Phase 1); evaluation (E-001, Phase 3)
+- **Research Status:** Not started (delta range is design decision, not research; effectiveness validated in Phase 3)
+- **Implementation Status:** Pending (I-001, Phase 1); evaluation pending (E-001, Phase 3)
 - **Override API:** Deferred to SC-013+ (post-evaluation sprint)
 
 ---
@@ -162,14 +163,30 @@ return compute_color_at(index, with_contrast_to: previous_color)
 
 *Definition:* "Available range" = color space positions between index-1 and index where both ΔE(base, prev) ≥ 0.02 AND ΔE(base, prev) ≤ 0.05 can be satisfied.
 
-1. Compute base color at position t = index × 0.05 in OKLab space
+1. Compute base color at position t = index × 0.05 in OKLab space (modulo wrapping via `fmod(t, 1.0)`)
 2. Calculate ΔE(base, previous) where previous = color at index−1
 3. **If ΔE < 0.02 (too similar):** Adjust position forward (increase t) until ΔE ≥ 0.02
 4. **If ΔE > 0.05 (too different):** Adjust position backward (decrease t) until ΔE ≤ 0.05
 5. **If constraints conflict** (e.g., no position exists where both ≥ 0.02 and ≤ 0.05): Prefer enforcing minimum ΔE ≥ 0.02 over maximum ≤ 0.05 (perceptual distinctness takes priority)
-   - *Example:* If only positions ≤ 0.01 or ≥ 0.06 exist, enforce ≤ 0.01 to stay below threshold (accept higher perceptual distance rather than collapse into undistinguishable colors)
+   - *Example:* If previous color forces ΔE to be either <0.02 (too similar) or >0.05 (too different), choose position that achieves ΔE ≥ 0.02 even if it exceeds 0.05 (better to have distinguishable colors than indistinguishable ones)
 6. Apply standard contrast enforcement (FR-002) after delta adjustment (tighter bound applies)
 7. Return final adjusted position and computed color
+
+**Exhaustion and Fallback Strategy (Loop Closure):**
+
+When local OKLab region around base position `t` is saturated (i.e., cannot satisfy constraints within reasonable search radius):
+
+1. **Search Bounds**: Limit position adjustment to ±0.10 in `t` space (~2 position steps) to prevent unbounded search
+2. **Modulo Wrapping**: If adjustment exceeds [0.0, 1.0], wrap via `fmod(t, 1.0)` to explore next cycle of closed loop
+3. **Soft Chroma Reduction**: If no valid position found after wrapping, reduce chroma (saturation) by 10-20% while preserving hue and lightness, then retry constraint satisfaction
+4. **Gamut Fallback**: If still failing, apply full gamut mapping (Section 9 of comprehensive spec): desaturate to sRGB boundary while maintaining perceptual continuity
+5. **Guaranteed Termination**: After 3 fallback iterations, accept best-effort color (minimum ΔE ≥ 0.01, relaxed from 0.02) to ensure function always returns
+
+**Loop Topology for 004:**
+- **Mode**: Closed loop only (no open/ping-pong/Möbius variants in this feature)
+- **Cycle Length**: ~20 colors per full cycle (1.0 / 0.05 spacing)
+- **Infinite Sequence**: Index 0, 20, 40, ... map to same position (0.0) but with contrast chain history affecting final color
+- **No Duplicate Prevention**: Unlike comprehensive engine, `discrete_at()` does not deduplicate; caller's responsibility to handle wrap-around if needed
 
 **Relationship to FR-002 (Contrast):**
 - FR-002: Minimum contrast enforcement (user-configured: LOW/MEDIUM/HIGH, e.g., 0.04–0.10 ΔE for MEDIUM)
@@ -186,6 +203,31 @@ return compute_color_at(index, with_contrast_to: previous_color)
 - **No persistent state** - Each call is independent
 - **Stack-only allocation** - No dynamic memory management
 - **Contrast chain built on-demand** - Recomputed for each index access
+
+### Precision & Accuracy (Constitution Compliance)
+
+**Per Constitution Principle II (Perceptual Integrity via OKLab):**
+
+- **Double precision OKLab conversions**: All internal color space conversions use IEEE 754 double precision (64-bit) to eliminate cumulative error
+- **Standard library cbrt()**: Cube root calculations use `cbrt()` from C standard library (`<math.h>`), providing machine epsilon precision (~1e-15 relative error)
+- **Perceptual ΔE calculations**: OKLab ΔE (Euclidean distance) computed with full double precision before final rounding
+- **Deterministic output**: Bit-identical RGB output across all platforms for same configuration
+
+This precision upgrade (adopted in ColorJourney v2.0.0) ensures maximum perceptual accuracy for contrast enforcement and delta range calculations, especially critical for large palettes where cumulative error could otherwise degrade quality.
+
+### Index Precision Guarantees (R-003 Research)
+
+**Supported Index Range: 0 to 1,000,000** (verified via R-003-A/B/C research)
+
+- **0 to 1M**: Full precision guaranteed, perceptual error <0.02 ΔE (imperceptible)
+- **1M to 10M**: Warning range, perceptual error 0.02-0.10 ΔE (may be perceptible, use with caution)
+- **Beyond 10M**: Not recommended, precision error >0.10 ΔE
+- **Negative indices**: Return black (0,0,0) per FR-006
+
+**Float Precision Analysis:**
+- IEEE 754 single precision guarantees exact integer representation up to 2^24 (~16M)
+- Position calculation error remains imperceptible (<0.02 ΔE) up to 1M indices
+- Deterministic behavior guaranteed via IEEE 754 standard (same input → same output)
 
 ---
 
@@ -315,7 +357,7 @@ All 56 tests passing:
 - Stack-only allocation: ~24 bytes per call
 - No heap allocations
 - No persistent cache (stateless design)
-- Lazy sequence buffer: 1.2 KB (100 colors × 12 bytes) - *size under research*
+- Lazy sequence buffer: 1.17 KB (100 colors × 12 bytes) - **confirmed optimal via R-001-B research**
 
 ### Performance Benchmarking Strategy
 
@@ -404,24 +446,26 @@ for (index, color) in journey.discreteColors.enumerated() {
    - Evaluate: Should this be rolled out generally or remain incremental-specific?
    - Benchmark: Impact on generation time
 
-2. **Lazy Sequence Chunk Size (SC-012)**
-   - Current: 100 colors per chunk
-   - Research: Test various chunk sizes (10, 50, 100, 200, 500)
-   - Compare: Memory usage vs. computation overhead
-   - Baseline: Measure against C core performance
-   - Goal: Find inflection point for optimal balance
+### Completed Research (Phase 0) ✅
 
-3. **Index Overflow Strategy (FR-008)**
-   - Investigate: Current codebase overflow handling patterns
-   - Research: Floating-point precision limits at high indices
-   - Test: Behavior at INT_MAX, precision loss boundaries
-   - Warning: Document developer-facing precision guarantees
+2. **Lazy Sequence Chunk Size (SC-012)** ✅
+   - **Decision:** Keep chunk size 100 (confirmed optimal)
+   - **Rationale:** At inflection point for common case (100 colors), only 2% difference vs larger chunks
+   - **Memory:** 1.17 KB (negligible overhead)
+   - **Performance:** Within 10% of C baseline for typical use
+   - **Report:** [chunk-size-decision.md](analysis-reports-phase-0/chunk-size-decision.md)
 
-4. **Thread Safety Validation (FR-009)**
-   - Investigate: Stateless design guarantees
-   - Test: Concurrent access from multiple threads
-   - Research: Race conditions in contrast chain computation
-   - Benchmark: Performance under concurrent load
+3. **Index Overflow Strategy (FR-008)** ✅
+   - **Decision:** Document supported range 0-1M, match codebase pattern
+   - **Precision:** Guaranteed <0.02 ΔE up to 1,000,000 indices
+   - **Strategy:** No runtime checks, developer responsibility
+   - **Report:** [index-precision-analysis.md](analysis-reports-phase-0/index-precision-analysis.md)
+
+4. **Thread Safety Validation (SC-011)** ✅
+   - **Result:** Safe for concurrent reads (100K+ ops tested)
+   - **Guarantee:** Stateless design, no shared mutable state
+   - **Performance:** 117K ops/second with 100 threads
+   - **Report:** [thread-safety-stress-test-report.md](analysis-reports-phase-0/thread-safety-stress-test-report.md)
 
 5. **Error Reporting Enhancement (FR-006)**
    - Research: Error code vs. status return patterns in codebase
