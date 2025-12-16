@@ -388,7 +388,7 @@
 ### I-001: Delta Range Enforcement (SC-008, FR-007)
 
 **Checklist:**
-- [ ] T010 Design delta range enforcement algorithm with conflict resolution in specs/004-incremental-creation/delta-algorithm.md
+- [x] T010 Design delta range enforcement algorithm with conflict resolution in specs/004-incremental-creation/delta-algorithm.md
 - [ ] T011 Implement `discrete_enforce_delta_range()` helper in Sources/CColorJourney/ColorJourney.c
 - [ ] T012 Implement OKLab ΔE calculation in Sources/CColorJourney/ColorJourney.c
 - [ ] T013 Integrate delta enforcement into `discrete_color_at_index()` in Sources/CColorJourney/ColorJourney.c
