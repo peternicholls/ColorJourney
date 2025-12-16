@@ -45,6 +45,7 @@ This works well when the number of colors is known in advance, but fails in scen
 CJ_RGB cj_journey_discrete_at(CJ_Journey journey, int index);
 
 // Range access for batch operations
+// Note: Uses count, not end - incremental steps don't know end at any time
 void cj_journey_discrete_range(CJ_Journey journey, int start, int count, CJ_RGB* out_colors);
 
 // Constant defining default spacing
@@ -58,6 +59,8 @@ void cj_journey_discrete_range(CJ_Journey journey, int start, int count, CJ_RGB*
 func discrete(at index: Int) -> ColorJourneyRGB
 
 // Range access
+// Note: Swift uses Range<Int> (0..<10) which translates to C's start=0, count=10
+// Semantic difference is intentional: Swift idiomatic vs C count-based
 func discrete(range: Range<Int>) -> [ColorJourneyRGB]
 
 // Subscript convenience
@@ -99,12 +102,17 @@ var discreteColors: AnySequence<ColorJourneyRGB>
 ### FR-006: Error Handling
 - **MUST** return black (0,0,0) for negative indices
 - **MUST** return black (0,0,0) for NULL journey
-- **SHALL** handle edge cases gracefully
+- **MUST** handle invalid journey handles gracefully (Swift: return black, no crash)
+- **SHALL** handle edge cases gracefully (overflow, precision loss)
+- **Note:** Error vs. legitimate black color distinction to be addressed in future error reporting enhancement
+- **TODO:** Investigate error code or status return mechanism for C API
 
-### FR-007: Delta Range Enforcement
-- **MUST** enforce minimum delta of 0.02 between consecutive colors (default)
-- **MUST** enforce maximum delta of 0.05 between consecutive colors (default)
+### FR-007: Delta Range Enforcement (Incremental Workflow)
+- **MUST** enforce minimum perceptual delta (ΔE in OKLab) of 0.02 between consecutive colors (default)
+- **MUST** enforce maximum perceptual delta (ΔE in OKLab) of 0.05 between consecutive colors (default)
 - **SHALL** accept explicit overrides for min/max delta (future enhancement)
+- **Scope:** Applies to incremental creation workflow only; effectiveness will determine general rollout
+- **Color Space:** All perceptual measurements use OKLab color space
 - **Note:** Range 0.02-0.05 to be confirmed during research phase
 - **Status:** Override API deferred to future sprint (TODO)
 
@@ -123,10 +131,11 @@ static float discrete_position_from_index(int index) {
 ```
 
 **Key Properties:**
-- Fixed spacing of 0.05 yields ~20 colors per full journey cycle
+- Fixed position spacing of 0.05 yields ~20 colors per full journey cycle
 - Modulo wrapping creates infinite cyclic sequence
 - Deterministic: same index always maps to same position
-- **Delta constraints:** Minimum 0.02, maximum 0.05 (defaults, overridable in future)
+- **Delta constraints (separate from spacing):** Perceptual ΔE minimum 0.02, maximum 0.05 (defaults, overridable in future)
+- **Note:** Position spacing (0.05) and perceptual delta range (0.02-0.05) are distinct concepts
 
 ### Contrast Enforcement
 
@@ -141,11 +150,26 @@ return compute_color_at(index, with_contrast_to: previous_color)
 ```
 
 **Delta Range Constraints:**
-- Minimum delta: 0.02 (ensures sufficient distinctness)
-- Maximum delta: 0.05 (prevents excessive variation)
-- Default behavior: Enforced automatically
+- Minimum ΔE (OKLab): 0.02 (ensures sufficient perceptual distinctness)
+- Maximum ΔE (OKLab): 0.05 (prevents excessive perceptual jumps)
+- Default behavior: Enforced automatically in incremental workflow
 - Future: API for explicit override (TODO)
 - Research needed: Confirm optimal range for perceptual balance
+
+**Delta Enforcement Algorithm:**
+1. Compute base color at position t = index × 0.05
+2. Calculate ΔE(base, previous) in OKLab space
+3. If ΔE < 0.02: Adjust position forward until ΔE ≥ 0.02
+4. If ΔE > 0.05: Adjust position backward until ΔE ≤ 0.05
+5. If constraints conflict (available range < 0.03): Prefer minimum over maximum
+6. Apply standard contrast enforcement (FR-002) after delta adjustment
+
+**Relationship to FR-002 (Contrast):**
+- FR-002: Minimum contrast (user-configured: LOW/MEDIUM/HIGH)
+- FR-007: Delta range (0.02-0.05, fixed for incremental workflow)
+- Both measured as ΔE in OKLab
+- Delta range provides tighter bounds within contrast requirements
+- Evaluation: Assess effectiveness before general rollout
 
 **Implication:** Index access requires computing all preceding colors to maintain contrast chain and delta constraints.
 
@@ -248,7 +272,14 @@ for (index, color) in journey.discreteColors.prefix(10).enumerated() {
    - Verify minimum ΔE between adjacent colors
    - Verify contrast enforcement matches batch API
 
-4. **Edge Cases**
+4. **Delta Range Tests** (FR-007)
+   - Verify ΔE ≥ 0.02 between all adjacent colors (minimum enforcement)
+   - Verify ΔE ≤ 0.05 between all adjacent colors (maximum enforcement)
+   - Test constraint conflict resolution (prefer minimum)
+   - Test delta enforcement with different contrast levels
+   - Measure effectiveness for incremental workflow evaluation
+
+5. **Edge Cases**
    - Negative indices return black
    - NULL journey handles gracefully
    - Single-color palettes work correctly
@@ -276,12 +307,33 @@ All 56 tests passing:
 - Stack-only allocation: ~24 bytes per call
 - No heap allocations
 - No persistent cache (stateless design)
+- Lazy sequence buffer: 1.2 KB (100 colors × 12 bytes) - *size under research*
+
+### Performance Benchmarking Strategy
+
+**Baseline:** C core is known to be fast - all measurements compare to C core performance
+
+**Metrics to Track:**
+- Color generation time (individual and batched)
+- Memory allocation overhead
+- Thread contention under concurrent load
+- Precision at high indices
+
+**TODO:** Establish concrete performance regression thresholds
 
 ### Performance Guidance
 
 - **Sequential access:** Use range access or lazy sequence for best performance
 - **Random access:** O(n) cost acceptable for typical indices (< 1000)
 - **Frequent access:** Consider implementing application-level caching
+
+### Color Space Specification
+
+**All perceptual reasoning uses OKLab:**
+- Contrast measurements: ΔE in OKLab
+- Delta range enforcement: ΔE in OKLab
+- Perceptual distance calculations: OKLab
+- Consistent with existing ColorJourney perceptual model
 
 ---
 
@@ -334,6 +386,43 @@ for (index, color) in journey.discreteColors.enumerated() {
 
 ---
 
+## Research & Investigation Tasks
+
+### High Priority Research
+
+1. **Delta Range Optimization (FR-007)**
+   - Confirm 0.02-0.05 range provides optimal perceptual balance
+   - Test effectiveness in incremental workflows
+   - Evaluate: Should this be rolled out generally or remain incremental-specific?
+   - Benchmark: Impact on generation time
+
+2. **Lazy Sequence Chunk Size (SC-012)**
+   - Current: 100 colors per chunk
+   - Research: Test various chunk sizes (10, 50, 100, 200, 500)
+   - Compare: Memory usage vs. computation overhead
+   - Baseline: Measure against C core performance
+   - Goal: Find inflection point for optimal balance
+
+3. **Index Overflow Strategy (FR-008)**
+   - Investigate: Current codebase overflow handling patterns
+   - Research: Floating-point precision limits at high indices
+   - Test: Behavior at INT_MAX, precision loss boundaries
+   - Warning: Document developer-facing precision guarantees
+
+4. **Thread Safety Validation (FR-009)**
+   - Investigate: Stateless design guarantees
+   - Test: Concurrent access from multiple threads
+   - Research: Race conditions in contrast chain computation
+   - Benchmark: Performance under concurrent load
+
+5. **Error Reporting Enhancement (FR-006)**
+   - Research: Error code vs. status return patterns in codebase
+   - Design: Distinguish error-black from legitimate-black
+   - Investigate: Swift error handling best practices
+   - Plan: Future API versioning for error returns
+
+---
+
 ## Success Criteria
 
 - ✅ **SC-001:** Index access returns deterministic colors
@@ -343,6 +432,21 @@ for (index, color) in journey.discreteColors.enumerated() {
 - ✅ **SC-005:** Backward compatibility maintained
 - ✅ **SC-006:** Documentation complete (Doxygen + DocC)
 - ✅ **SC-007:** Performance characteristics documented
-- 🔄 **SC-008:** Delta range enforcement implemented (min: 0.02, max: 0.05)
+- 🔄 **SC-008:** Delta range enforcement (ΔE: 0.02-0.05 in OKLab, incremental workflow)
+- 🔄 **SC-009:** Error handling for invalid inputs (black return, graceful degradation)
+- 🔄 **SC-010:** Index bounds tested (0 to 1,000,000)
+- 🔍 **SC-011:** Thread safety verified (research, investigation, testing)
+- 🔍 **SC-012:** Lazy sequence chunk size optimized (research: compare to C core performance)
 
-**Status:** SC-001 to SC-007 met ✅ | SC-008 requires implementation 🔄
+**Legend:**
+- ✅ Completed and verified
+- 🔄 Implementation required
+- 🔍 Research/investigation needed
+
+**Status Summary:**
+- **Current:** SC-001 to SC-007 met ✅ (core implementation complete)
+- **Next Sprint:** SC-008 to SC-010 (delta range, error handling, bounds)
+- **Research Phase:** SC-011 to SC-012 (thread safety, chunk size optimization)
+- **Future:** Override API design, error code mechanism, general rollout evaluation
+
+**Status:** SC-001 to SC-007 met ✅ | SC-008 to SC-010 require implementation 🔄 | SC-011 to SC-012 require research 🔍
