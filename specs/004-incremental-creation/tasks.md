@@ -24,16 +24,23 @@
 
 ### R-001: Lazy Sequence Chunk Size Optimization (SC-012)
 
-#### R-001-A: Establish C Core Performance Baseline
+#### R-001-A: Establish C Core Performance Baseline ✅
 
 **Requirement:** SC-012 (Lazy sequence chunk size optimized)  
 **Objective:** Establish C core color generation performance baseline as reference point for chunk size comparison  
 **Effort:** 1 day  
+**Status:** ✅ **COMPLETE** (December 16, 2025)  
 **Deliverables:**
-- Baseline performance measurements (1, 10, 50, 100, 500, 1000 colors generated)
-- Performance test harness (reproducible benchmarking setup)
-- Documentation of measurement methodology
-- Baseline report (speeds, memory profile, cache behavior)
+- ✅ Baseline performance measurements (1, 10, 50, 100, 500, 1000 colors generated)
+- ✅ Performance test harness (reproducible benchmarking setup): `Tests/CColorJourneyTests/performance_baseline.c`
+- ✅ Documentation of measurement methodology
+- ✅ Baseline report (speeds, memory profile, cache behavior): `baseline-performance-report.md`
+
+**Key Findings:**
+- discrete_at: O(n) as expected, ~0.9ms for 100 colors, ~94ms for 1000 colors
+- discrete_range: ~50x faster for 100 colors, ~492x faster for 1000 colors
+- Range access provides 5-500x speedup depending on count
+- Memory: Stack-only (~24 bytes/call), no heap allocations
 
 **Success Criteria:**
 - ✅ Baseline measurements documented and reproducible
