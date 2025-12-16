@@ -98,20 +98,27 @@
 
 ---
 
-#### R-001-D: Chunk Size Decision & Documentation
+#### R-001-D: Chunk Size Decision & Documentation ✅
 
 **Task ID:** R-001-D  
 **Requirement:** SC-012  
 **Objective:** Synthesize R-001-A/B/C findings; recommend chunk size with rationale; define regression test thresholds  
 **Effort:** 0.5 days  
-**Dependencies:** R-001-C (all testing complete)  
+**Status:** ✅ **COMPLETE** (December 16, 2025)  
+**Dependencies:** R-001-C (deferred), R-001-A/B (complete)  
 **Deliverables:**
-- Recommended chunk size with rationale (e.g., "100 colors optimal; trade-off: 1.2 KB memory for <10% speed overhead")
-- Rationale document (tradeoffs, inflection point analysis, hardware considerations)
-- Regression test thresholds (e.g., "chunk size: 100 ±0; memory: <2 KB; speed: <10% slower than C baseline")
+- ✅ Recommended chunk size with rationale: **Keep chunk 100** (optimal balance)
+- ✅ Rationale document: `chunk-size-decision.md` (tradeoffs, inflection point analysis)
+- ✅ Regression test thresholds defined (100 colors: <0.075ms, 500 colors: <1.0ms, 1000 colors: <3.5ms)
+- ✅ Alternative approaches documented (dynamic chunking - deferred)
+
+**Decision:**
+- **Chunk size: 100** (no changes required)
+- Rationale: At inflection point for common case, good across all use cases, negligible memory (1.17 KB)
+- Real-world validation (R-001-C) deferred with validation strategy defined
 
 **Success Criteria:**
-- ✅ Chunk size chosen (optimal or conservative)
+- ✅ Chunk size chosen (100 - optimal and conservative)
 - ✅ Rationale documented with tradeoff analysis
 - ✅ Regression thresholds defined for Phase 2 validation
 - ✅ Ready for Phase 1 implementation
@@ -120,23 +127,35 @@
 
 ### R-002: Thread Safety Validation (SC-011)
 
-#### R-002-A: Code Review for Thread Safety
+#### R-002-A: Code Review for Thread Safety ✅
 
 **Task ID:** R-002-A  
 **Requirement:** SC-011 (Thread safety verified)  
 **Objective:** Analyze incremental API codebase for potential race conditions, verify stateless design, document memory model assumptions  
 **Effort:** 1 day  
+**Status:** ✅ **COMPLETE** (December 16, 2025)  
 **Deliverables:**
-- Code review document (race condition analysis)
-- Identified potential issues (or confirmation of safety)
-- Memory model assumptions documented
-- Recommendations for testing strategy
+- ✅ Code review document: `thread-safety-review.md` (18 KB, comprehensive analysis)
+- ✅ Identified potential issues: **NONE** - confirmed safe for concurrent reads
+- ✅ Memory model assumptions documented (C99 stack, Swift value types)
+- ✅ Recommendations for testing strategy (R-002-B/C)
+
+**Key Findings:**
+- **Stateless design:** No shared mutable state in C or Swift
+- **Stack-only allocation:** All variables thread-local
+- **Read-only journey access:** Journey config immutable after creation
+- **No race conditions:** All functions are pure or read-only
+- **Thread Safety Guarantee:** ✅ Safe for concurrent reads
+
+**Caveats:**
+- Journey handle must remain valid during concurrent access (caller responsibility)
+- Individual iterators not thread-safe (standard Swift behavior, documented)
 
 **Success Criteria:**
 - ✅ Stateless design verified (no shared mutable state)
-- ✅ Contrast chain computation checked for races
-- ✅ Memory model understood and documented
-- ✅ Testing strategy recommendations clear
+- ✅ Contrast chain computation checked for races (stack-based, safe)
+- ✅ Memory model understood and documented (C99 + Swift)
+- ✅ Testing strategy recommendations clear (R-002-B concurrent tests, R-002-C stress tests)
 
 ---
 
