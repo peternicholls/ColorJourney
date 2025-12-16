@@ -388,7 +388,7 @@
 ### I-001: Delta Range Enforcement (SC-008, FR-007)
 
 **Checklist:**
-- [ ] T010 Design delta range enforcement algorithm with conflict resolution in specs/004-incremental-creation/delta-algorithm.md
+- [x] T010 Design delta range enforcement algorithm with conflict resolution in specs/004-incremental-creation/delta-algorithm.md
 - [ ] T011 Implement `discrete_enforce_delta_range()` helper in Sources/CColorJourney/ColorJourney.c
 - [ ] T012 Implement OKLab ΔE calculation in Sources/CColorJourney/ColorJourney.c
 - [ ] T013 Integrate delta enforcement into `discrete_color_at_index()` in Sources/CColorJourney/ColorJourney.c
@@ -645,6 +645,19 @@
 - All implementation tasks complete
 - Tests passing
 - Proceed to Phase 2 authorized
+
+---
+
+### PR #17 Warning Backlog (to address in Phase 2)
+
+**Context:** Non-blocking review items raised during PR #17 (Phase 1). Track and resolve in Phase 2 integration/doc updates.
+
+- [ ] W001 Document fallback divergence vs. spec (delta-algorithm.md): current implementation prioritizes delta range over TypeScript-style fallback
+- [ ] W002 Document binary-search monotonicity assumption and limitations (delta-algorithm.md) (C3/C8)
+- [ ] W003 Document asymmetric wrap-around search behavior and limitations (delta-algorithm.md) (C4)
+- [ ] W004 Document last-resort fallback missing minimum validation and add planned guard (delta-algorithm.md) (C7)
+- [ ] W005 Document actual contrast minima (LOW=0.05, MEDIUM=0.10, HIGH=0.15) vs. theoretical values and align spec wording (delta-algorithm.md + tests)
+- [ ] W006 Add “best-effort max ΔE” note for boundary spikes (tests/documentation) (C1)
 
 ---
 

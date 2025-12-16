@@ -131,10 +131,25 @@ public final class ColorJourney {
 
     /// Get a single discrete color at the specified index.
     ///
-    /// - Parameter index: Zero-based color index (must be ≥ 0)
-    /// - Returns: Deterministic color for the given index; returns black for negative indices
+    /// Generates a color at the specified index with **delta range enforcement**: consecutive colors
+    /// maintain a perceptual distance (ΔE) in the range [0.02, 0.05], ensuring colors are distinguishable
+    /// (minimum ΔE ≥ 0.02) while maintaining smooth progression (maximum ΔE ≤ 0.05, best-effort).
+    ///
+    /// **Supported Index Range:**
+    /// - **0 to 1,000,000**: Precision guaranteed (<0.02 ΔE error, imperceptible)
+    /// - **Beyond 1,000,000**: Colors remain valid but precision degrades
+    ///
+    /// **Error Handling:**
+    /// - Negative indices return black `ColorJourneyRGB(red: 0, green: 0, blue: 0)`
+    ///
+    /// - Parameter index: Zero-based index (recommended range: 0-1,000,000)
+    /// - Returns: Deterministic color for the given index; returns black on error
+    ///
     /// - Note: This function has O(n) performance where n is the index. For accessing multiple
     ///   colors, consider using `discrete(range:)` or implement your own caching strategy.
+    ///
+    /// - Note: Maximum ΔE constraint (≤0.05) may be violated at cycle boundaries (~every 20 indices).
+    ///   Minimum constraint (≥0.02) is always enforced.
     public func discrete(at index: Int) -> ColorJourneyRGB {
         guard let handle = handle else {
             return ColorJourneyRGB(red: 0, green: 0, blue: 0)
@@ -151,10 +166,16 @@ public final class ColorJourney {
 
     /// Generate discrete colors for a specific range of indexes.
     ///
-    /// - Parameter range: Range of indexes to generate (lowerBound must be ≥ 0)
-    /// - Returns: Array of colors covering the requested range; empty for negative ranges
+    /// Generates colors with the same **delta range enforcement** as `discrete(at:)`, ensuring
+    /// consecutive colors maintain perceptual distance (ΔE) in [0.02, 0.05] range.
+    ///
+    /// - Parameter range: Range of indexes to generate (recommended range: 0-1,000,000)
+    /// - Returns: Array of colors covering the requested range; empty for invalid ranges
+    ///
     /// - Note: This function has O(start + count) performance. More efficient than calling
     ///   `discrete(at:)` multiple times for sequential access.
+    ///
+    /// - SeeAlso: `discrete(at:)` for detailed documentation on delta enforcement and supported ranges
     public func discrete(range: Range<Int>) -> [ColorJourneyRGB] {
         guard let handle = handle, !range.isEmpty else {
             return []

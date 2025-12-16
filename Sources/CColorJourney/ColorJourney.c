@@ -43,7 +43,29 @@
  * Algorithm Configuration Constants
  * ======================================================================== */
 
-
+/**
+ * Delta Range Enforcement Constants (FR-007, SC-008)
+ * ==================================================
+ * 
+ * These constants define the perceptual distance constraints for
+ * incremental color generation (discrete sequences).
+ *
+ * **Delta Range [0.02, 0.05]:**
+ * - Minimum ΔE = 0.02: Just Noticeable Difference (JND), ensures colors are distinguishable
+ * - Maximum ΔE = 0.05: Smooth progression, prevents jarring jumps
+ * 
+ * **Search Parameters:**
+ * - Search bound: ±0.10 in t-space (~2 position steps)
+ * - Max iterations: 20 (binary search convergence)
+ * - Tolerance: ±0.001 ΔE (convergence threshold)
+ * 
+ * Reference: specs/004-incremental-creation/delta-algorithm.md
+ */
+#define CJ_DELTA_MIN 0.02f           ///< Minimum perceptual distance (JND)
+#define CJ_DELTA_MAX 0.05f           ///< Maximum perceptual distance (smooth progression)
+#define CJ_DELTA_SEARCH_BOUND 0.10f  ///< Search range in t-space (±10%)
+#define CJ_DELTA_TOLERANCE 0.001f    ///< Convergence tolerance for binary search
+#define CJ_DELTA_MAX_ITERATIONS 20   ///< Maximum binary search iterations
 
 /**
  * Maximum iterations for contrast enforcement algorithm.
@@ -676,6 +698,189 @@ static float discrete_position_with_loop_mode(const CJ_Journey_Impl* j, int inde
 }
 
 /**
+ * Binary search for position t that satisfies delta constraint.
+ * 
+ * Searches for a position in t-space where the color satisfies the target ΔE
+ * relative to the previous color. Used for both "too similar" and "too different"
+ * violations.
+ * 
+ * @param journey Journey implementation
+ * @param prev_lab Previous color in OKLab space
+ * @param t_min Search range minimum
+ * @param t_max Search range maximum
+ * @param target_de Target delta E to achieve
+ * @param increase_distance True if searching to increase distance (too similar),
+ *                          false if searching to decrease distance (too different)
+ * @return Adjusted position t, or -1.0f if no valid position found
+ */
+static float binary_search_delta_position(CJ_Journey_Impl* j,
+                                         CJ_Lab prev_lab,
+                                         float t_min,
+                                         float t_max,
+                                         float target_de,
+                                         bool increase_distance) {
+    float tolerance = CJ_DELTA_TOLERANCE;
+    int max_iterations = CJ_DELTA_MAX_ITERATIONS;
+    
+    for (int iteration = 0; iteration < max_iterations; iteration++) {
+        float t_mid = (t_min + t_max) * 0.5f;
+        
+        /* Sample color at midpoint */
+        CJ_RGB color_mid = cj_journey_sample((CJ_Journey)j, t_mid);
+        CJ_Lab lab_mid = cj_rgb_to_oklab(color_mid);
+        float de_mid = cj_delta_e(lab_mid, prev_lab);
+        
+        /* Check convergence */
+        float error = fabsf(de_mid - target_de);
+        if (error < tolerance) {
+            return t_mid;  /* Found acceptable position */
+        }
+        
+        /* Adjust search bounds based on violation type */
+        if (increase_distance) {
+            /* Need to increase ΔE: search away from prev */
+            if (de_mid < target_de) {
+                /* Still too similar, search further away */
+                t_min = t_mid;
+            } else {
+                /* Overshot, search closer */
+                t_max = t_mid;
+            }
+        } else {
+            /* Need to decrease ΔE: search closer to prev */
+            if (de_mid > target_de) {
+                /* Still too different, search closer */
+                t_max = t_mid;
+            } else {
+                /* Undershot, search further */
+                t_min = t_mid;
+            }
+        }
+    }
+    
+    /* Return best effort after max iterations */
+    return (t_min + t_max) * 0.5f;
+}
+
+/**
+ * Enforce delta range [0.02, 0.05] for incremental color generation.
+ * 
+ * DELTA RANGE ENFORCEMENT (FR-007, SC-008):
+ * Ensures consecutive colors maintain perceptual distance within optimal range:
+ * - Minimum ΔE ≥ 0.02: Colors are distinguishable (Just Noticeable Difference)
+ * - Maximum ΔE ≤ 0.05: Smooth progression without jarring jumps
+ * 
+ * Algorithm (7 steps from delta-algorithm.md):
+ * 1. Compute base position from index
+ * 2. Convert to OKLab space
+ * 3. Calculate initial ΔE vs previous color
+ * 4. Evaluate constraint violations
+ * 5. Binary search for adjusted position if needed
+ * 6. Apply conflict resolution if no valid position found
+ * 7. Return adjusted position (or base if satisfied)
+ * 
+ * Conflict Resolution Priority:
+ * - Prefer minimum ΔE ≥ 0.02 over maximum ΔE ≤ 0.05
+ * - Rationale: Distinctness more important than avoiding jumps
+ * - Fallback: Try multiple search attempts if first fails
+ * 
+ * @param j Journey implementation
+ * @param index Color index in sequence
+ * @param t_base Base position from index calculation
+ * @param previous Previous color (NULL for index 0)
+ * @return Adjusted position t, or t_base if no adjustment needed
+ */
+static float enforce_delta_range(CJ_Journey_Impl* j,
+                                int index,
+                                float t_base,
+                                const CJ_RGB* previous) {
+    /* No enforcement for first color (no previous) */
+    if (!previous || index <= 0) {
+        return t_base;
+    }
+    
+    /* Step 1-2: Get base color and convert to OKLab */
+    CJ_RGB base_color = cj_journey_sample((CJ_Journey)j, t_base);
+    CJ_Lab base_lab = cj_rgb_to_oklab(base_color);
+    CJ_Lab prev_lab = cj_rgb_to_oklab(*previous);
+    
+    /* Step 3: Calculate initial ΔE */
+    float delta_e = cj_delta_e(base_lab, prev_lab);
+    
+    /* Step 4: Evaluate constraint violations */
+    if (delta_e >= CJ_DELTA_MIN && delta_e <= CJ_DELTA_MAX) {
+        /* Satisfied: no adjustment needed */
+        return t_base;
+    }
+    
+    /* Step 5: Position adjustment via binary search */
+    float target_de;
+    bool increase_distance;
+    
+    if (delta_e < CJ_DELTA_MIN) {
+        /* VIOLATION: Too similar, need to increase perceptual distance */
+        target_de = CJ_DELTA_MIN;
+        increase_distance = true;
+    } else {
+        /* VIOLATION: Too different, need to decrease perceptual distance */
+        target_de = CJ_DELTA_MAX;
+        increase_distance = false;
+    }
+    
+    /* Try multiple search attempts with increasing ranges */
+    float best_t = t_base;
+    float best_de = delta_e;
+    float best_error = fabsf(delta_e - target_de);
+    
+    /* Attempt 1: Standard search range ±0.10 */
+    float search_offsets[] = {CJ_DELTA_SEARCH_BOUND, CJ_DELTA_SEARCH_BOUND * 2.0f};
+    
+    for (int attempt = 0; attempt < 2; attempt++) {
+        float offset = search_offsets[attempt];
+        float t_min = fmodf(t_base - offset + 1.0f, 1.0f);
+        float t_max = fmodf(t_base + offset, 1.0f);
+        
+        /* Handle wrap-around: always search in positive direction */
+        if (t_min > t_max) {
+            /* Try searching forward from t_base */
+            t_min = t_base;
+            t_max = fmodf(t_base + offset, 1.0f);
+        }
+        
+        float t_adjusted = binary_search_delta_position(j, prev_lab, t_min, t_max, target_de, increase_distance);
+        
+        /* Validate result */
+        CJ_RGB adjusted_color = cj_journey_sample((CJ_Journey)j, t_adjusted);
+        CJ_Lab adjusted_lab = cj_rgb_to_oklab(adjusted_color);
+        float adjusted_de = cj_delta_e(adjusted_lab, prev_lab);
+        float error = fabsf(adjusted_de - target_de);
+        
+        /* Keep track of best result */
+        if (error < best_error) {
+            best_t = t_adjusted;
+            best_de = adjusted_de;
+            best_error = error;
+        }
+        
+        /* Step 6: Check if we achieved minimum distinctness (priority constraint) */
+        if (adjusted_de >= CJ_DELTA_MIN - CJ_DELTA_TOLERANCE) {
+            /* Success: minimum constraint satisfied */
+            return t_adjusted;
+        }
+    }
+    
+    /* Step 7: Return best effort even if not perfect */
+    /* Priority: ensure minimum ΔE is met if possible */
+    if (best_de >= CJ_DELTA_MIN - CJ_DELTA_TOLERANCE) {
+        return best_t;
+    }
+    
+    /* Last resort: move forward in t-space by a fixed amount */
+    /* This ensures we at least try to get different colors */
+    return fmodf(t_base + 0.05f, 1.0f);
+}
+
+/**
  * Apply minimum contrast with simple linear adjustment.
  * 
  * SIMPLIFIED CONTRAST ENFORCEMENT:
@@ -724,10 +929,25 @@ static CJ_RGB discrete_color_at_index(CJ_Journey_Impl* j,
                                       int index,
                                       const CJ_RGB* previous,
                                       float min_delta_e) {
-    float t = discrete_position_from_index(index);
-    CJ_RGB color = cj_journey_sample((CJ_Journey)j, t);
+    /* Step 1: Calculate base position from index */
+    float t_base = discrete_position_from_index(index);
+    
+    /* Step 2: Apply delta range enforcement [0.02, 0.05] (FR-007, SC-008) */
+    /* Delta enforcement is the primary constraint for incremental creation */
+    float t_adjusted = enforce_delta_range(j, index, t_base, previous);
+    
+    /* Step 3: Sample color at adjusted position */
+    CJ_RGB color = cj_journey_sample((CJ_Journey)j, t_adjusted);
 
-    return apply_minimum_contrast(color, previous, min_delta_e);
+    /* Step 4: Only apply additional contrast if it's stricter than delta max */
+    /* Delta range [0.02, 0.05] takes precedence for incremental workflow */
+    /* Only enforce contrast if min_delta_e > CJ_DELTA_MAX (e.g., HIGH contrast) */
+    if (min_delta_e > CJ_DELTA_MAX) {
+        return apply_minimum_contrast(color, previous, min_delta_e);
+    }
+    
+    /* Delta enforcement handles the constraint, return color as-is */
+    return color;
 }
 
 CJ_RGB cj_journey_discrete_at(CJ_Journey journey, int index) {
