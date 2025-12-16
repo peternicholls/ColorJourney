@@ -112,3 +112,33 @@
    - **Tolerance violations**: Review `deltas.json` and `hints.json` for failing cases
    - **Performance issues**: Use `--cases` or `--tags` to run subsets; check `--max-duration-ms`
    - **Provenance tracking**: Always specify `--c-commit` and `--wasm-commit` in CI for reproducibility
+
+---
+
+## Phase 9: Swift Wrapper Parity Testing
+
+**Status**: Specification complete, ready for implementation  
+**Documentation**: [phase-9-swift-parity.md](phase-9-swift-parity.md)
+
+Phase 9 validates the Swift wrapper layer (`Sources/ColorJourney/*`) using the same methodology as C parity testing.
+
+**Quick Start for Phase 9**:
+```bash
+# 1. Review the specification
+cat phase-9-swift-parity.md
+
+# 2. Start implementing tasks (T051-T079)
+cat phase-9-tasks.md
+
+# 3. Reference the API contract
+cat contracts/swift-wrapper-parity-api.yaml
+
+# 4. Understand the implementation roadmap
+cat PHASE-9-SPEC-SUMMARY.md
+```
+
+**Key Phase 9 Documents**:
+- [phase-9-swift-parity.md](phase-9-swift-parity.md) - Complete test strategy and architecture
+- [phase-9-tasks.md](phase-9-tasks.md) - 29 implementation tasks (T051-T079)
+- [PHASE-9-SPEC-SUMMARY.md](PHASE-9-SPEC-SUMMARY.md) - Executive summary and roadmap
+- [INDEX.md](INDEX.md) - Complete reference index for all documentation

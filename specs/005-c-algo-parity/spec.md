@@ -134,3 +134,27 @@ CI maintainers run the suite on demand or per change to prevent regressions; any
 
 - Default tolerances (used unless overridden): abs L=1e-4, abs a=1e-4, abs b=1e-4, ΔE<=0.5; relative tolerances L/a/b=1e-3.
 - Corpus versioning: `vYYYYMMDD.n` (n increments per corpus change). Reports must record the corpus version and fail if missing.
+
+---
+
+## Phase 9: Swift Wrapper Parity Testing
+
+**Status**: ✅ Phases 1-8 Complete → Phase 9 Specification Ready  
+**Branch**: `005-c-algo-parity`  
+**Next**: See [phase-9-swift-parity.md](phase-9-swift-parity.md) for full Phase 9 specification
+
+After Phase 1-8 validates C algorithm parity (canonical vs wasm-derived C), Phase 9 extends validation to the Swift wrapper layer. This ensures the public Swift API (`Sources/ColorJourney/*`) accurately bridges to the C core without introducing deviations.
+
+**Phase 9 Key Objectives**:
+1. **Reuse corpus**: Apply same 7 test cases (98 colors) to Swift wrapper
+2. **Reference-based validation**: Compare Swift outputs against known C reference outputs
+3. **Zero-deviation requirement**: Identical tolerances enforce that Swift wrapper introduces no bugs
+4. **Output format alignment**: Match C parity report schema for unified analysis
+5. **CI integration**: Branch-specific GitHub Actions workflow for automated validation
+
+**Phase 9 Documents**:
+- **Full Specification**: [phase-9-swift-parity.md](phase-9-swift-parity.md)
+- **Task Breakdown**: [phase-9-tasks.md](phase-9-tasks.md) - 29 tasks (T051-T079)
+- **API Contract**: [contracts/swift-wrapper-parity-api.yaml](contracts/swift-wrapper-parity-api.yaml)
+- **Executive Summary**: [PHASE-9-SPEC-SUMMARY.md](PHASE-9-SPEC-SUMMARY.md)
+- **Complete Index**: [INDEX.md](INDEX.md)

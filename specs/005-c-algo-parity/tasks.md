@@ -154,3 +154,18 @@ description: "Tasks for C Algorithm Parity Testing"
 - MVP first: complete Setup → Foundational → US1 to get deterministic parity reports.
 - Incremental: add US2 for diagnostics, then US3 for CI gating and artifact retention.
 - Each story is independently testable by invoking the CLI against the corpus with its respective outputs enabled.
+
+---
+
+## Phase 9: Swift Wrapper Parity Testing
+
+**Status**: ✅ Complete (Phases 1-8 finished)  
+**Next Phase**: See [phase-9-tasks.md](phase-9-tasks.md) for 29 Swift wrapper validation tasks (T051-T079)
+
+Phase 9 replicates the C parity methodology but validates the Swift wrapper layer (`Sources/ColorJourney/*`). Comprehensive specification available:
+
+- **Full Specification**: [phase-9-swift-parity.md](phase-9-swift-parity.md)
+- **Detailed Tasks**: [phase-9-tasks.md](phase-9-tasks.md) (29 tasks, 5 phases)
+- **API Contract**: [contracts/swift-wrapper-parity-api.yaml](contracts/swift-wrapper-parity-api.yaml)
+- **Executive Summary**: [PHASE-9-SPEC-SUMMARY.md](PHASE-9-SPEC-SUMMARY.md)
+- **Complete Index**: [INDEX.md](INDEX.md)

@@ -43,19 +43,15 @@
  * Algorithm Configuration Constants
  * ======================================================================== */
 
-/**
- * Minimum palette size for applying periodic chroma pulse enhancement.
- * Palettes with more colors than this threshold get a cosine wave pattern
- * applied to their chroma to create intentional "rhythm" in saturation.
- */
-#define CJ_CHROMA_PULSE_MIN_COLORS 20
+
 
 /**
- * Maximum iterations for iterative contrast enforcement algorithm.
- * Each iteration applies a L nudge and chroma boost to increase perceptual
- * distance (ΔE) between adjacent colors until minimum contrast is met.
+ * Maximum iterations for contrast enforcement algorithm.
+ * Kept for backward compatibility (not used in simple linear approach).
+ * 
+ * Reference: OSCILLATION_FIX.md - Simplified contrast enforcement
  */
-#define CJ_CONTRAST_MAX_ITERATIONS 5
+#define CJ_CONTRAST_MAX_ITERATIONS 1
 
 /* ========================================================================
  * Fast Math Helpers
@@ -359,13 +355,9 @@ static void build_waypoints(CJ_Journey journey) {
             
             j->waypoints[i].anchor.h = base.h + hue_t * 2.0f * M_PI;
             
-            /* Subtle chroma variation - peak at golden ratio point */
-            float chroma_envelope = 1.0f + 0.2f * sinf(t * M_PI);
-            j->waypoints[i].anchor.C = base.C * chroma_envelope;
-            
-            /* Lightness gentle wave */
-            float lightness_envelope = 1.0f + 0.1f * sinf(t * 2.0f * M_PI);
-            j->waypoints[i].anchor.L = base.L * lightness_envelope;
+            /* Use base chroma and lightness directly, without oscillatory modulation */
+            j->waypoints[i].anchor.C = base.C;
+            j->waypoints[i].anchor.L = base.L;
             
             j->waypoints[i].weight = 1.0f;
         }
@@ -684,23 +676,21 @@ static float discrete_position_with_loop_mode(const CJ_Journey_Impl* j, int inde
 }
 
 /**
- * Apply minimum contrast with iterative refinement (WASM-style).
+ * Apply minimum contrast with simple linear adjustment.
  * 
- * ITERATIVE CONTRAST ENFORCEMENT:
- * The WASM implementation uses an iterative approach (up to 5 iterations)
- * instead of the previous single-pass approach. This produces smoother,
- * more natural-looking color adjustments.
+ * SIMPLIFIED CONTRAST ENFORCEMENT:
+ * Single-pass linear approach matching TypeScript implementation.
+ * Applies straightforward L adjustment without iteration or hue rotation.
  * 
  * Algorithm:
  * 1. Check ΔE between current and previous color
- * 2. If insufficient, apply small L nudge (10% of shortfall)
- * 3. If still insufficient, boost chroma
- * 4. Repeat until contrast is met or max iterations reached
+ * 2. If insufficient, apply linear L adjustment scaled by shortfall
+ * 3. Clamp L to valid range [0, 1]
+ * 4. Done (no iteration)
  * 
- * This iterative approach prevents aggressive "pushing" of colors and
- * maintains better perceptual quality.
+ * This eliminates the "jet stream" oscillation while maintaining smooth progression.
  * 
- * Reference: ALGORITHM_COMPARISON_ANALYSIS.md - Iterative contrast enforcement
+ * Reference: OSCILLATION_FIX.md - Simplified contrast enforcement
  */
 static CJ_RGB apply_minimum_contrast(CJ_RGB color,
                                      const CJ_RGB* previous,
@@ -710,49 +700,21 @@ static CJ_RGB apply_minimum_contrast(CJ_RGB color,
     CJ_Lab prev_lab = cj_rgb_to_oklab(*previous);
     CJ_Lab curr_lab = cj_rgb_to_oklab(color);
     
-    /* Iterative refinement (up to CJ_CONTRAST_MAX_ITERATIONS) */
-    const int max_iterations = CJ_CONTRAST_MAX_ITERATIONS;
-    for (int iter = 0; iter < max_iterations; iter++) {
-        float dE = cj_delta_e(curr_lab, prev_lab);
-        
-        if (dE >= min_delta_e) {
-            /* Sufficient contrast achieved */
-            break;
-        }
-        
-        /* Calculate how much contrast we need */
-        float shortfall = min_delta_e - dE;
-        
-        /* Try multiple adjustment strategies in sequence */
-        
-        /* Strategy 1: Adjust lightness */
-        float direction = (prev_lab.L < 0.5f) ? 1.0f : -1.0f;
-        float L_nudge = shortfall * 0.5f;  /* Use 50% of shortfall for L adjustment */
-        curr_lab.L = clampf(curr_lab.L + direction * L_nudge, 0.0f, 1.0f);
-        
-        /* Check if L adjustment helped */
-        dE = cj_delta_e(curr_lab, prev_lab);
-        if (dE >= min_delta_e) {
-            break;
-        }
-        
-        /* Strategy 2: Adjust both a and b components */
-        shortfall = min_delta_e - dE;
-        CJ_LCh lch = cj_oklab_to_lch(curr_lab);
-        
-        /* Try rotating hue to increase separation */
-        float hue_rotation = 0.2f;  /* ~11 degrees */
-        lch.h += hue_rotation * (float)iter;  /* Increase rotation each iteration */
-        while (lch.h >= 2.0f * M_PI) lch.h -= 2.0f * M_PI;
-        
-        /* And boost chroma if possible */
-        if (lch.C > 1e-5f) {
-            float scale = 1.0f + shortfall * 0.5f;
-            lch.C = fminf(lch.C * scale, 0.4f);
-        }
-        
-        curr_lab = cj_lch_to_oklab(lch);
+    float dE = cj_delta_e(curr_lab, prev_lab);
+    
+    if (dE >= min_delta_e) {
+        /* Already sufficient contrast */
+        return color;
     }
+    
+    /* Calculate how much contrast we need */
+    float shortfall = min_delta_e - dE;
+    
+    /* Determine adjustment direction: push away from previous */
+    float direction = (prev_lab.L < 0.5f) ? 1.0f : -1.0f;
+    
+    /* Linear L adjustment, scaled up to meet shortfall (3.0x multiplier) */
+    curr_lab.L = clampf(curr_lab.L + direction * shortfall * 3.0f, 0.0f, 1.0f);
 
     CJ_RGB adjusted = cj_oklab_to_rgb(curr_lab);
     return cj_rgb_clamp(adjusted);
@@ -832,36 +794,5 @@ void cj_journey_discrete(CJ_Journey journey, int count, CJ_RGB* out_colors) {
         }
 
         out_colors[i] = color;
-    }
-    
-    /* ========== PERIODIC CHROMA PULSE (WASM Enhancement) ==========
-     * For large palettes (>CJ_CHROMA_PULSE_MIN_COLORS), apply a periodic
-     * chroma modulation to create intentional "rhythm" in saturation across
-     * the palette. This produces more "musical" color spacing that feels
-     * more curated.
-     * 
-     * Formula: chroma_pulse = 1.0 + 0.1 * cos(i * π/5)
-     * 
-     * This creates a gentle wave pattern in saturation that helps the eye
-     * distinguish between adjacent colors in large palettes.
-     * 
-     * Reference: ALGORITHM_COMPARISON_ANALYSIS.md - WASM chroma modulation
-     */
-    if (count > CJ_CHROMA_PULSE_MIN_COLORS) {
-        for (int i = 0; i < count; i++) {
-            /* Convert to OKLab to access chroma */
-            CJ_Lab lab = cj_rgb_to_oklab(out_colors[i]);
-            CJ_LCh lch = cj_oklab_to_lch(lab);
-            
-            /* Apply periodic pulse */
-            double chroma_pulse = 1.0 + 0.1 * cos((double)i * M_PI / 5.0);
-            lch.C = (float)((double)lch.C * chroma_pulse);
-            lch.C = clampf(lch.C, 0.0f, 0.4f);
-            
-            /* Convert back to RGB */
-            lab = cj_lch_to_oklab(lch);
-            out_colors[i] = cj_oklab_to_rgb(lab);
-            out_colors[i] = cj_rgb_clamp(out_colors[i]);
-        }
     }
 }

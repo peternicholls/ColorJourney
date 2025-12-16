@@ -1,0 +1,590 @@
+openapi: 3.1.0
+info:
+  title: ColorJourney Swift Wrapper Parity API
+  version: 0.1.0
+  description: |
+    Validation API for Swift wrapper layer accuracy and data fidelity.
+    Tests that the Swift API faithfully wraps the C core without introducing deviations.
+
+  contact:
+    name: ColorJourney Project
+    url: https://github.com/peternicholls/ColorJourney
+
+tags:
+  - name: Swift Runner
+    description: Swift parity test runner operations
+  - name: Reports
+    description: Swift parity test reports and results
+
+paths:
+  /swift-runner/run:
+    post:
+      tags:
+        - Swift Runner
+      summary: Execute Swift wrapper parity test against corpus
+      operationId: runSwiftParity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SwiftParityRequest"
+      responses:
+        "202":
+          description: Swift parity run accepted and started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SwiftParityRunStatus"
+        "400":
+          description: Invalid request (missing corpus, invalid reference, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /swift-runner/runs/{runId}:
+    get:
+      tags:
+        - Reports
+      summary: Fetch Swift parity run status and results
+      operationId: getSwiftParityRun
+      parameters:
+        - $ref: "#/components/parameters/RunId"
+      responses:
+        "200":
+          description: Swift parity run status and results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SwiftParityRunStatus"
+        "404":
+          description: Run not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /swift-runner/runs/{runId}/results/{caseId}:
+    get:
+      tags:
+        - Reports
+      summary: Fetch detailed Swift vs C comparison for a case
+      operationId: getSwiftComparisonResult
+      parameters:
+        - $ref: "#/components/parameters/RunId"
+        - $ref: "#/components/parameters/CaseId"
+      responses:
+        "200":
+          description: Swift vs C comparison details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SwiftComparisonResult"
+        "404":
+          description: Case not found in run
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /swift-runner/runs/{runId}/artifacts/{caseId}:
+    get:
+      tags:
+        - Reports
+      summary: Download artifacts for a case comparison
+      operationId: getSwiftArtifacts
+      parameters:
+        - $ref: "#/components/parameters/RunId"
+        - $ref: "#/components/parameters/CaseId"
+      responses:
+        "302":
+          description: Redirect to artifact storage path
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Artifact URL or file path
+        "404":
+          description: Artifacts not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  parameters:
+    RunId:
+      name: runId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Unique identifier for the Swift parity run
+
+    CaseId:
+      name: caseId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Input case identifier (from corpus)
+
+  schemas:
+    SwiftParityRequest:
+      type: object
+      required:
+        - corpusPath
+        - cReferencePath
+      properties:
+        corpusPath:
+          type: string
+          description: Path to corpus JSON file (e.g., corpus/default.json)
+        cReferencePath:
+          type: string
+          description: Path to C reference report from Phase 1-8 (e.g., artifacts/full-run-default/report.json)
+        artifactsOutputPath:
+          type: string
+          default: ./artifacts/swift-parity/
+          description: Output directory for run artifacts
+        caseFilters:
+          type: array
+          items:
+            type: string
+          description: Optional case IDs to run (if empty, all cases)
+        tagFilters:
+          type: array
+          items:
+            type: string
+          description: Optional tags to filter cases
+        passGate:
+          type: number
+          minimum: 0
+          maximum: 1
+          default: 0.95
+          description: Required pass rate (0.0-1.0)
+        runId:
+          type: string
+          description: Custom run identifier (if empty, auto-generate)
+        swiftVersion:
+          type: string
+          description: Swift version for provenance (if empty, auto-detect)
+        targetSDK:
+          type: string
+          description: Target SDK (iOS, macOS, etc.) for provenance
+
+    SwiftParityRunStatus:
+      type: object
+      required:
+        - runId
+        - state
+      properties:
+        runId:
+          type: string
+          format: uuid
+          description: Unique run identifier
+        state:
+          type: string
+          enum: [queued, running, completed, failed]
+          description: Current run state
+        corpusVersion:
+          type: string
+          description: Corpus version tested (e.g., v20251212.1)
+        summary:
+          $ref: "#/components/schemas/SwiftParitySummary"
+        artifactsRoot:
+          type: string
+          description: Root path where artifacts are stored
+        startedAt:
+          type: string
+          format: date-time
+          description: Run start timestamp
+        finishedAt:
+          type: string
+          format: date-time
+          description: Run completion timestamp (if finished)
+        error:
+          type: string
+          description: Error message (if state is failed)
+
+    SwiftParitySummary:
+      type: object
+      required:
+        - totalCases
+        - passed
+        - failed
+      properties:
+        totalCases:
+          type: integer
+          description: Total cases executed
+        passed:
+          type: integer
+          description: Cases that passed tolerance checks
+        failed:
+          type: integer
+          description: Cases that failed tolerance checks
+        passRate:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Fraction of cases passed
+        withinPassGate:
+          type: boolean
+          description: Whether pass rate meets required threshold
+        durationMs:
+          type: number
+          description: Total execution time in milliseconds
+
+        # Statistical summaries for key metrics
+        deltaE:
+          $ref: "#/components/schemas/StatisticsSummary"
+        okLabL:
+          $ref: "#/components/schemas/StatisticsSummary"
+        okLabA:
+          $ref: "#/components/schemas/StatisticsSummary"
+        okLabB:
+          $ref: "#/components/schemas/StatisticsSummary"
+        rgbR:
+          $ref: "#/components/schemas/StatisticsSummary"
+        rgbG:
+          $ref: "#/components/schemas/StatisticsSummary"
+        rgbB:
+          $ref: "#/components/schemas/StatisticsSummary"
+
+    SwiftComparisonResult:
+      type: object
+      required:
+        - caseId
+        - status
+        - tolerance
+      properties:
+        caseId:
+          type: string
+          description: Input case identifier
+        status:
+          type: string
+          enum: [pass, fail]
+          description: Whether case passed tolerance checks
+        tolerance:
+          $ref: "#/components/schemas/Tolerance"
+
+        # Per-color comparisons
+        colorComparisons:
+          type: array
+          items:
+            $ref: "#/components/schemas/SwiftColorComparison"
+
+        # Summary statistics
+        maxDeltaE:
+          type: number
+          description: Maximum deltaE across all colors
+        meanDeltaE:
+          type: number
+          description: Mean deltaE across all colors
+
+        # Top divergence contributors
+        topContributors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Contributor"
+
+        # Artifact references
+        artifactsPath:
+          type: string
+          description: Directory containing detailed artifacts for this case
+
+        # Provenance
+        provenance:
+          $ref: "#/components/schemas/SwiftProvenance"
+
+    SwiftColorComparison:
+      type: object
+      required:
+        - index
+      properties:
+        index:
+          type: integer
+          description: Color position in palette
+
+        swiftOutput:
+          $ref: "#/components/schemas/ColorValue"
+        cReference:
+          $ref: "#/components/schemas/ColorValue"
+
+        deltas:
+          $ref: "#/components/schemas/ColorDeltas"
+
+    ColorValue:
+      type: object
+      properties:
+        oklab:
+          $ref: "#/components/schemas/OKLab"
+        rgb:
+          $ref: "#/components/schemas/sRGB"
+        hex:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+
+    OKLab:
+      type: object
+      required: [l, a, b]
+      properties:
+        l:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Lightness (0 = darkest, 1 = lightest)
+        a:
+          type: number
+          minimum: -1
+          maximum: 1
+          description: Green-red axis (-1 = green, 1 = red)
+        b:
+          type: number
+          minimum: -1
+          maximum: 1
+          description: Blue-yellow axis (-1 = blue, 1 = yellow)
+
+    sRGB:
+      type: object
+      required: [r, g, b]
+      properties:
+        r:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Red channel (linear sRGB)
+        g:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Green channel (linear sRGB)
+        b:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Blue channel (linear sRGB)
+
+    ColorDeltas:
+      type: object
+      properties:
+        okLabL:
+          type: number
+          description: OKLab L channel absolute difference
+        okLabA:
+          type: number
+          description: OKLab a channel absolute difference
+        okLabB:
+          type: number
+          description: OKLab b channel absolute difference
+        deltaE:
+          type: number
+          description: Delta E 76 distance
+
+    Tolerance:
+      type: object
+      properties:
+        abs:
+          type: object
+          description: Absolute tolerance thresholds
+          properties:
+            l:
+              type: number
+            a:
+              type: number
+            b:
+              type: number
+            deltaE:
+              type: number
+        rel:
+          type: object
+          description: Relative tolerance thresholds
+          properties:
+            l:
+              type: number
+            a:
+              type: number
+            b:
+              type: number
+
+    StatisticsSummary:
+      type: object
+      properties:
+        mean:
+          type: number
+        stddev:
+          type: number
+        min:
+          type: number
+        p50:
+          type: number
+        p95:
+          type: number
+        p99:
+          type: number
+        max:
+          type: number
+
+    Contributor:
+      type: object
+      properties:
+        metric:
+          type: string
+          description: Metric name (e.g., deltaE, oklab.l)
+        magnitude:
+          type: number
+          description: Absolute difference magnitude
+        direction:
+          type: string
+          enum: [higher, lower, flat]
+          description: Direction of difference (Swift vs C Reference)
+        zScore:
+          type: number
+          description: Statistical z-score (deviation from mean)
+
+    SwiftProvenance:
+      type: object
+      properties:
+        cCommit:
+          type: string
+          description: Git commit of C core being tested
+        swiftCommit:
+          type: string
+          description: Git commit of Swift wrapper
+        swiftVersion:
+          type: string
+          description: Swift compiler version (e.g., 5.9)
+        targetSDK:
+          type: string
+          description: Target SDK (iOS, macOS, watchOS, tvOS, visionOS)
+        platform:
+          type: string
+          description: Hardware/OS identifier (e.g., macOS Sonoma)
+        corpusVersion:
+          type: string
+          description: Corpus version tested
+        cReferenceRunId:
+          type: string
+          description: Reference to C parity run used for comparison
+        buildFlags:
+          type: array
+          items:
+            type: string
+          description: Compiler flags used for Swift build
+
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Human-readable error message
+        code:
+          type: string
+          description: Machine-readable error code
+        details:
+          type: object
+          description: Additional error context
+
+    ContributorAnalysis:
+      type: object
+      properties:
+        metric:
+          type: string
+        magnitude:
+          type: number
+        direction:
+          type: string
+          enum: [higher, lower, flat]
+
+examples:
+  SwiftParityRequest:
+    value:
+      corpusPath: specs/005-c-algo-parity/corpus/default.json
+      cReferencePath: specs/005-c-algo-parity/artifacts/full-run-default/report.json
+      artifactsOutputPath: specs/005-c-algo-parity/artifacts/swift-parity-run/
+      caseFilters: []
+      tagFilters: []
+      passGate: 0.95
+      swiftVersion: "5.9"
+      targetSDK: "iOS 13+"
+
+  SwiftParityRunStatus:
+    value:
+      runId: "swift-parity-20251212-001"
+      state: "completed"
+      corpusVersion: "v20251212.1"
+      summary:
+        totalCases: 7
+        passed: 7
+        failed: 0
+        passRate: 1.0
+        withinPassGate: true
+        durationMs: 15.3
+        deltaE:
+          mean: 0.0
+          stddev: 0.0
+          min: 0.0
+          p50: 0.0
+          p95: 0.0
+          p99: 0.0
+          max: 0.0
+      artifactsRoot: "specs/005-c-algo-parity/artifacts/swift-parity-run/"
+      startedAt: "2025-12-12T10:30:00Z"
+      finishedAt: "2025-12-12T10:30:15Z"
+
+  SwiftComparisonResult:
+    value:
+      caseId: "baseline-wheel"
+      status: "pass"
+      tolerance:
+        abs:
+          l: 0.0001
+          a: 0.0001
+          b: 0.0001
+          deltaE: 0.5
+        rel:
+          l: 0.001
+          a: 0.001
+          b: 0.001
+      colorComparisons:
+        - index: 0
+          swiftOutput:
+            oklab:
+              l: 0.706137
+              a: 0.045551
+              b: 0.014190
+          cReference:
+            oklab:
+              l: 0.706137
+              a: 0.045551
+              b: 0.014190
+          deltas:
+            okLabL: 0.0
+            okLabA: 0.0
+            okLabB: 0.0
+            deltaE: 0.0
+      maxDeltaE: 0.0
+      meanDeltaE: 0.0
+      topContributors:
+        - metric: "deltaE"
+          magnitude: 0.0
+          direction: "flat"
+          zScore: 0.0
+      artifactsPath: "specs/005-c-algo-parity/artifacts/swift-parity-run/baseline-wheel/"
+      provenance:
+        cCommit: "bbaecdf372908c9fb60515327320168775ec5862"
+        swiftCommit: "bbaecdf372908c9fb60515327320168775ec5862"
+        swiftVersion: "5.9"
+        targetSDK: "iOS 13+"
+        platform: "macOS 14.1"
+        corpusVersion: "v20251212.1"
+        cReferenceRunId: "full-run-default-20251212"

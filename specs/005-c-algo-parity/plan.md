@@ -76,3 +76,27 @@ scripts/                  # release/build helpers
 |-----------|------------|-------------------------------------|
 | [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
 | [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+
+---
+
+## Phase 9: Swift Wrapper Parity Testing Plan
+
+**Status**: ✅ Phases 1-8 Complete → Phase 9 Specification Ready  
+**Branch**: `005-c-algo-parity`  
+**Documentation**: [phase-9-swift-parity.md](phase-9-swift-parity.md)
+
+Phase 9 validates that the Swift wrapper (`Sources/ColorJourney/*`) accurately bridges to the C core without introducing deviations. The plan replicates the C parity methodology but focuses on the Swift API boundary.
+
+**Key Design Decisions**:
+- Reuse corpus from Phase 1-8 (consistency)
+- Compare against C reference outputs (validation)
+- Identical tolerances (zero-deviation requirement)
+- Match C parity report format (statistical alignment)
+- 29 tasks organized in 5 phases (T051-T079)
+
+**Related Documents**:
+- **Detailed Specification**: [phase-9-swift-parity.md](phase-9-swift-parity.md) - Full test strategy and architecture
+- **Task List**: [phase-9-tasks.md](phase-9-tasks.md) - 29 implementation tasks with acceptance criteria
+- **API Contract**: [contracts/swift-wrapper-parity-api.yaml](contracts/swift-wrapper-parity-api.yaml) - OpenAPI specification
+- **Executive Summary**: [PHASE-9-SPEC-SUMMARY.md](PHASE-9-SPEC-SUMMARY.md) - Overview and roadmap
+- **Complete Reference**: [INDEX.md](INDEX.md) - Full documentation index
