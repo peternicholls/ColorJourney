@@ -1,14 +1,14 @@
 # 004 Incremental Creation - Task Breakdown
 
 **Feature ID:** 004-incremental-creation  
-**Status:** Core API shipped (SC-001–SC-007 ✅); Research complete (R-001, R-002, R-003 ✅); Implementation pending  
+**Status:** Core API shipped (SC-001–SC-007 ✅); Research complete (R-001, R-002, R-003 ✅); Implementation complete  
 **Core Implementation Date:** December 9, 2025  
 **Branch:** `004-incremental-creation`  
-**Total Tasks:** 39 (T001-T039)  
-**Phases:** 4 (Phase 0: Research ✅, Phase 1: Implementation, Phase 2: Integration, Phase 3: Evaluation)  
+**Total Tasks:** 45 (T001-T045)  
+**Phases:** 4 (Phase 0: Research ✅, Phase 1: Implementation ✅, Phase 2: Integration, Phase 3: Evaluation)  
 **Estimated Total Effort:** 170 hours / 6 weeks
 
-**Task Format:** Each section includes both checklist format (T001-T039) and detailed specifications (original task IDs)  
+**Task Format:** Each section includes both checklist format (T001-T045) and detailed specifications (original task IDs)  
 
 **References:**
 - Spec Success Criteria: See [spec.md § Success Criteria & Task Traceability](spec.md#success-criteria--task-traceability)
@@ -135,9 +135,23 @@
 
 ---
 
+### Warning Backlog Resolution (PR #17)
+
+**Objective:** Close the review warning backlog (W001–W006) by documenting deviations, assumptions, and coverage gaps identified in Phase 1, aligning documentation and tests with implemented behavior.
+
+- **Scope & Deliverables:**
+   - T031: Clarify fallback divergence vs. spec and rationale in delta-algorithm.md.
+   - T032: Document monotonicity assumptions and limitations for binary search (C3/C8).
+   - T033: Document asymmetric wrap-around search behavior and limitations (C4).
+   - T034: Document last-resort fallback gap, add planned guard coverage notes (C7).
+   - T035: Align contrast minima documentation with implemented LOW/MEDIUM/HIGH values; update referenced tests accordingly.
+   - T036: Add “best-effort max ΔE” note for boundary spikes and reference regression coverage locations.
+
+**Success Criteria:** All six warnings documented with explicit rationale, file locations updated, and referenced tests adjusted where needed; no open warning items remain for Phase 2 gate.
+
 ### R-002: Thread Safety Validation (SC-011)
 
-**Checklist:**
+**Task ID:** T037 (T-001-A through T-001-E)  
 - [x] T004 [P] Conduct thread safety code review in specs/004-incremental-creation/thread-safety-review.md
 - [x] T005 [P] Implement concurrent read tests in Tests/ColorJourneyTests/ThreadSafetyTests.swift
 - [x] T006 Conduct stress testing and document in specs/004-incremental-creation/thread-safety-stress-test-report.md
@@ -389,15 +403,15 @@
 
 **Checklist:**
 - [x] T010 Design delta range enforcement algorithm with conflict resolution in specs/004-incremental-creation/delta-algorithm.md
-- [ ] T011 Implement `discrete_enforce_delta_range()` helper in Sources/CColorJourney/ColorJourney.c
-- [ ] T012 Implement OKLab ΔE calculation in Sources/CColorJourney/ColorJourney.c
-- [ ] T013 Integrate delta enforcement into `discrete_color_at_index()` in Sources/CColorJourney/ColorJourney.c
-- [ ] T014 [P] Add minimum delta test (ΔE ≥ 0.02) in Tests/CColorJourneyTests/test_incremental.c
-- [ ] T015 [P] Add maximum delta test (ΔE ≤ 0.05) in Tests/CColorJourneyTests/test_incremental.c
-- [ ] T016 [P] Add conflict resolution test in Tests/CColorJourneyTests/test_incremental.c
-- [ ] T017 Add multi-contrast-level delta test in Tests/CColorJourneyTests/test_incremental.c
-- [ ] T018 Measure delta enforcement performance overhead vs baseline
-- [ ] T019 Code review and refinement of delta range implementation
+- [x] T011 Implement `discrete_enforce_delta_range()` helper in Sources/CColorJourney/ColorJourney.c
+- [x] T012 Implement OKLab ΔE calculation in Sources/CColorJourney/ColorJourney.c
+- [x] T013 Integrate delta enforcement into `discrete_color_at_index()` in Sources/CColorJourney/ColorJourney.c
+- [x] T014 [P] Add minimum delta test (ΔE ≥ 0.02) in Tests/CColorJourneyTests/test_incremental.c
+- [x] T015 [P] Add maximum delta test (ΔE ≤ 0.05) in Tests/CColorJourneyTests/test_incremental.c
+- [x] T016 [P] Add conflict resolution test in Tests/CColorJourneyTests/test_incremental.c
+- [x] T017 Add multi-contrast-level delta test in Tests/CColorJourneyTests/test_incremental.c
+- [x] T018 Measure delta enforcement performance overhead vs baseline
+- [x] T019 Code review and refinement of delta range implementation
 
 ---
 
@@ -491,12 +505,12 @@
 ### I-002: Error Handling Enhancement (SC-009, FR-006)
 
 **Checklist:**
-- [ ] T020 Audit current error handling paths in Sources/CColorJourney/ColorJourney.c
-- [ ] T021 Implement enhanced bounds checking in Sources/CColorJourney/ColorJourney.c
-- [ ] T022 Implement handle validation improvements in Sources/CColorJourney/ColorJourney.c
-- [ ] T023 [P] Add negative indices test in Tests/CColorJourneyTests/test_incremental.c
-- [ ] T024 [P] Add NULL/invalid journey test in Tests/CColorJourneyTests/test_incremental.c
-- [ ] T025 Verify Swift nil-safety in Tests/ColorJourneyTests/IncrementalTests.swift
+- [x] T020 Audit current error handling paths in Sources/CColorJourney/ColorJourney.c
+- [x] T021 Implement enhanced bounds checking in Sources/CColorJourney/ColorJourney.c
+- [x] T022 Implement handle validation improvements in Sources/CColorJourney/ColorJourney.c
+- [x] T023 [P] Add negative indices test in Tests/CColorJourneyTests/test_incremental.c
+- [x] T024 [P] Add NULL/invalid journey test in Tests/CColorJourneyTests/test_incremental.c
+- [x] T025 Verify Swift nil-safety in Tests/ColorJourneyTests/IncrementalTests.swift
 
 ---
 
@@ -562,11 +576,11 @@
 ### I-003: Index Bounds Validation (SC-010, FR-008)
 
 **Checklist:**
-- [ ] T026 [P] Add baseline index tests (0, 1, 10, 100, 1000) in Tests/CColorJourneyTests/test_incremental.c
-- [ ] T027 [P] Add high index tests (999,999, 1,000,000) in Tests/CColorJourneyTests/test_incremental.c
-- [ ] T028 Add precision validation tests at boundary in Tests/CColorJourneyTests/test_incremental.c
-- [ ] T029 Add Doxygen bounds documentation to Sources/CColorJourney/include/ColorJourney.h
-- [ ] T030 Add DocC bounds documentation to Sources/ColorJourney/Journey/ColorJourneyClass.swift
+- [x] T026 [P] Add baseline index tests (0, 1, 10, 100, 1000) in Tests/CColorJourneyTests/test_incremental.c
+- [x] T027 [P] Add high index tests (999,999, 1,000,000) in Tests/CColorJourneyTests/test_incremental.c
+- [x] T028 Add precision validation tests at boundary in Tests/CColorJourneyTests/test_incremental.c
+- [x] T029 Add Doxygen bounds documentation to Sources/CColorJourney/include/ColorJourney.h
+- [x] T030 Add DocC bounds documentation to Sources/ColorJourney/Journey/ColorJourneyClass.swift
 
 ---
 
@@ -652,23 +666,24 @@
 
 **Context:** Non-blocking review items raised during PR #17 (Phase 1). Track and resolve in Phase 2 integration/doc updates.
 
-- [ ] W001 Document fallback divergence vs. spec (delta-algorithm.md): current implementation prioritizes delta range over TypeScript-style fallback
-- [ ] W002 Document binary-search monotonicity assumption and limitations (delta-algorithm.md) (C3/C8)
-- [ ] W003 Document asymmetric wrap-around search behavior and limitations (delta-algorithm.md) (C4)
-- [ ] W004 Document last-resort fallback missing minimum validation and add planned guard (delta-algorithm.md) (C7)
-- [ ] W005 Document actual contrast minima (LOW=0.05, MEDIUM=0.10, HIGH=0.15) vs. theoretical values and align spec wording (delta-algorithm.md + tests)
-- [ ] W006 Add “best-effort max ΔE” note for boundary spikes (tests/documentation) (C1)
+Backlog items are now first-class Phase 2 tasks T031-T036 (see Phase 2 checklist for tracking and completion).
 
 ---
 
-## Phase 2: Integration & Testing (5-7 days)
+## Phase 2: Integration & Testing (6-8 days)
 
 **Checklist:**
-- [ ] T031 Consolidate and expand unit tests (25+ cases) in Tests/CColorJourneyTests/test_incremental.c
-- [ ] T032 Create integration tests for combined features in Tests/ColorJourneyTests/IntegrationTests.swift
-- [ ] T033 Run performance regression tests vs R-001 baseline and document in specs/004-incremental-creation/performance-regression-report.md
-- [ ] T034 Run memory profiling and leak detection, document in specs/004-incremental-creation/memory-profile-report.md
-- [ ] T035 Final code review and document approval in specs/004-incremental-creation/code-review-final.md
+- [ ] T031 [P] Document fallback divergence vs. spec in specs/004-incremental-creation/delta-algorithm.md (W001)
+- [ ] T032 [P] Document binary-search monotonicity assumption and limitations in specs/004-incremental-creation/delta-algorithm.md (W002)
+- [ ] T033 [P] Document asymmetric wrap-around search behavior and limitations in specs/004-incremental-creation/delta-algorithm.md (W003)
+- [ ] T034 [P] Document last-resort fallback gap and add planned guard coverage in specs/004-incremental-creation/delta-algorithm.md (W004)
+- [ ] T035 [P] Align documented contrast minima with implemented values and update associated tests in specs/004-incremental-creation/delta-algorithm.md and Tests/CColorJourneyTests/test_incremental.c (W005)
+- [ ] T036 [P] Add “best-effort max ΔE” note for boundary spikes in specs/004-incremental-creation/delta-algorithm.md and Tests/CColorJourneyTests/test_incremental.c (W006)
+- [ ] T037 Consolidate and expand unit tests (25+ cases) in Tests/CColorJourneyTests/test_incremental.c
+- [ ] T038 Create integration tests for combined features in Tests/ColorJourneyTests/IntegrationTests.swift
+- [ ] T039 Run performance regression tests vs R-001 baseline and document in specs/004-incremental-creation/performance-regression-report.md
+- [ ] T040 Run memory profiling and leak detection, document in specs/004-incremental-creation/memory-profile-report.md
+- [ ] T041 Final code review and document approval in specs/004-incremental-creation/code-review-final.md
 
 ---
 
@@ -750,7 +765,7 @@
 
 ### T-001: Integration Tests
 
-**Task ID:** T032 (T-001-E)  
+**Task ID:** T038 (T-001-E)  
 **Objective:** Real-world integration tests  
 **Effort:** 1 day  
 **Deliverables:**
@@ -768,7 +783,7 @@
 
 ### T-002: Performance Baseline - C Core
 
-**Task ID:** T033 (T-002-A, T-002-B)  
+**Task ID:** T039 (T-002-A, T-002-B)  
 **Objective:** Performance regression testing against R-001-A baseline  
 **Effort:** 1 day  
 **Deliverables:**
@@ -807,7 +822,7 @@
 
 ### T-002: Memory Profiling
 
-**Task ID:** T034 (T-002-C)  
+**Task ID:** T040 (T-002-C)  
 **Objective:** Verify memory usage and detect leaks  
 **Effort:** 1 day  
 **Deliverables:**
@@ -825,7 +840,7 @@
 
 ### Integration Phase Gate
 
-**Task ID:** T035 (GATE-2)  
+**Task ID:** T041 (GATE-2)  
 **Objective:** Review all integration testing and approve Phase 3  
 **Effort:** 0.5 days  
 **Dependencies:** T-001-E, T-002-C (all testing complete)  
@@ -846,16 +861,16 @@
 ## Phase 3: Evaluation & Decision (1 week)
 
 **Checklist:**
-- [ ] T036 Evaluate perceptual quality improvement with user feedback, document in specs/004-incremental-creation/perceptual-quality-evaluation.md
-- [ ] T037 Test delta range in real-world application integration, document in specs/004-incremental-creation/integration-test-report.md
-- [ ] T038 Verify correctness and stability under real usage, document in specs/004-incremental-creation/stability-verification.md
-- [ ] T039 Document rollout recommendation (general/incremental-only/defer) in specs/004-incremental-creation/rollout-decision.md
+- [ ] T042 Evaluate perceptual quality improvement with user feedback, document in specs/004-incremental-creation/perceptual-quality-evaluation.md
+- [ ] T043 Test delta range in real-world application integration, document in specs/004-incremental-creation/integration-test-report.md
+- [ ] T044 Verify correctness and stability under real usage, document in specs/004-incremental-creation/stability-verification.md
+- [ ] T045 Document rollout recommendation (general/incremental-only/defer) in specs/004-incremental-creation/rollout-decision.md
 
 ---
 
 ### E-001: Effectiveness Evaluation - Perceptual Quality
 
-**Task ID:** T036 (E-001-A)  
+**Task ID:** T042 (E-001-A)  
 **Objective:** Assess user-perceived quality improvement  
 **Effort:** 2 days  
 **Deliverables:**
@@ -879,7 +894,7 @@
 
 ### E-001: Performance in Real-World Apps
 
-**Task ID:** T037 (E-001-B)  
+**Task ID:** T043 (E-001-B)  
 **Objective:** Test delta range in actual applications  
 **Effort:** 1.5 days  
 **Dependencies:** GATE-2 (approved for evaluation)  
@@ -905,7 +920,7 @@
 
 ### E-001: Correctness & Stability Verification
 
-**Task ID:** T038 (E-001-C)  
+**Task ID:** T044 (E-001-C)  
 **Objective:** Final correctness and stability checks  
 **Effort:** 1 day  
 **Deliverables:**
@@ -924,7 +939,7 @@
 
 ### E-001: Rollout Decision & Recommendation
 
-**Task ID:** T039 (E-001-D)  
+**Task ID:** T045 (E-001-D)  
 **Objective:** Make decision on delta range general rollout  
 **Effort:** 1 day  
 **Dependencies:** E-001-A, E-001-B, E-001-C (all evaluation complete)  
@@ -980,23 +995,23 @@
 
 | Phase | Task Count | Estimated Days |
 |-------|------------|-----------------|
-| **Phase 0** | 11 | 6-12 |
-| **Phase 1** | 12 | 12-15 |
-| **Phase 2** | 8 | 5-7 |
-| **Phase 3** | 5 | 7 |
-| **Gates** | 4 | 2 |
-| **TOTAL** | **32** | **39-43** |
+| **Phase 0** | 9 | 6-12 |
+| **Phase 1** | 21 | 12-15 |
+| **Phase 2** | 11 | 6-8 |
+| **Phase 3** | 4 | 7 |
+| **Gates (captured in above)** | 0 | 2 |
+| **TOTAL** | **45** | **39-44** |
 
 ### By Type
 
 | Type | Count |
 |------|-------|
-| Research | 11 |
-| Implementation | 12 |
-| Integration | 8 |
-| Evaluation | 5 |
-| Gates | 4 |
-| **TOTAL** | **40** |
+| Research | 9 |
+| Implementation | 21 |
+| Integration & Docs | 11 |
+| Evaluation | 4 |
+| Gates (captured in above) | 0 |
+| **TOTAL** | **45** |
 
 ---
 
@@ -1030,6 +1045,7 @@ PHASE 1: IMPLEMENTATION (Mostly Parallel)
 └─ GATE-1: Implementation gate
 
 PHASE 2: INTEGRATION (Sequential)
+├─ W001-W006: PR #17 warning backlog docs/tests (parallel)
 ├─ T-001-A: Unit tests
 ├─ T-001-B: Delta tests integration
 ├─ T-001-C: Error tests integration
@@ -1066,10 +1082,11 @@ PHASE 3: EVALUATION (Sequential)
 - Day 9: GATE-1
 
 ### Week 5: Phase 2 (Integration)
-- Day 1: T-001-A
-- Days 2-3: T-001-B, T-001-C, T-001-D parallel
-- Day 4: T-001-E
-- Days 5-7: T-002-A, T-002-B, T-002-C
+- Day 1: T031-T036 (W001-W006 documentation/test alignment) in parallel
+- Day 2: T-001-A
+- Days 3-4: T-001-B, T-001-C, T-001-D parallel
+- Day 5: T-001-E
+- Days 6-7: T-002-A, T-002-B, T-002-C
 - Day 8: GATE-2
 
 ### Week 6: Phase 3 (Evaluation)
@@ -1088,10 +1105,10 @@ PHASE 3: EVALUATION (Sequential)
 | Phase | Checklist Tasks | Detailed Tasks | Status |
 |-------|----------------|----------------|--------|
 | Phase 0: Research | T001-T009 | R-001-A to R-003-C | ✅ Complete |
-| Phase 1: Implementation | T010-T030 | I-001-A to I-003-C | Not Started |
-| Phase 2: Integration | T031-T035 | T-001-A to T-002-C, GATE-2 | Not Started |
-| Phase 3: Evaluation | T036-T039 | E-001-A to E-001-D | Not Started |
-| **Total** | **39 tasks** | **32+ subtasks** | **9 complete** |
+| Phase 1: Implementation | T010-T030 | I-001-A to I-003-C | ✅ Complete |
+| Phase 2: Integration | T031-T041 | W001-W006, T-001-A to T-002-C, GATE-2 | Not Started |
+| Phase 3: Evaluation | T042-T045 | E-001-A to E-001-D | Not Started |
+| **Total** | **45 tasks** | **32+ subtasks** | **30 complete** |
 
 ---
 
@@ -1118,15 +1135,21 @@ PHASE 3: EVALUATION (Sequential)
 | T026 | I-003-A | Baseline index tests |
 | T027-T028 | I-003-B | High index tests |
 | T029-T030 | I-003-C | Bounds documentation |
-| T031 | T-001-A to T-001-D | Comprehensive test suite |
-| T032 | T-001-E | Integration tests |
-| T033 | T-002-A, T-002-B | Performance regression |
-| T034 | T-002-C | Memory profiling |
-| T035 | GATE-2 | Integration gate |
-| T036 | E-001-A | Perceptual quality evaluation |
-| T037 | E-001-B | Real-world app testing |
-| T038 | E-001-C | Correctness verification |
-| T039 | E-001-D | Rollout decision |
+| T031 | W001 | Document fallback divergence vs. spec |
+| T032 | W002 | Document binary-search monotonicity assumption |
+| T033 | W003 | Document asymmetric wrap-around behavior |
+| T034 | W004 | Document last-resort fallback gap and guard plan |
+| T035 | W005 | Align contrast minima documentation/tests |
+| T036 | W006 | Add best-effort max ΔE note in docs/tests |
+| T037 | T-001-A to T-001-D | Comprehensive test suite |
+| T038 | T-001-E | Integration tests |
+| T039 | T-002-A, T-002-B | Performance regression |
+| T040 | T-002-C | Memory profiling |
+| T041 | GATE-2 | Integration gate |
+| T042 | E-001-A | Perceptual quality evaluation |
+| T043 | E-001-B | Real-world app testing |
+| T044 | E-001-C | Correctness verification |
+| T045 | E-001-D | Rollout decision |
 
 ---
 
