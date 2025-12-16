@@ -49,24 +49,32 @@
 
 ---
 
-#### R-001-B: Test Chunk Sizes (10, 25, 50, 100, 200, 500)
+#### R-001-B: Test Chunk Sizes (10, 25, 50, 100, 200, 500) ✅
 
 **Task ID:** R-001-B  
 **Requirement:** SC-012  
 **Objective:** Benchmark lazy sequence chunk buffer with 6 different chunk sizes; compare each to C core baseline to identify optimal tradeoff  
 **Effort:** 1.5 days  
+**Status:** ✅ **COMPLETE** (December 16, 2025)  
 **Dependencies:** R-001-A (baseline established)  
 **Deliverables:**
-- Performance data for each chunk size (generation time, memory overhead, iteration latency)
-- Memory profiling results (allocations, peak usage)
-- Comparison charts showing each size vs. baseline
-- Inflection point analysis (where memory savings plateau)
+- ✅ Performance data for each chunk size (generation time, memory overhead, iteration latency)
+- ✅ Memory profiling results (allocations, peak usage)
+- ✅ Comparison showing each size vs. baseline: `chunk-size-benchmark-report.md`
+- ✅ Inflection point analysis (where memory savings plateau)
+- ✅ Test harness: `Tests/ColorJourneyTests/ChunkSizeBenchmarkTests.swift`
+
+**Key Findings:**
+- Chunk 100 at inflection point for 100 colors (most common use)
+- Chunk 200 only 2% faster than 100 (within margin of error)
+- Memory negligible for all sizes (<6 KB)
+- **Recommendation:** Keep current chunk size 100 (optimal balance)
 
 **Success Criteria:**
 - ✅ All 6 chunk sizes benchmarked
 - ✅ Data compared to C core baseline
 - ✅ Inflection points identified
-- ✅ Recommendation direction clear (e.g., 100 optimal, or conservative fallback)
+- ✅ Recommendation direction clear (chunk 100 optimal for common case)
 
 ---
 
