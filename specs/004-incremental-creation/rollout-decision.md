@@ -167,20 +167,23 @@ Delta range enforcement should be enabled by default for all incremental APIs an
 - [x] Add CHANGELOG entry for v2.2.0
 - [x] Create RELEASENOTES.md with detailed release information and known issues
 
-### Phase 2: Release Preparation (This Sprint) 🚧
+### Phase 2: Release Candidate Validation (This Sprint) ✅
 
 - [x] Tag release candidate (v2.2.0-rc1)
 - [x] Run full CI/CD pipeline (triggered by tag push)
 - [x] Generate release notes (RELEASENOTES.md created)
-- [ ] Update version numbers in Package.swift and podspec
-- [ ] Create PR into develop (#19)
+- [x] Create PR into develop (#19)
+- [ ] Review and validate RC on test infrastructure
+- [ ] Gather feedback from pre-release testing
 
-### Phase 3: Release (Next Sprint)
+### Phase 3: Final Release (Next Sprint)
 
-- [ ] Merge to main/develop branch
-- [ ] Create release tag (v2.2.0)
+- [ ] Update version numbers in Package.swift, podspec, and codebase
+- [ ] Merge PR #19 to develop
+- [ ] Create release tag (v2.2.0) on main
 - [ ] Publish to CocoaPods
 - [ ] Announce release
+- [ ] Monitor feedback and issue reports
 
 ---
 
