@@ -112,6 +112,7 @@ struct ColorSetRequest {
         case "nightMode": return .nightMode
         case "warmEarth": return .warmEarth
         case "coolSky": return .coolSky
+        case "custom": return .custom
         default: return .balanced
         }
     }
