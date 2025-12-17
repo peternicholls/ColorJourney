@@ -167,12 +167,13 @@ Delta range enforcement should be enabled by default for all incremental APIs an
 - [x] Add CHANGELOG entry for v2.2.0
 - [x] Create RELEASENOTES.md with detailed release information and known issues
 
-### Phase 2: Release Preparation (This Sprint)
+### Phase 2: Release Preparation (This Sprint) 🚧
 
-- [ ] Tag release candidate (v2.2.0-rc1)
-- [ ] Run full CI/CD pipeline
-- [ ] Generate release notes
-- [ ] Update version numbers
+- [x] Tag release candidate (v2.2.0-rc1)
+- [x] Run full CI/CD pipeline (triggered by tag push)
+- [x] Generate release notes (RELEASENOTES.md created)
+- [ ] Update version numbers in Package.swift and podspec
+- [ ] Create PR into develop (#19)
 
 ### Phase 3: Release (Next Sprint)
 
