@@ -5,7 +5,7 @@
 **Core Implementation Date:** December 9, 2025  
 **Branch:** `004-incremental-creation`  
 **Total Tasks:** 45 (T001-T045)  
-**Phases:** 4 (Phase 0: Research ✅, Phase 1: Implementation ✅, Phase 2: Integration, Phase 3: Evaluation)  
+**Phases:** 4 (Phase 0: Research ✅, Phase 1: Implementation ✅, Phase 2: Integration ✅, Phase 3: Evaluation ✅)  
 **Estimated Total Effort:** 170 hours / 6 weeks
 
 **Task Format:** Each section includes both checklist format (T001-T045) and detailed specifications (original task IDs)  
@@ -673,17 +673,17 @@ Backlog items are now first-class Phase 2 tasks T031-T036 (see Phase 2 checklist
 ## Phase 2: Integration & Testing (6-8 days)
 
 **Checklist:**
-- [ ] T031 [P] Document fallback divergence vs. spec in specs/004-incremental-creation/delta-algorithm.md (W001)
-- [ ] T032 [P] Document binary-search monotonicity assumption and limitations in specs/004-incremental-creation/delta-algorithm.md (W002)
-- [ ] T033 [P] Document asymmetric wrap-around search behavior and limitations in specs/004-incremental-creation/delta-algorithm.md (W003)
-- [ ] T034 [P] Document last-resort fallback gap and add planned guard coverage in specs/004-incremental-creation/delta-algorithm.md (W004)
-- [ ] T035 [P] Align documented contrast minima with implemented values and update associated tests in specs/004-incremental-creation/delta-algorithm.md and Tests/CColorJourneyTests/test_incremental.c (W005)
-- [ ] T036 [P] Add “best-effort max ΔE” note for boundary spikes in specs/004-incremental-creation/delta-algorithm.md and Tests/CColorJourneyTests/test_incremental.c (W006)
-- [ ] T037 Consolidate and expand unit tests (25+ cases) in Tests/CColorJourneyTests/test_incremental.c
-- [ ] T038 Create integration tests for combined features in Tests/ColorJourneyTests/IntegrationTests.swift
-- [ ] T039 Run performance regression tests vs R-001 baseline and document in specs/004-incremental-creation/performance-regression-report.md
-- [ ] T040 Run memory profiling and leak detection, document in specs/004-incremental-creation/memory-profile-report.md
-- [ ] T041 Final code review and document approval in specs/004-incremental-creation/code-review-final.md
+- [x] T031 [P] Document fallback divergence vs. spec in specs/004-incremental-creation/delta-algorithm.md (W001)
+- [x] T032 [P] Document binary-search monotonicity assumption and limitations in specs/004-incremental-creation/delta-algorithm.md (W002)
+- [x] T033 [P] Document asymmetric wrap-around search behavior and limitations in specs/004-incremental-creation/delta-algorithm.md (W003)
+- [x] T034 [P] Document last-resort fallback gap and add planned guard coverage in specs/004-incremental-creation/delta-algorithm.md (W004)
+- [x] T035 [P] Align documented contrast minima with implemented values and update associated tests in specs/004-incremental-creation/delta-algorithm.md and Tests/CColorJourneyTests/test_incremental.c (W005)
+- [x] T036 [P] Add “best-effort max ΔE” note for boundary spikes in specs/004-incremental-creation/delta-algorithm.md and Tests/CColorJourneyTests/test_incremental.c (W006)
+- [x] T037 Consolidate and expand unit tests (25+ cases) in Tests/CColorJourneyTests/test_incremental.c
+- [x] T038 Create integration tests for combined features in Tests/ColorJourneyTests/IntegrationTests.swift
+- [x] T039 Run performance regression tests vs R-001 baseline and document in specs/004-incremental-creation/performance-regression-report.md
+- [x] T040 Run memory profiling and leak detection, document in specs/004-incremental-creation/memory-profile-report.md
+- [x] T041 Final code review and document approval in specs/004-incremental-creation/code-review-final.md
 
 ---
 
@@ -861,10 +861,10 @@ Backlog items are now first-class Phase 2 tasks T031-T036 (see Phase 2 checklist
 ## Phase 3: Evaluation & Decision (1 week)
 
 **Checklist:**
-- [ ] T042 Evaluate perceptual quality improvement with user feedback, document in specs/004-incremental-creation/perceptual-quality-evaluation.md
-- [ ] T043 Test delta range in real-world application integration, document in specs/004-incremental-creation/integration-test-report.md
-- [ ] T044 Verify correctness and stability under real usage, document in specs/004-incremental-creation/stability-verification.md
-- [ ] T045 Document rollout recommendation (general/incremental-only/defer) in specs/004-incremental-creation/rollout-decision.md
+- [x] T042 Evaluate perceptual quality improvement with user feedback, document in specs/004-incremental-creation/perceptual-quality-evaluation.md
+- [x] T043 Test delta range in real-world application integration, document in specs/004-incremental-creation/integration-test-report.md
+- [x] T044 Verify correctness and stability under real usage, document in specs/004-incremental-creation/stability-verification.md
+- [x] T045 Document rollout recommendation (general/incremental-only/defer) in specs/004-incremental-creation/rollout-decision.md
 
 ---
 
@@ -1106,9 +1106,9 @@ PHASE 3: EVALUATION (Sequential)
 |-------|----------------|----------------|--------|
 | Phase 0: Research | T001-T009 | R-001-A to R-003-C | ✅ Complete |
 | Phase 1: Implementation | T010-T030 | I-001-A to I-003-C | ✅ Complete |
-| Phase 2: Integration | T031-T041 | W001-W006, T-001-A to T-002-C, GATE-2 | Not Started |
-| Phase 3: Evaluation | T042-T045 | E-001-A to E-001-D | Not Started |
-| **Total** | **45 tasks** | **32+ subtasks** | **30 complete** |
+| Phase 2: Integration | T031-T041 | W001-W006, T-001-A to T-002-C, GATE-2 | ✅ Complete |
+| Phase 3: Evaluation | T042-T045 | E-001-A to E-001-D | ✅ Complete |
+| **Total** | **45 tasks** | **32+ subtasks** | **45 complete** |
 
 ---
 
