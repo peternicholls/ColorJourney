@@ -186,14 +186,21 @@ final class PaletteExplorerViewModel: ObservableObject {
     }
     
     private func colorToRGB(_ color: Color) -> ColorJourneyRGB {
-        // SwiftUI Color to RGB components
-        #if canImport(AppKit)
-        let nsColor = NSColor(color)
+        #if canImport(UIKit)
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        guard UIColor(color).getRed(&r, green: &g, blue: &b, alpha: &a) else {
+            return ColorJourneyRGB(red: 0.5, green: 0.5, blue: 0.5)
+        }
+        return ColorJourneyRGB(red: Float(r), green: Float(g), blue: Float(b))
+        #elseif canImport(AppKit)
+        guard let nsColor = NSColor(color).usingColorSpace(.sRGB) else {
+            return ColorJourneyRGB(red: 0.5, green: 0.5, blue: 0.5)
+        }
         var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
         nsColor.getRed(&r, green: &g, blue: &b, alpha: &a)
         return ColorJourneyRGB(red: Float(r), green: Float(g), blue: Float(b))
         #else
-        // Fallback - try to extract from description or use default
+        // Fallback for other platforms
         return ColorJourneyRGB(red: 0.5, green: 0.5, blue: 0.5)
         #endif
     }
