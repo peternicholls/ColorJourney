@@ -1,0 +1,61 @@
+{
+    "corpusVersion": "v20251212.1",
+    "description": "Tiny corpus for integration testing",
+    "cases": [
+        {
+            "id": "case-baseline",
+            "tags": [
+                "baseline",
+                "oklab"
+            ],
+            "anchors": [
+                {
+                    "oklab": {
+                        "l": 0.50,
+                        "a": 0.10,
+                        "b": 0.05
+                    }
+                },
+                {
+                    "rgb": {
+                        "r": 0.10,
+                        "g": 0.50,
+                        "b": 0.90
+                    }
+                }
+            ],
+            "config": {
+                "count": 2,
+                "lightness": 0.7,
+                "chroma": 0.2,
+                "contrast": 1.0,
+                "vibrancy": 0.4,
+                "temperature": 0.1,
+                "loopMode": "once",
+                "variationSeed": 42
+            },
+            "seed": 1234,
+            "corpusVersion": "v20251212.1",
+            "notes": "Baseline deterministic case"
+        },
+        {
+            "id": "case-edge",
+            "anchors": [
+                {
+                    "oklab": {
+                        "l": 0.01,
+                        "a": -0.05,
+                        "b": -0.05
+                    }
+                }
+            ],
+            "config": {
+                "count": 1,
+                "loopMode": "loop",
+                "lightness": 0.2
+            },
+            "seed": 9876,
+            "corpusVersion": "v20251212.1"
+        }
+    ]
+}

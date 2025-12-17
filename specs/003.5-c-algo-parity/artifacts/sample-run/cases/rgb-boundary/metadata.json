@@ -1,0 +1,41 @@
+{
+	"inputCaseId":	"rgb-boundary",
+	"passed":	true,
+	"maxDeltaE":	0,
+	"input":	{
+		"corpusVersion":	"v20251212.1",
+		"seed":	777,
+		"count":	8,
+		"tags":	["boundary", "srgb", "contrast"]
+	},
+	"artifacts":	{
+		"canonical":	"canonical.json",
+		"alternate":	"alternate.json",
+		"diff":	"diff.json"
+	},
+	"topContributors":	[{
+			"metric":	"deltaE",
+			"magnitude":	0,
+			"direction":	"flat",
+			"stage":	"Comparison/Scoring",
+			"parameter":	"overall-delta",
+			"zScore":	0,
+			"significant":	false
+		}, {
+			"metric":	"oklab.l",
+			"magnitude":	0,
+			"direction":	"flat",
+			"stage":	"OKLab normalization",
+			"parameter":	"lightness",
+			"zScore":	0,
+			"significant":	false
+		}, {
+			"metric":	"oklab.a",
+			"magnitude":	0,
+			"direction":	"flat",
+			"stage":	"OKLab normalization",
+			"parameter":	"chroma-a",
+			"zScore":	0,
+			"significant":	false
+		}]
+}

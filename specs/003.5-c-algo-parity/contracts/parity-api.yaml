@@ -1,0 +1,254 @@
+openapi: 3.1.0
+info:
+  title: ColorJourney Parity API
+  version: 0.1.0
+  description: Run and inspect parity checks between the wasm engine and canonical C core.
+paths:
+  /runs:
+    post:
+      summary: Start a parity run against selected corpus cases.
+      operationId: startRun
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StartRunRequest"
+      responses:
+        "202":
+          description: Run accepted.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunStatus"
+  /runs/{runId}:
+    get:
+      summary: Fetch run status and aggregated summary.
+      operationId: getRun
+      parameters:
+        - $ref: "#/components/parameters/RunId"
+      responses:
+        "200":
+          description: Run status and summary.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunStatus"
+  /runs/{runId}/results/{caseId}:
+    get:
+      summary: Fetch detailed comparison result for a single case.
+      operationId: getResult
+      parameters:
+        - $ref: "#/components/parameters/RunId"
+        - $ref: "#/components/parameters/CaseId"
+      responses:
+        "200":
+          description: Comparison detail.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComparisonResult"
+  /runs/{runId}/artifacts/{caseId}:
+    get:
+      summary: Download artifacts for a failing case.
+      operationId: getArtifacts
+      parameters:
+        - $ref: "#/components/parameters/RunId"
+        - $ref: "#/components/parameters/CaseId"
+      responses:
+        "302":
+          description: Redirect to artifact storage path.
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Artifact URL or path.
+
+components:
+  parameters:
+    RunId:
+      name: runId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    CaseId:
+      name: caseId
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    StartRunRequest:
+      type: object
+      properties:
+        corpusVersion:
+          type: string
+          description: Corpus version to run.
+        caseIds:
+          type: array
+          items:
+            type: string
+          description: Optional subset of cases to execute.
+        tolerance:
+          $ref: "#/components/schemas/Tolerance"
+        provenance:
+          $ref: "#/components/schemas/ProvenanceOverride"
+      required: [corpusVersion]
+    RunStatus:
+      type: object
+      properties:
+        runId:
+          type: string
+          format: uuid
+        state:
+          type: string
+          enum: [queued, running, completed, failed]
+        summary:
+          $ref: "#/components/schemas/RunSummary"
+        artifactsRoot:
+          type: string
+        startedAt:
+          type: string
+          format: date-time
+        finishedAt:
+          type: string
+          format: date-time
+      required: [runId, state]
+    RunSummary:
+      type: object
+      properties:
+        totalCases:
+          type: integer
+        passed:
+          type: integer
+        failed:
+          type: integer
+        histograms:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: number
+        topContributors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Contributor"
+    ComparisonResult:
+      type: object
+      properties:
+        inputCaseId:
+          type: string
+        status:
+          type: string
+          enum: [pass, fail]
+        tolerance:
+          $ref: "#/components/schemas/Tolerance"
+        deltas:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeltaEntry"
+        topContributors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Contributor"
+        artifactsPath:
+          type: string
+        provenance:
+          $ref: "#/components/schemas/Provenance"
+      required: [inputCaseId, status, tolerance, deltas]
+    DeltaEntry:
+      type: object
+      properties:
+        index:
+          type: integer
+        okLabDelta:
+          type: object
+          properties:
+            l:
+              type: number
+            a:
+              type: number
+            b:
+              type: number
+        deltaE:
+          type: number
+        rgbDelta:
+          type: object
+          properties:
+            r:
+              type: integer
+            g:
+              type: integer
+            b:
+              type: integer
+      required: [index, okLabDelta, deltaE]
+    Contributor:
+      type: object
+      properties:
+        metric:
+          type: string
+          description: Channel or derived metric name.
+        magnitude:
+          type: number
+        direction:
+          type: string
+          enum: [higher, lower]
+    Tolerance:
+      type: object
+      properties:
+        abs:
+          type: object
+          properties:
+            l:
+              type: number
+            a:
+              type: number
+            b:
+              type: number
+            deltaE:
+              type: number
+        rel:
+          type: object
+          properties:
+            l:
+              type: number
+            a:
+              type: number
+            b:
+              type: number
+    Provenance:
+      type: object
+      properties:
+        cCommit:
+          type: string
+        wasmCommit:
+          type: string
+        buildFlags:
+          type: array
+          items:
+            type: string
+        corpusVersion:
+          type: string
+        platform:
+          type: string
+      required: [cCommit, wasmCommit, corpusVersion]
+    ProvenanceOverride:
+      type: object
+      properties:
+        cCommit:
+          type: string
+        wasmCommit:
+          type: string
+        buildFlags:
+          type: array
+          items:
+            type: string
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: string

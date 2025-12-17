@@ -1,0 +1,635 @@
+
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{microtype}
+\geometry{margin=1in}
+
+\title{The Color Journey Engine\\
+Comprehensive Conceptual, Mathematical, and API Specification}
+\author{Peter Nicholls (concept) \\[4pt]
+\small This document formalises the design of the Color Journey Engine as implemented in prototype form.}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The Color Journey Engine is a framework for generating ordered sequences of discrete color swatches from a small number of anchor colors and a set of high-level ``dynamics'' controls.
+Internally, it constructs perceptually-aware paths through OKLab color space using cubic Bézier curves, dynamics operators, and optional stochastic variation.
+Externally, it exposes a simple API that takes anchors and configuration, and returns an ordered palette plus diagnostics, in JSON and CSS-friendly forms.
+
+This document specifies the design goals, perceptual foundations, curve construction methods, single- and multi-anchor behaviour, dynamics and variation layers, loop semantics, gamut handling, diagnostics, and API structures.
+The aim is to make the engine understandable and re-implementable without reference to prior discussions or prototypes.
+\end{abstract}
+
+\tableofcontents
+
+\section{Scope and Design Philosophy}
+\label{sec:scope}
+
+\subsection{What the Engine Does}
+
+The Color Journey Engine produces \textbf{ordered sequences of discrete color swatches}, hereafter called \emph{palettes}.
+Given:
+\begin{itemize}
+  \item between 1 and 5 anchor colors,
+  \item a requested number of swatches $N$,
+  \item a configuration of dynamics, variation, and loop settings,
+\end{itemize}
+the engine returns:
+\begin{itemize}
+  \item a palette of $N$ colors, ordered according to a perceptual journey,
+  \item optional internal representations (e.g.\ OKLab coordinates) for each swatch,
+  \item diagnostics summarising perceptual spacing, contrast behaviour, and traversal strategy.
+\end{itemize}
+
+The key properties of generated palettes are:
+\begin{enumerate}
+  \item \emph{Perceptual coherence}: adjacent colors are related by a controlled perceptual distance in a modern color space (OKLab).
+  \item \emph{Narrative order}: the sequence follows a well-defined geometric path through color space (the ``journey''), so that order carries meaning.
+  \item \emph{Configurable mood}: high-level controls (``dynamics'') and presets give expressive influence over how journeys behave without exposing low-level math.
+  \item \emph{Determinism}: given the same anchors, configuration, and random seed, the engine produces the same palette.
+\end{enumerate}
+
+\subsection{What the Engine Does Not Do}
+
+The engine deliberately \emph{does not}:
+\begin{itemize}
+  \item expose continuous curve evaluation to callers as a primary API;
+  \item implement animation or temporal logic (e.g.\ playhead scrubbing, time-based interpolation);
+  \item guarantee aesthetic success in all contexts (perceptual structure $\neq$ taste);
+  \item guarantee accessibility compliance; this is reported via diagnostics but must be enforced by the caller if required;
+  \item implement categorical colour maps as a separate mode; instead, higher contrast and wider spread are achieved via configuration and dynamics.
+\end{itemize}
+
+In short, the engine provides a perceptual and geometric \emph{foundation} for color sequences.
+It intentionally avoids taking over semantic decisions, usage patterns, or accessibility policy from the caller.
+
+\subsection{Primary Use Cases}
+
+Typical use cases include:
+\begin{itemize}
+  \item timelines, tracks, and state sequences in UI and media applications;
+  \item theming systems where a small set of anchors needs to be expanded into a larger palette;
+  \item data visualisation where ordered categories or gradients are required;
+  \item generative and creative tools that expand seed colours into structured journeys.
+\end{itemize}
+
+The engine is not restricted to these domains; any context where ordered color sequences matter can benefit from Color Journey.
+
+\subsection{Design Principles}
+
+The design is guided by four core principles:
+\begin{enumerate}
+  \item \textbf{Perceptual foundation}: operate in a perceptual color space (OKLab) where distances approximate perceived differences.
+  \item \textbf{Aesthetic expression via configuration}: anchors and dynamics/presets shape the aesthetic outcome rather than ad-hoc formulas.
+  \item \textbf{Discrete output, continuous thinking}: internally, continuous curves are used as construction devices; externally, only discrete swatches are exposed.
+  \item \textbf{Responsible flexibility}: the engine enforces basic sanity and provides diagnostics, but the caller is responsible for checking suitability in context.
+\end{enumerate}
+
+\section{Color Space Foundations}
+\label{sec:oklab}
+
+\subsection{OKLab Coordinates}
+
+Internally, the engine represents colours in OKLab, a perceptually-oriented space designed so Euclidean distances correlate with perceived differences.
+A color $X$ is represented as:
+\begin{equation}
+  X = (L, a, b)_{\text{OKLab}},
+\end{equation}
+where $L$ is perceived lightness and $a,b$ form an opponent chromatic plane.
+
+Given two colors $X_1=(L_1,a_1,b_1)$ and $X_2=(L_2,a_2,b_2)$, their distance is:
+\begin{equation}
+  \Delta(X_1,X_2) = \sqrt{(L_2-L_1)^2 + (a_2-a_1)^2 + (b_2-b_1)^2}.
+\end{equation}
+This $\Delta$ serves as the engine's notion of perceptual distance $\Delta E$.
+
+\subsection{Conversion from sRGB}
+
+Anchors are typically specified in sRGB, e.g.\ hex codes.
+The engine converts from sRGB to OKLab via the standard chain:
+\begin{enumerate}
+  \item sRGB $\rightarrow$ linear RGB (inverse gamma);
+  \item linear RGB $\rightarrow$ CIE XYZ (3$\times$3 matrix);
+  \item XYZ $\rightarrow$ OKLab (fixed transform and non-linearity).
+\end{enumerate}
+
+Conversely, OKLab coordinates are mapped back to sRGB for final palette export, with gamut handling described in Section~\ref{sec:gamut}.
+
+\section{Journeys and Anchors}
+\label{sec:journeys}
+
+\subsection{Anchors}
+
+The caller provides $k$ anchor colors in sRGB, with:
+\begin{equation}
+  1 \le k \le 5.
+\end{equation}
+Let the anchors in OKLab be:
+\begin{equation}
+  A_i = (L_i, a_i, b_i)_{\text{OKLab}}, \quad i=0,\dots,k-1.
+\end{equation}
+
+When $k \ge 2$, the journey is defined by segments between successive anchors.
+When $k = 1$, the engine constructs an outward journey from that single point (Section~\ref{sec:single}).
+
+\subsection{Discrete Journeys}
+
+A \emph{journey} is conceptually a continuous path $\Gamma:[0,1]\to\mathbb{R}^3$ through OKLab, built from piecewise cubic Bézier segments between anchors.
+However, the public API does not expose $\Gamma$; instead, the engine samples $\Gamma$ to produce an ordered list of $N$ discrete swatches:
+\begin{equation}
+  C_0, C_1, \dots, C_{N-1},
+\end{equation}
+each with an associated OKLab coordinate and exported representation (e.g.\ hex).
+
+Thus, journeys are \emph{constructive}, not prescriptive: they define how the palette is generated, not how it must be consumed.
+
+\section{Curve Construction in OKLab}
+\label{sec:curves}
+
+\subsection{Cubic Bézier Segments}
+
+For anchors $A_i$ and $A_{i+1}$, the engine constructs a cubic Bézier segment
+\begin{equation}
+  \gamma_i(t) =
+  (1-t)^3 P_{i,0}
+  + 3(1-t)^2 t P_{i,1}
+  + 3(1-t)t^2 P_{i,2}
+  + t^3 P_{i,3}, \quad t \in [0,1],
+\end{equation}
+with
+\begin{equation}
+  P_{i,0} = A_i, \quad P_{i,3} = A_{i+1},
+\end{equation}
+and control points $P_{i,1}$ and $P_{i,2}$ determined by dynamics and heuristics.
+
+The derivative is
+\begin{equation}
+\begin{aligned}
+  \gamma_i'(t) &=
+    3(1-t)^2 (P_{i,1}-P_{i,0})
+  + 6(1-t)t (P_{i,2}-P_{i,1})
+  + 3 t^2 (P_{i,3}-P_{i,2}).
+\end{aligned}
+\end{equation}
+Endpoint tangents are
+\begin{equation}
+  \gamma_i'(0) = 3(P_{i,1}-P_{i,0}), \quad
+  \gamma_i'(1) = 3(P_{i,3}-P_{i,2}).
+\end{equation}
+
+\subsection{Continuity Between Segments}
+
+For $k \ge 3$, multiple segments are stitched together to form a full journey:
+\begin{equation}
+  \Gamma(t) = \gamma_i\bigl(\tau(t)\bigr), \quad t \in [0,1],
+\end{equation}
+where $i$ indexes the appropriate segment and $\tau$ rescales $t$ into local parameter ranges.
+
+At each internal anchor $A_j$ with $0 < j < k-1$, the engine enforces at least $C^1$ continuity:
+\begin{equation}
+  \gamma_{j-1}(1) = \gamma_{j}(0) = A_j, \quad
+  \gamma_{j-1}'(1) \parallel \gamma_{j}'(0).
+\end{equation}
+Magnitude of the tangents is allowed to vary across the join, which permits the journey to ``linger'' near some anchors and move quickly past others, encoding perceptual rhythm.
+
+\subsection{Arc-Length and Swatch Placement}
+
+The perceptual arc length of segment $\gamma_i$ is
+\begin{equation}
+  L_i = \int_0^1 \lVert \gamma_i'(t) \rVert \, dt,
+\end{equation}
+approximated numerically by sampling.
+
+The total journey length is
+\begin{equation}
+  L_{\text{tot}} = \sum_{i=0}^{k-2} L_i.
+\end{equation}
+
+Given a requested number of swatches $N \ge 2$, the engine computes a step length
+\begin{equation}
+  s = \frac{L_{\text{tot}}}{N-1},
+\end{equation}
+and chooses parameters $(i,\hat{t}_\ell)$ along the piecewise curve such that the arc length between $C_\ell$ and $C_{\ell+1}$ is approximately $s$. This yields near-equal perceptual spacing along the journey. Non-uniform spacing (e.g.\ easing) can be achieved by remapping the target arc-length positions via monotone easing functions.
+
+\section{Single-Anchor Journeys: Mood Expansion}
+\label{sec:single}
+
+\subsection{Conceptual Goal}
+
+When $k=1$, the engine must construct a journey from a single seed color $A_0$.
+The intention is not:
+\begin{itemize}
+  \item a purely monochromatic palette, nor
+  \item a random walk through color space.
+\end{itemize}
+Instead, the goal is \emph{mood expansion}: explore perceptual space around the seed while maintaining clear identity with it.
+
+\subsection{Default Direction via OKLCH}
+
+Let $A_0=(L_0,a_0,b_0)$ and define OKLCH coordinates:
+\begin{equation}
+  C_0 = \sqrt{a_0^2 + b_0^2}, \quad
+  h_0 = \operatorname{atan2}(b_0,a_0).
+\end{equation}
+We consider a hue-rotation path at constant $L_0$ and $C_0$:
+\begin{equation}
+  X(\tau) = (L_0, C_0 \cos(h_0+\tau), C_0 \sin(h_0+\tau)).
+\end{equation}
+Differentiating at $\tau=0$ yields a natural tangent:
+\begin{equation}
+  v_h = X'(0) = \bigl(0, -C_0 \sin h_0, C_0 \cos h_0\bigr).
+\end{equation}
+Normalising (for $C_0>0$) gives the base unit direction
+\begin{equation}
+  \hat{v}_{\text{base}} = (0,-\sin h_0,\cos h_0),
+\end{equation}
+corresponding to increasing hue at constant lightness and chroma.
+
+\subsection{Temperature Bias and Gamut-Aware Adjustment}
+
+The dynamics layer (Section~\ref{sec:dynamics}) exposes a warm/cool ``temperature'' control $\tau \in [-1,1]$ and a higher-level \texttt{biasPreset} (e.g.\ ``neutral'', ``warm'', ``cool''). For single anchors, we:
+\begin{itemize}
+  \item build candidate direction vectors for canonical warm and cool hues;
+  \item blend $\hat{v}_{\text{base}}$ with these according to $\tau$;
+  \item optionally adjust the direction slightly to favour directions where more gamut headroom exists (e.g.\ bright yellows cannot increase lightness much).
+\end{itemize}
+
+The resulting unit direction $\hat{v}$ is used to construct an initial Bézier segment:
+\begin{equation}
+  P_0 = A_0, \quad
+  P_1 = P_0 + s_1 \hat{v}, \quad
+  P_2 = P_0 + s_2 \hat{v}, \quad
+  P_3 = P_0 + s_3 \hat{v},
+\end{equation}
+with scalars $s_1,s_2,s_3$ chosen as multiples of a base perceptual step (Section~\ref{sec:distance}) and modulated by intensity and smoothness.
+
+\subsection{Grey and Low-Chroma Anchors}
+
+When $C_0$ is below a small threshold, hue is ill-defined.
+In this case the engine falls back to:
+\begin{itemize}
+  \item lightness-based journeys (varying $L$ in a controlled band), and/or
+  \item gently introducing chroma away from grey while respecting user dynamics.
+\end{itemize}
+An advanced configuration may include a ``force chromatic exploration'' flag to override this conservative behaviour.
+
+\section{Perceptual Distance Constraints}
+\label{sec:distance}
+
+For adjacent swatches $C_i$ and $C_{i+1}$ in OKLab, the engine aims to satisfy:
+\begin{equation}
+  \Delta_{\min} \le \Delta(C_i,C_{i+1}) \le \Delta_{\max},
+\end{equation}
+where $\Delta_{\min} > 0$ and $\Delta_{\max} > \Delta_{\min}$ are configuration defaults that may be tuned.
+Typical defaults might be on the order of $\Delta_{\min} \approx 2$ (just noticeably different) and $\Delta_{\max} \approx 5$ (clearly distinct but still coherent).
+
+These are \emph{soft design targets}, not hard guarantees; the engine uses them to choose the number of internal steps and to assess diagnostics, but callers can request more or fewer swatches than a strict application of these limits would allow.
+
+\section{Dynamics Layer: Perceptual Operators}
+\label{sec:dynamics}
+
+\subsection{Purpose}
+
+The dynamics layer translates high-level, mood-like controls into precise geometric effects on anchors, curves, and sampled swatches.
+For example, ``increase vibrancy'' or ``cool bias'' are mapped to chroma and hue operations in OKLab/OKLCH.
+
+\subsection{Configuration Structure}
+
+A typical \texttt{dynamics} object in the API has the form:
+\begin{verbatim}
+"dynamics": {
+  "lightness": -0.1,
+  "chroma": 1.1,
+  "contrast": 0.04,
+  "vibrancy": 0.5,
+  "warmth": -0.3,
+  "biasPreset": "neutral",
+  "bezierLight": [0.5, 0.5],
+  "bezierChroma": [0.5, 0.5],
+  "enableColorCircle": false,
+  "arcLength": 0,
+  "curveStyle": "sinusoidal",
+  "curveDimensions": ["all"],
+  "curveStrength": 1.0
+}
+\end{verbatim}
+
+Not all fields need be exposed in every implementation; this is a superset reflecting the prototype.
+
+\subsection{Example Effects}
+
+At a high level:
+
+\begin{itemize}
+  \item \textbf{lightness}: additive or multiplicative shift on $L$ (anchors and/or samples);
+  \item \textbf{chroma}: multiplicative factor on $C$ in OKLCH, e.g.\ $C' = C \cdot (1 + \alpha)$;
+  \item \textbf{contrast}: influences how much arc-length variation is allowed between steps (e.g.\ tightening or loosening $\Delta_{\min}$ and $\Delta_{\max}$);
+  \item \textbf{vibrancy}: biases control points so mid-journey chroma is preserved or enhanced instead of dipping;
+  \item \textbf{warmth}: additional hue bias (beyond temperature) pushing toward warm or cool sectors;
+  \item \textbf{bezierLight}, \textbf{bezierChroma}: control the shape of lightness and chroma profiles via normalised control weights;
+  \item \textbf{curveStyle}: selects geometric templates (e.g.\ straight, cubic, sinusoidal perturbations) that influence control point placement;
+  \item \textbf{curveDimensions}: restricts which dimensions (L, chroma, hue) are curved;
+  \item \textbf{curveStrength}: global scalar controlling how strongly curves deviate from straight lines.
+\end{itemize}
+
+These operators may act at different stages: anchor pre-processing, curve construction, and post-sampling adjustment.
+
+\section{Variation Layer: Stochastic Micro-Variation}
+\label{sec:variation}
+
+\subsection{Motivation}
+
+Even a well-constructed journey can appear too mechanical in certain creative or generative contexts. The variation layer introduces controlled, reproducible randomness so that palettes feel less rigid while preserving overall structure.
+
+\subsection{Configuration}
+
+A typical \texttt{variation} block is:
+\begin{verbatim}
+"variation": {
+  "mode": "off",      // "off" | "subtle" | "noticeable" | "extreme"
+  "seed": 12345
+}
+\end{verbatim}
+
+Future extensions may add a magnitude override and frequency control (per-swatch, per-loop, or random-walk).
+
+\subsection{Mathematical Model}
+
+Let $C_i$ be the ideal OKLab color from the deterministic journey.
+Variation produces
+\begin{equation}
+  C_i' = C_i + \varepsilon_i,
+\end{equation}
+where $\varepsilon_i$ is a random vector drawn from a distribution with mean zero and covariance tuned to the variation mode.
+
+For example:
+\begin{itemize}
+  \item \texttt{subtle}: $\|\varepsilon_i\| \lesssim 0.1 \, \Delta_{\min}$;
+  \item \texttt{noticeable}: $\|\varepsilon_i\| \lesssim 0.3 \, \Delta_{\min}$;
+  \item \texttt{extreme}: $\|\varepsilon_i\|$ may approach $0.5 \, \Delta_{\min}$ or more, but with constraints to avoid flipping hue quadrants unintentionally.
+\end{itemize}
+
+The random number generator is seeded with the provided \texttt{seed}, ensuring reproducibility.
+
+After variation, gamut correction (Section~\ref{sec:gamut}) is applied before export.
+
+\section{Loop Semantics and Output Non-Repetition}
+\label{sec:loops}
+
+\subsection{Loop Modes}
+
+The engine recognises loop configuration such as:
+\begin{itemize}
+  \item \texttt{"open"}: construct a journey from first to last anchor with no geometric closure enforced;
+  \item \texttt{"closed"}: attempt geometric closure so that the end reconnects smoothly to the start in color space;
+  \item \texttt{"mobius"}: introduce a topological twist (e.g.\ lightness or chroma inversion) so that one loop arrives at an ``inverted'' version of the start, returning only after two cycles;
+  \item \texttt{"phased"}: each conceptual loop applies an additional phase transform (e.g.\ hue rotation or lightness offset).
+\end{itemize}
+
+These modes affect how internal curves are built, not how callers must use the palette.
+Simpler repetition behaviours (e.g.\ ping-pong, manual tiling) are intentionally left to the caller to implement.
+
+\subsection{Loop Closure and Palette Export}
+
+Even when a loop mode enforces geometric closure (e.g.\ \texttt{"closed"} or \texttt{"mobius"}), the exported palette avoids duplicating the starting color at the end.
+If the final computed color $C_{N-1}$ is within a small threshold of $C_0$ in $\Delta E$, the engine omits $C_{N-1}$ or adjusts the sampling so that:
+\begin{itemize}
+  \item the journey internally closes in OKLab, but
+  \item the discrete palette contains unique colors.
+\end{itemize}
+
+When callers request $N$ swatches, the engine unrolls the journey (with loops as configured) into exactly $N$ discrete colors; there is no partial or incremental palette state managed internally between calls.
+
+\section{Gamut Management}
+\label{sec:gamut}
+
+\subsection{The Problem}
+
+OKLab as a mathematical space includes colors that are not representable in sRGB.
+Curves through OKLab may traverse out-of-gamut regions, leading to invalid RGB values when converted.
+
+\subsection{Two-Layer Strategy}
+
+The engine uses a two-layer strategy:
+\begin{enumerate}
+  \item \textbf{Gamut-aware construction}: when choosing control points and applying dynamics, the engine prefers directions that stay within or near the sRGB gamut, avoiding known problem regions where possible.
+  \item \textbf{Soft correction at sampling}: when individual sampled OKLab colors map to out-of-gamut sRGB, a perceptual gamut mapping is applied, reducing chroma (and possibly adjusting lightness slightly) while preserving hue as much as possible.
+\end{enumerate}
+
+This prioritises smooth appearance over strict adherence to an idealised curve that cannot be displayed.
+
+\section{Diagnostics and Constraints}
+\label{sec:diagnostics}
+
+\subsection{Diagnostics Fields}
+
+The engine reports diagnostics such as:
+\begin{verbatim}
+"diagnostics": {
+  "minDeltaE": 0.023,
+  "maxDeltaE": 0.023,
+  "contrastViolations": 0,
+  "wcagMinRatio": 1.27,
+  "wcagViolations": 0,
+  "enforcementIters": 0,
+  "traversalStrategy": "perceptual"
+}
+\end{verbatim}
+
+These capture:
+\begin{itemize}
+  \item the minimum and maximum perceptual distances between adjacent swatches;
+  \item the minimum observed contrast ratio (e.g.\ WCAG against a reference background);
+  \item the number of contrast violations for configured thresholds;
+  \item how many enforcement iterations were needed (if any) to try to respect constraints;
+  \item which internal traversal strategy was used (e.g.\ perceptual vs linear fallback).
+\end{itemize}
+
+\subsection{Caller Responsibilities}
+
+Callers are expected to:
+\begin{itemize}
+  \item choose semantically meaningful anchors;
+  \item inspect diagnostics (especially for accessibility and contrast);
+  \item test palettes in their actual UI or visualisation context;
+  \item adjust anchors or configuration and iterate as needed.
+\end{itemize}
+
+The engine provides structured, perceptually-grounded output and informative diagnostics, but does not replace human judgment.
+
+\section{API Specification}
+\label{sec:api}
+
+\subsection{JSON Structure}
+
+A typical API response has the form:
+\begin{lstlisting}[language=json,basicstyle=\ttfamily\small]
+{
+  "config": {
+    "anchors": ["#00c9ff", "#92fe9d"],
+    "numColors": 12,
+    "loop": "open",
+    "granularity": "discrete",
+    "dynamics": { ... },
+    "variation": { ... },
+    "ui": {
+      "show3D": true
+    }
+  },
+  "palette": [
+    {
+      "hex": "#00c7ff",
+      "ok": {
+        "l": 0.7685694565,
+        "a": -0.1137434919,
+        "b": -0.1178564072
+      }
+    },
+    {
+      "hex": "#00cdfa",
+      "ok": {
+        "l": 0.7803908646,
+        "a": -0.1171478644,
+        "b": -0.0979815200
+      }
+    },
+    ...
+  ],
+  "diagnostics": {
+    "minDeltaE": 0.0233740579,
+    "maxDeltaE": 0.0233740579,
+    "contrastViolations": 0,
+    "wcagMinRatio": 1.2759496219,
+    "wcagViolations": 0,
+    "enforcementIters": 0,
+    "traversalStrategy": "perceptual"
+  }
+}
+\end{lstlisting}
+
+The \texttt{"config"} object echoes the effective configuration used for generation, which is useful for reproducibility and debugging.
+
+\subsection{CSS Token Output}
+
+For web usage, palettes can be exported as CSS custom properties:
+\begin{lstlisting}[language=css,basicstyle=\ttfamily\small]
+:root {
+  --cj-1: #00c7ff;
+  --cj-2: #00cdfa;
+  --cj-3: #00d2f2;
+  --cj-4: #04d8e9;
+  --cj-5: #28dde0;
+  --cj-6: #3be2d6;
+  --cj-7: #4ae7cd;
+  --cj-8: #57ebc2;
+  --cj-9: #63f0b8;
+  --cj-10: #6ff4ac;
+  --cj-11: #79f9a0;
+  --cj-12: #84fd92;
+}
+\end{lstlisting}
+
+The naming convention \texttt{--cj-N} is stable and independent of anchors or curve shape, making integration into design systems straightforward.
+
+\section{Implementation Sketch}
+\label{sec:impl}
+
+This section provides illustrative pseudocode; it is not language-specific but resembles C-like struct definitions.
+
+\subsection{Core Types}
+
+\begin{verbatim}
+typedef struct { double L, a, b; } Lab;
+
+typedef struct {
+    Lab P0, P1, P2, P3; // cubic Bezier control points
+} BezierSegment;
+
+typedef struct {
+    double lightness;
+    double chroma;
+    double contrast;
+    double vibrancy;
+    double warmth;
+    const char *biasPreset;
+    double bezierLight[2];
+    double bezierChroma[2];
+    bool enableColorCircle;
+    double arcLength;
+    const char *curveStyle;
+    const char **curveDimensions;
+    double curveStrength;
+} Dynamics;
+
+typedef struct {
+    const char *mode; // "off", "subtle", ...
+    int seed;
+} Variation;
+\end{verbatim}
+
+\subsection{High-Level Generation Function}
+
+\begin{verbatim}
+void generatePalette(Config config,
+                     Swatch *outPalette,
+                     Diagnostics *outDiag)
+{
+    // 1. Convert anchors from sRGB to OKLab
+    Lab anchorsLab[MAX_ANCHORS];
+    for (int i = 0; i < config.numAnchors; ++i) {
+        anchorsLab[i] = srgbToOklab(config.anchors[i]);
+    }
+
+    // 2. Build journey segments (single- or multi-anchor)
+    BezierSegment segments[MAX_SEGMENTS];
+    int numSegments = buildJourneySegments(
+        anchorsLab, config.numAnchors,
+        config.dynamics, segments);
+
+    // 3. Estimate total arc length
+    double totalLength = estimateTotalArcLength(
+        segments, numSegments);
+
+    // 4. Sample N colors along journey
+    Lab samplesLab[MAX_COLORS];
+    sampleJourney(segments, numSegments,
+                  config.numColors,
+                  samplesLab);
+
+    // 5. Apply variation
+    applyVariation(samplesLab, config.numColors,
+                   config.variation);
+
+    // 6. Gamut mapping and conversion to sRGB / hex
+    for (int i = 0; i < config.numColors; ++i) {
+        Lab corrected = gamutMap(samplesLab[i]);
+        outPalette[i].ok = corrected;
+        outPalette[i].hex = oklabToHex(corrected);
+    }
+
+    // 7. Compute diagnostics
+    computeDiagnostics(outPalette, config.numColors,
+                       config, outDiag);
+}
+\end{verbatim}
+
+The details of \texttt{buildJourneySegments}, \texttt{estimateTotalArcLength}, \texttt{sampleJourney}, \texttt{applyVariation}, \texttt{gamutMap}, and \texttt{computeDiagnostics} follow the conceptual descriptions in earlier sections.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+The Color Journey Engine combines perceptual color theory, geometric curve construction, and a carefully designed configuration model to generate ordered palettes from a small set of anchors.
+By treating journeys as internal construction devices and exposing only discrete output plus diagnostics, the engine remains flexible and easy to integrate while still offering sophisticated behaviour.
+
+This document has described the conceptual goals, mathematical foundations, dynamics and variation layers, loop semantics, gamut management, diagnostics, and API-level structures.
+It is intended to serve as a comprehensive specification for reimplementation and as a reference for further evolution of the engine's capabilities.
+
+\end{document}

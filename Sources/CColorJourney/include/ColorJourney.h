@@ -579,6 +579,17 @@ void cj_journey_discrete(CJ_Journey journey, int count, CJ_RGB* out_colors);
  * This ensures that the color sequence is consistent and contrast is maintained
  * across the entire sequence.
  *
+ * **Delta Range Enforcement (FR-007, SC-008):**
+ * Consecutive colors maintain perceptual distance in the range [0.02, 0.05] ΔE:
+ * - Minimum ΔE ≥ 0.02: Colors are distinguishable (Just Noticeable Difference)
+ * - Maximum ΔE ≤ 0.05: Smooth progression (best-effort, may be violated at cycle boundaries)
+ * - Priority: Minimum constraint always enforced; maximum is best-effort
+ *
+ * **Supported Index Range:**
+ * - **[0, 1,000,000)**: Precision guaranteed (<0.02 ΔE error, imperceptible)
+ * - **[1,000,000, 10,000,000)**: Reduced precision (0.02-0.10 ΔE error, use with caution)
+ * - **[10,000,000, ∞)**: Not recommended (>0.10 ΔE error, undefined precision)
+ *
  * **Performance:** O(n) where n is @p index, as all prior colors are recomputed
  * on each call. For efficient access to multiple colors, use
  * @ref cj_journey_discrete_range or implement caching in your application if
@@ -587,10 +598,21 @@ void cj_journey_discrete(CJ_Journey journey, int count, CJ_RGB* out_colors);
  * **Determinism:** All calls with the same journey configuration and index
  * yield the same color, making this suitable for user-side caching strategies.
  *
+ * **Error Handling:**
+ * - NULL journey: Returns black (0, 0, 0)
+ * - Negative index: Returns black (0, 0, 0)
+ * - Very high indices (>1M): Colors remain valid but precision degrades
+ *
  * @param journey Journey handle
- * @param index   Zero-based color index (must be ≥ 0)
- * @return RGB color at the requested index; returns black if @p journey is
+ * @param index   Zero-based color index (recommended range: 0-1,000,000)
+ * @return RGB color at the requested index; returns black (0, 0, 0) if @p journey is
  *         NULL or @p index < 0
+ *
+ * @note Maximum ΔE constraint (≤0.05) may be violated at cycle boundaries (every ~20 indices)
+ * @note For production use, indices beyond 1,000,000 should be avoided due to precision loss
+ *
+ * @see cj_journey_discrete_range for efficient range access
+ * @see specs/004-incremental-creation/spec.md for complete delta enforcement specification
  */
 CJ_RGB cj_journey_discrete_at(CJ_Journey journey, int index);
 
@@ -598,9 +620,12 @@ CJ_RGB cj_journey_discrete_at(CJ_Journey journey, int index);
  * @brief Fill a range of discrete colors starting at @p start.
  *
  * Generates @p count colors covering indexes [start, start+count) using the
- * same deterministic mapping as @ref cj_journey_discrete_at. Contrast is
- * enforced against the previous index (including indexes before @p start when
- * needed) so the range matches sequential access results.
+ * same deterministic mapping as @ref cj_journey_discrete_at. Contrast and
+ * delta range enforcement are applied consistently with discrete_at, ensuring
+ * that colors maintain perceptual distance constraints.
+ *
+ * **Delta Range Enforcement:** Same as @ref cj_journey_discrete_at - consecutive
+ * colors maintain ΔE in [0.02, 0.05] range with minimum constraint prioritized.
  *
  * **Performance:** O(start + count) as all colors from index 0 to start+count-1
  * are computed to ensure proper contrast enforcement. For efficient bulk access,
@@ -610,10 +635,15 @@ CJ_RGB cj_journey_discrete_at(CJ_Journey journey, int index);
  * **Determinism:** Results are deterministic and match individual calls to
  * @ref cj_journey_discrete_at, making this suitable for user-side caching.
  *
+ * **Error Handling:**
+ * - NULL journey, NULL out_colors, count ≤ 0, or start < 0: Returns early without modification
+ *
  * @param journey    Journey handle
- * @param start      Zero-based start index (must be ≥ 0)
+ * @param start      Zero-based start index (recommended range: 0-1,000,000)
  * @param count      Number of colors to generate (must be ≥ 1)
  * @param out_colors Caller-provided buffer with at least @p count entries
+ *
+ * @see cj_journey_discrete_at for single color access and detailed documentation
  */
 void cj_journey_discrete_range(CJ_Journey journey, int start, int count, CJ_RGB* out_colors);
 

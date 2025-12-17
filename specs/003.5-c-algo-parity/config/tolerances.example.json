@@ -1,0 +1,23 @@
+{
+    "toleranceVersion": "v20251212.0",
+    "description": "Default OKLab/DeltaE tolerances for the C parity harness; adjust only with provenance and version bump.",
+    "abs": {
+        "l": 0.0001,
+        "a": 0.0001,
+        "b": 0.0001,
+        "deltaE": 0.5
+    },
+    "rel": {
+        "l": 0.001,
+        "a": 0.001,
+        "b": 0.001
+    },
+    "policy": {
+        "failThreshold": 0.5,
+        "notes": "Runs that exceed deltaE or per-channel tolerances must fail. Overrides are allowed for debugging when documented; production/CI must pin this file or a reviewed derivative."
+    },
+    "provenance": {
+        "source": "specs/003.5-c-algo-parity/config/tolerances.example.json",
+        "updated": "2025-12-12T00:00:00Z"
+    }
+}

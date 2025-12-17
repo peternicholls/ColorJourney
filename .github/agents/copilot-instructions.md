@@ -120,3 +120,6 @@ Examples/                # C + Swift example programs
 - Automate code generation (e.g., splitting large files) programmatically
 - Ask for clarification rather than assume requirements
 - When stuck, check DevDocs/ (especially ARCHITECTURE.md, PRD.md, README_IMPLEMENTATION.md)
+
+## Recent Changes
+- 003.5-c-algo-parity: Added C99 core (Sources/CColorJourney), Swift 5.9 wrapper, C→WASM build via Emscripten emsdk 3.1.67 (pinned) + SwiftPM with `swift-docc-plugin`; Emscripten toolchain; clang/gcc for C harness; Node 20 LTS + Vite 5.x runtime for wasm consumer

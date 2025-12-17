@@ -1,0 +1,202 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://colorjourney.dev/schemas/parity-corpus.schema.json",
+    "title": "ColorJourney C Parity Corpus",
+    "description": "Versioned corpus used to drive C parity runs against canonical and wasm-derived binaries.",
+    "type": "object",
+    "required": [
+        "corpusVersion",
+        "cases"
+    ],
+    "properties": {
+        "corpusVersion": {
+            "type": "string",
+            "description": "Version identifier in the form vYYYYMMDD.n",
+            "pattern": "^v[0-9]{8}\\.[0-9]+$"
+        },
+        "description": {
+            "type": "string",
+            "description": "Optional human-readable summary of the corpus contents."
+        },
+        "cases": {
+            "type": "array",
+            "description": "Collection of deterministic input cases to execute across engines.",
+            "minItems": 1,
+            "items": {
+                "$ref": "#/$defs/inputCase"
+            }
+        }
+    },
+    "additionalProperties": false,
+    "$defs": {
+        "inputCase": {
+            "type": "object",
+            "required": [
+                "id",
+                "anchors",
+                "config",
+                "seed",
+                "corpusVersion"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Stable identifier for this case.",
+                    "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                "tags": {
+                    "type": "array",
+                    "description": "Optional tags for grouping or filtering.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "uniqueItems": true
+                },
+                "anchors": {
+                    "type": "array",
+                    "description": "Anchor colors expressed as OKLab and/or sRGB triples.",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/$defs/anchor"
+                    }
+                },
+                "config": {
+                    "$ref": "#/$defs/config"
+                },
+                "seed": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Required seed to ensure deterministic palette generation."
+                },
+                "corpusVersion": {
+                    "type": "string",
+                    "description": "Corpus version this case belongs to (mirrors top-level).",
+                    "pattern": "^v[0-9]{8}\\.[0-9]+$"
+                },
+                "notes": {
+                    "type": "string",
+                    "description": "Optional context or expected behavior for reviewers."
+                }
+            },
+            "additionalProperties": false
+        },
+        "anchor": {
+            "type": "object",
+            "description": "Color anchor with at least one representation (OKLab or sRGB).",
+            "properties": {
+                "oklab": {
+                    "$ref": "#/$defs/oklab"
+                },
+                "rgb": {
+                    "$ref": "#/$defs/srgb"
+                }
+            },
+            "anyOf": [
+                {
+                    "required": [
+                        "oklab"
+                    ]
+                },
+                {
+                    "required": [
+                        "rgb"
+                    ]
+                }
+            ],
+            "additionalProperties": false
+        },
+        "oklab": {
+            "type": "object",
+            "description": "OKLab values using double precision.",
+            "properties": {
+                "l": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                },
+                "a": {
+                    "type": "number",
+                    "minimum": -1,
+                    "maximum": 1
+                },
+                "b": {
+                    "type": "number",
+                    "minimum": -1,
+                    "maximum": 1
+                }
+            },
+            "required": [
+                "l",
+                "a",
+                "b"
+            ],
+            "additionalProperties": false
+        },
+        "srgb": {
+            "type": "object",
+            "description": "sRGB values normalized to 0–1.",
+            "properties": {
+                "r": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                },
+                "g": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                },
+                "b": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                }
+            },
+            "required": [
+                "r",
+                "g",
+                "b"
+            ],
+            "additionalProperties": false
+        },
+        "config": {
+            "type": "object",
+            "description": "Generation parameters shared by both engines.",
+            "required": [
+                "count"
+            ],
+            "properties": {
+                "count": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Number of palette entries expected from each engine."
+                },
+                "lightness": {
+                    "type": "number"
+                },
+                "chroma": {
+                    "type": "number"
+                },
+                "contrast": {
+                    "type": "number"
+                },
+                "vibrancy": {
+                    "type": "number"
+                },
+                "temperature": {
+                    "type": "number"
+                },
+                "loopMode": {
+                    "type": "string",
+                    "description": "Looping behavior or traversal mode."
+                },
+                "variationSeed": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Optional secondary seed for variation loops."
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}

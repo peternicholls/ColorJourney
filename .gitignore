@@ -82,6 +82,7 @@ out/
 .env
 .env.*
 coverage/
+specs/003.5-c-algo-parity/tools/parity-runner/tests/output/
 
 # Documentation build
 docs/_build/
@@ -98,6 +99,7 @@ docs/.doctrees/
 *.zip
 checksums.txt
 *-checksums.txt
+swift-release/
 
 # Security - Never commit these!
 *.key

@@ -1,0 +1,117 @@
+{
+    "corpusVersion": "v20251212.1",
+    "description": "Baseline corpus for parity runs: baseline wheel, RGB boundary, and seeded multi-anchor paths.",
+    "cases": [
+        {
+            "id": "baseline-wheel",
+            "tags": [
+                "baseline",
+                "oklab",
+                "wheel"
+            ],
+            "anchors": [
+                {
+                    "oklab": {
+                        "l": 0.62,
+                        "a": 0.05,
+                        "b": 0.02
+                    }
+                }
+            ],
+            "config": {
+                "count": 12,
+                "lightness": 0.5,
+                "chroma": 0.9,
+                "contrast": 0.12,
+                "vibrancy": 0.4,
+                "temperature": 0.0,
+                "loopMode": "closed",
+                "variationSeed": 1337
+            },
+            "seed": 424242,
+            "corpusVersion": "v20251212.1",
+            "notes": "Single-anchor OKLab wheel for deterministic coverage"
+        },
+        {
+            "id": "rgb-boundary",
+            "tags": [
+                "boundary",
+                "srgb",
+                "contrast"
+            ],
+            "anchors": [
+                {
+                    "rgb": {
+                        "r": 0.0,
+                        "g": 0.0,
+                        "b": 0.0
+                    }
+                },
+                {
+                    "rgb": {
+                        "r": 1.0,
+                        "g": 1.0,
+                        "b": 1.0
+                    }
+                }
+            ],
+            "config": {
+                "count": 8,
+                "lightness": 0.4,
+                "chroma": 1.0,
+                "contrast": 0.15,
+                "vibrancy": 0.25,
+                "temperature": 0.05,
+                "loopMode": "open",
+                "variationSeed": 99
+            },
+            "seed": 777,
+            "corpusVersion": "v20251212.1",
+            "notes": "Covers black/white anchors with open loop and higher contrast"
+        },
+        {
+            "id": "seeded-multi-anchor",
+            "tags": [
+                "seeded",
+                "multi-anchor",
+                "warm"
+            ],
+            "anchors": [
+                {
+                    "rgb": {
+                        "r": 0.15,
+                        "g": 0.35,
+                        "b": 0.80
+                    }
+                },
+                {
+                    "oklab": {
+                        "l": 0.55,
+                        "a": 0.12,
+                        "b": -0.08
+                    }
+                },
+                {
+                    "rgb": {
+                        "r": 0.85,
+                        "g": 0.25,
+                        "b": 0.18
+                    }
+                }
+            ],
+            "config": {
+                "count": 16,
+                "lightness": 0.6,
+                "chroma": 1.1,
+                "contrast": 0.10,
+                "vibrancy": 0.35,
+                "temperature": 0.15,
+                "loopMode": "pingpong",
+                "variationSeed": 2025
+            },
+            "seed": 987654,
+            "corpusVersion": "v20251212.1",
+            "notes": "Seeded variation with mixed anchor representations"
+        }
+    ]
+}

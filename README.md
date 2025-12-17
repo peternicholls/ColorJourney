@@ -1,10 +1,16 @@
 # Color Journey
 
-**Programmatically created graduated color palettes *that actually look good!***
+**C-first, perceptual color journeys that ship anywhere—fast.**
 
 [![Build Status](https://github.com/peternicholls/ColorJourney/actions/workflows/core-ci.yml/badge.svg?branch=develop)](https://github.com/peternicholls/ColorJourney/actions/workflows/core-ci.yml)
 [![Version](https://img.shields.io/github/v/release/peternicholls/ColorJourney)](https://github.com/peternicholls/ColorJourney/releases)
 [![Platforms](https://img.shields.io/badge/platforms-iOS%2013%2B%20%7C%20macOS%2010.15%2B-informational)](README.md#platform-support)
+
+ColorJourney’s canonical implementation is a C99 core tuned for human-perceptual color (using the OKLab color space first proposed by Björn Ottosson) and deterministic output across platforms. The Swift (and future) wrappers are thin, ergonomic layers over the same engine—so colors stay identical whether you ship on iOS, macOS, Linux, Windows, or embedded targets. The result: real-time generation (10,000+ colors/sec), zero ARC overhead, and portable headers you can wrap anywhere.
+
+- **C-first and canonical:** All color math lives in `Sources/CColorJourney/`; wrappers stay synchronized for portability.
+- **Human-perceptual by design:** OKLab contrast and chroma controls keep adjacent colors readable and balanced.
+- **Performance that holds up:** Tight C loops deliver deterministic output at interactive speeds for UI and realtime apps.
 
 ## The Problem
 
@@ -20,7 +26,7 @@ You end up tweaking hex values by hand, copy-pasting from design tools, or settl
 
 ## The Solution
 
-*Color Journey* doesn't generate any old color pallet, it **takes you on a journey through them**.
+*Color Journey* doesn't generate any old color palette, it **takes you on a journey through them**.
 
 Think of it like this: you're standing at a viewpoint (your anchor color). You want to explore the landscape of color space, but not randomly—you want an intentional path. Maybe you head toward lighter territory, or veer into warmer climates. Maybe you loop back to where you started, or ping-pong between destinations.
 
@@ -93,6 +99,7 @@ C99 core works everywhere (iOS, macOS, Linux, Windows, embedded). Swift wrapper 
 | **[Examples/](Examples/)** | Working code samples | Everyone |
 | **[Quick Start](#quick-start)** | Getting started guide | New Users |
 | **[CONTRIBUTING.md](CONTRIBUTING.md)** | Contributing process | Contributors |
+| **[RELEASENOTES.md](RELEASENOTES.md)** | Detailed release notes & known issues | Everyone |
 
 ---
 
@@ -182,6 +189,8 @@ The Swift wrapper provides ergonomics and type safety, while the C core ensures 
 
 - **High-Level Controls** - Lightness, chroma, contrast, temperature, vibrancy biases
 
+- **Incremental Generation** - Access infinite color sequences with guaranteed perceptual distinctness via delta range enforcement
+
 - **Variation Layer** - Optional subtle, structured micro-variation
 
 - **Deterministic** - Repeatable output with optional seeded variation
@@ -270,6 +279,25 @@ let config = ColorJourneyConfig(
     )
 )
 ```
+
+### Incremental Access
+
+Access colors incrementally with guaranteed perceptual distinctness:
+
+```swift
+// Get color at specific index (infinite sequence)
+let color = journey.discrete(at: 42)
+
+// Efficient batch access for ranges
+let colors = journey.discrete(range: 0..<100)
+
+// Lazy streaming access
+for (index, color) in journey.discreteColors.prefix(50).enumerated() {
+    print("Color \(index): \(color)")
+}
+```
+
+All incremental APIs enforce delta range constraints to ensure adjacent colors are always perceptually distinct.
 
 ## SwiftUI Integration
 

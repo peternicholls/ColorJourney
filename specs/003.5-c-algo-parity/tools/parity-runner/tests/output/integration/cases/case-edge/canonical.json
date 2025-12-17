@@ -1,0 +1,1 @@
+{"engine":"canonical-c","durationMs":0.002,"count":1,"buildFlags":"-std=c99 -Wall -Wextra -pedantic -Iinclude -Ivendor/cjson -I../stats","colors":[{"oklab":{"l":0.086497865617275238,"a":0.00319902109913528,"b":0.017642272636294365},"rgb":{"r":0.0011556899407878518,"g":0.00054349930724129081,"b":0}}]}

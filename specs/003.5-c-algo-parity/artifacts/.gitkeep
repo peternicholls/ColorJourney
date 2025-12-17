@@ -1,0 +1,3 @@
+# Artifacts directory structure placeholder
+# Per-run artifacts are created here dynamically and should be git-ignored
+# This file ensures the directory structure exists in version control
