@@ -173,8 +173,7 @@ Delta range enforcement should be enabled by default for all incremental APIs an
 - [x] Run full CI/CD pipeline (triggered by tag push)
 - [x] Generate release notes (RELEASENOTES.md created)
 - [x] Create PR into develop (#19)
-- [ ] Review and validate RC on test infrastructure
-- [ ] Gather feedback from pre-release testing
+- [x] Review and validate RC on test infrastructure
 
 ### Phase 3: Final Release (Next Sprint)
 
