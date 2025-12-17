@@ -3,7 +3,7 @@
 **Feature Branch**: `005-c-algo-parity`  
 **Created**: 2025-12-12  
 **Status**: Draft  
-**Input**: User description: "we have two version of the C algorythm and calculations. 1. Sources/wasm/ 2. Sources/CColorJourney/ (recursive directories)
+**Input**: User description: "we have two version of the C algorithm and calculations. 1. Sources/wasm/ 2. Sources/CColorJourney/ (recursive directories)
 
 serious work has been made at making version 2. the canonical version. however, i am yet to see satisfactory output from it. Meanwhile, version 1. creates almost precisely the kind of output I expect in the web demo version.
 
