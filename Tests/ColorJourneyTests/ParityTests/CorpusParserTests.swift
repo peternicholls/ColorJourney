@@ -42,7 +42,7 @@ final class CorpusParserTests: XCTestCase {
 
     private func fixtureURL(named file: String) -> URL {
         URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-            .appendingPathComponent("specs/005-c-algo-parity/corpus/\(file)")
+            .appendingPathComponent("specs/003.5-c-algo-parity/corpus/\(file)")
     }
 
     private func writeTempFile(named: String, contents: String) throws -> URL {
