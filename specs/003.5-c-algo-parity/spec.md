@@ -5,7 +5,7 @@
 **Status**: Draft  
 **Input**: User description: "we have two version of the C algorythm and calculations. 1. Sources/wasm/ 2. Sources/CColorJourney/ (recursive directories)
 
-serious work has been made at making version 2. the cannonical version. however, i am yet to see satisfactory output from it. Meanwhile, version 1. creates almost precisly the kind of output I expect in the web demo version.
+serious work has been made at making version 2. the canonical version. however, i am yet to see satisfactory output from it. Meanwhile, version 1. creates almost precisely the kind of output I expect in the web demo version.
 
 Despite the work done, i am not satisfied. SO 
 
