@@ -81,7 +81,7 @@ struct SwatchDisplay: Identifiable, Equatable {
     
     /// Whether text should be light or dark on this color
     var prefersDarkText: Bool {
-        relativeLuminance > 0.5
+        relativeLuminance > 0.179
     }
     
     /// Recommended text color for this swatch
