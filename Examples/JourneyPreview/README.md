@@ -1,130 +1,135 @@
 # JourneyPreview - ColorJourney Demo App
 
+A professional SwiftUI demo app showcasing ColorJourney's perceptually uniform color palette generation. This app serves as both a demonstration for developers and an interactive playground for exploring the color engine's capabilities.
 
+## Overview
 
+- **Date**: December 17, 2025  
+- **Feature**: 005-demo-app-refresh
 
+JourneyPreview focuses on:
 
+- Exploring generated color journeys and palettes.
+- Evaluating accessibility and contrast behavior across backgrounds.
+- Exporting palettes as Swift and CSS code snippets for real-world use.
 
+## Key Technical Decisions
 
+### 1. Architecture Pattern: MVVM
 
+**Decision**: Use Model-View-ViewModel (MVVM) pattern with SwiftUI.
 
+**Rationale**:
+- Standard pattern for SwiftUI applications.
+- Clean separation of concerns between UI and business logic.
+- SwiftUI's `@StateObject` and `@Published` work naturally with MVVM.
+- Easier testing of business logic independent of the user interface.
 
+**Alternatives Considered**:
+- TCA (The Composable Architecture) — rejected as overkill for this demo app's complexity.
+- MVC — rejected as a poor fit for SwiftUI's declarative nature.
 
+### 2. Navigation: NavigationSplitView
 
+**Decision**: Use `NavigationSplitView` for sidebar-based navigation.
 
+**Rationale**:
+- Native macOS look and feel.
+- Built-in sidebar collapse behavior.
+- Scales well for multiple views and future iOS support with adaptive layouts.
 
+### 3. Color Display: Rounded Square Swatches
 
+**Decision**: Display colors as rounded square tiles with configurable sizes.
 
+**Rationale**:
+- Matches modern UI patterns (e.g., Finder, Photos).
+- Rounded corners feel more approachable and visually consistent.
+- Size slider provides a familiar interaction for changing swatch size.
+- Shadow and hover effects add depth without overwhelming the design.
 
+### 4. Large Palette Handling
 
+**Decision**: Three-tier approach with warning (50), advisory (100), and hard limit (200) for number of colors displayed.
 
+**Rationale**:
+- Performance is not the issue (C core handles millions of colors per second).
+- **50 colors**: Can display comfortably in a grid without scrolling on most screens.
+- **100 colors**: Requires paged/grouped display but remains performant.
+- **200 colors**: UI practical limit; beyond this the interface becomes unusable.
 
+**Implementation**:
+- Grid mode: Standard display for ≤ 50 colors.
+- Grouped mode: 20-color groups for 51–100 colors.
+- Paged mode: 25-color pages for 101–200 colors.
+- Refused: > 200 colors, with helpful messaging to the user.
 
+### 5. Code Snippet Generation
 
+**Decision**: Generate Swift and CSS snippets from the current palette parameters.
 
+**Rationale**:
+- Primary audience is developers.
+- Swift is the native language for Apple platforms.
+- CSS covers common web use cases.
+- Copy-to-clipboard functionality reduces friction when using generated code.
 
+**Formats Supported**:
 
+| Format         | Use Case                           |
+|----------------|------------------------------------|
+| CSS Variables  | `--palette-color-0`, etc.         |
+| CSS Classes    | `.color-0`, `.color-1`, etc.      |
+| Swift Colors   | Static color array definitions    |
+| Swift Usage    | How to create and apply a journey |
 
+## Performance Considerations
 
+### Palette Generation
 
+UI overhead dominates actual generation time. The underlying C core generates colors in approximately **0.6 μs per color**:
 
+- 50 colors: ~30 μs  
+- 200 colors: ~120 μs
 
+### SwiftUI Rendering
 
+For a `LazyVGrid` with 200 items:
 
+- Initial render: ~16 ms (about one frame).
+- Resize/scroll: Handled efficiently by SwiftUI's native optimizations.
+- Hover states: Only individual views update on interaction.
 
+### Memory Usage
 
+Each swatch stores:
 
+- `ColorJourneyRGB`: 12 bytes (3 floats).
+- `SwatchDisplay`: ~48 bytes (UUID, index, size enum, optional strings).
 
+Total memory for 200 swatches is less than **10 KB**, so memory usage is negligible compared to typical app overhead.
 
+## Accessibility Considerations
 
+1. **VoiceOver Support**
+   - Grid container has a meaningful accessibility label.
+   - Selected state is announced clearly.
+   - All swatches have accessibility labels including their hex values.
 
+2. **Contrast Checking**
+   - Text on swatches adapts to background luminance.
+   - Low-contrast swatches display a warning badge.
+   - Multiple background presets are available for testing.
 
+3. **Keyboard Navigation**
+   - Standard SwiftUI focus handling is used.
+   - Tab navigation through interactive controls is fully supported.
 
+## References
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-- [SwiftUI NavigationSplitView](https://developer.apple.com/documentation/swiftui/navigationsplitview)- [WCAG 2.1 Contrast Requirements](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html)- [Human Interface Guidelines - Color](https://developer.apple.com/design/human-interface-guidelines/color)## References   - Standard SwiftUI focus handling   - Tab navigation through controls3. **Keyboard Navigation**:   - Multiple background presets for testing   - Text on swatches adapts to background luminance   - Low-contrast swatches show warning badge2. **Contrast Checking**:   - Grid container has meaningful label   - Selected state is announced   - All swatches have accessibility labels with hex values1. **VoiceOver Support**:## Accessibility Considerations- Total for 200 swatches: <10KB- SwatchDisplay: ~48 bytes (UUID, index, size enum, optional strings)- ColorJourneyRGB: 12 bytes (3 floats)Each swatch stores:### Memory Usage- Hover states: Individual view updates only- Resize/scroll: Native optimization handles well- Initial render: ~16ms (one frame)LazyVGrid with 200 items:### SwiftUI RenderingUI overhead dominates actual generation time.- 200 colors: ~120μs- 50 colors: ~30μsThe C core generates colors in ~0.6μs per color:### Palette Generation## Performance Considerations| CSS Variables | --palette-color-0, etc. || CSS Classes | .color-0, .color-1, etc. || Swift Colors | Static color array || Swift Usage | How to create a journey ||--------|----------|| Format | Use Case |**Formats Supported**:- Copy-to-clipboard reduces friction- CSS covers web use cases- Swift is native language for Apple platforms- Primary audience is developers**Rationale**:**Decision**: Generate Swift and CSS snippets from current palette parameters.### 5. Code Snippet Generation- Refused: >200 colors with helpful messaging- Paged mode: 25-color pages for 101-200 colors- Grouped mode: 20-color groups for 51-100 colors- Grid mode: Standard display for ≤50 colors**Implementation**:- Performance is not the issue (C core handles millions per second)- 200 colors: UI practical limit; beyond this becomes unusable- 100 colors: Requires paged/grouped display but still performant- 50 colors: Can display comfortably in grid without scrolling on most screens**Rationale**:**Decision**: Three-tier approach with warning (50), advisory (100), and hard limit (200).### 4. Large Palette Handling- Shadow effects add depth without overwhelming- Size slider provides familiar interaction- Rounded corners feel more approachable- Matches modern UI patterns (Finder, Photos app)**Rationale**:**Decision**: Display colors as rounded square tiles with configurable sizes.### 3. Color Display: Rounded Square Swatches- Future iOS support with adaptive layouts- Built-in sidebar collapse behavior- Scales well for multiple views- Native macOS look and feel**Rationale**:**Decision**: Use `NavigationSplitView` for sidebar-based navigation.### 2. Navigation: NavigationSplitView- TCA (rejected: overkill for demo app complexity)- MVC (rejected: poor fit for SwiftUI's declarative nature)**Alternatives Considered**:- Standard pattern for SwiftUI applications- Easier testing of business logic independent of UI- SwiftUI's `@StateObject` and `@Published` work naturally with MVVM- Clean separation of concerns**Rationale**:**Decision**: Use Model-View-ViewModel (MVVM) pattern with SwiftUI.### 1. Architecture Pattern: MVVM## Key Technical DecisionsThis document captures research and technical decisions made during the design phase of the JourneyPreview demo app refresh.## Overview**Date**: December 17, 2025**Feature**: 005-demo-app-refresh  A professional SwiftUI demo app showcasing ColorJourney's perceptually uniform color palette generation. This app serves as both a demonstration for developers and an interactive playground for exploring the color engine's capabilities.
-
+- [SwiftUI NavigationSplitView](https://developer.apple.com/documentation/swiftui/navigationsplitview)
+- [WCAG 2.1 Contrast Requirements](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html)
+- [Human Interface Guidelines – Color](https://developer.apple.com/design/human-interface-guidelines/color)
 ## Features
 
 ### Palette Explorer
