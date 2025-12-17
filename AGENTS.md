@@ -49,10 +49,10 @@ Examples/                # C + Swift example programs
 ## Active Work: Phase 9 - Swift Wrapper Parity Testing
 
 **Status**: Specification complete, ready for implementation  
-**Branch**: `005-c-algo-parity`  
-**Documentation**: [specs/005-c-algo-parity/phase-9-swift-parity.md](specs/005-c-algo-parity/phase-9-swift-parity.md)
+**Branch**: `004-incremental-creation`  
+**Documentation**: [specs/003.5-c-algo-parity/phase-9-swift-parity.md](specs/003.5-c-algo-parity/phase-9-swift-parity.md)
 
-Phase 9 validates that the Swift wrapper (`Sources/ColorJourney/*`) accurately interfaces with the C core without introducing deviations. See [INDEX.md](specs/005-c-algo-parity/INDEX.md) for full specification suite and [phase-9-tasks.md](specs/005-c-algo-parity/phase-9-tasks.md) for 29 implementation tasks (T051-T079).
+Phase 9 validates that the Swift wrapper (`Sources/ColorJourney/*`) accurately interfaces with the C core without introducing deviations. See [INDEX.md](specs/003.5-c-algo-parity/INDEX.md) for full specification suite and [phase-9-tasks.md](specs/003.5-c-algo-parity/phase-9-tasks.md) for 29 implementation tasks (T051-T079).
 
 ---
 

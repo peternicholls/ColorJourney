@@ -25,7 +25,10 @@ emcc src/wasm/oklab.c src/wasm/color_journey.c \
   -s EXPORTED_RUNTIME_METHODS='["cwrap", "HEAPU8", "HEAPU32", "wasmMemory"]' \
   -s ALLOW_MEMORY_GROWTH=1 \
   -O3
-# Clear Vite's cache to prevent dependency hashing errors on asset changes
+# Clear Vite's cache to prevent dependency hashing errors on asset changes.
+# Note: This forceful cache clearing ensures clean builds but may slow down development.
+# If you're rebuilding frequently, consider commenting out this line and only running it
+# when you encounter caching issues or after modifying build configuration.
 rm -rf node_modules/.vite && echo "✅ Vite cache cleared to prevent update errors."
 # Check if the build was successful and files exist
 # Use stat command compatible with macOS and Linux

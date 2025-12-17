@@ -2,7 +2,7 @@
 
 **Date**: 2025-12-12  
 **Status**: ✅ COMPLETE  
-**Branch**: 005-c-algo-parity
+**Branch**: 004-incremental-creation
 
 ---
 
@@ -73,7 +73,7 @@
 
 ### CI/CD
 - [x] GitHub Actions workflow specification
-- [x] Branch-specific trigger (005-c-algo-parity only)
+- [x] Branch-specific trigger (004-incremental-creation only)
 - [x] Artifact upload on failure
 - [x] Pass-rate validation (≥95% threshold)
 - [x] Swift version and SDK detection
@@ -141,7 +141,7 @@
   - Branch-specific triggers
 
 ### Local Execution
-- [x] Makefile targets in `specs/005-c-algo-parity/`
+- [x] Makefile targets in `specs/003.5-c-algo-parity/`
   - `make build` - Build Swift runner
   - `make test` - Run unit tests
   - `make clean` - Clean artifacts
@@ -247,7 +247,7 @@
 
 ### Documentation Locations
 ```
-specs/005-c-algo-parity/
+specs/003.5-c-algo-parity/
 ├── phase-9-swift-parity.md          ← Main specification
 ├── phase-9-tasks.md                 ← Task breakdown
 ├── PHASE-9-SPEC-SUMMARY.md          ← Executive summary
@@ -294,7 +294,7 @@ specs/005-c-algo-parity/
 **Phase 9 Specification v1.0**
 - **Date**: 2025-12-12
 - **Status**: Complete and Ready for Review
-- **Branch**: 005-c-algo-parity
+- **Branch**: 004-incremental-creation
 - **Documents**: 3 specification files + 1 API contract
 - **Tasks**: 29 with detailed acceptance criteria
 - **Effort Estimate**: 5-7 days development + review

@@ -17,7 +17,7 @@
         "notes": "Runs that exceed deltaE or per-channel tolerances must fail. Overrides are allowed for debugging when documented; production/CI must pin this file or a reviewed derivative."
     },
     "provenance": {
-        "source": "specs/005-c-algo-parity/config/tolerances.example.json",
+        "source": "specs/003.5-c-algo-parity/config/tolerances.example.json",
         "updated": "2025-12-12T00:00:00Z"
     }
 }

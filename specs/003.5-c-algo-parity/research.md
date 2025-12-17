@@ -8,7 +8,7 @@
   Rationale: Keeps tooling minimal and deterministic; avoids embedding additional runtimes.
   Alternatives considered: Embedding comparisons in Swift tests (mixes concerns); adding JS/Node layer (unnecessary for pure C parity).
 
-- Decision: Define the corpus as JSON fixtures versioned under specs/005-c-algo-parity/corpus/, covering baseline palettes, boundary values, seeded random cases, and web-demo samples; track corpus version in reports.
+- Decision: Define the corpus as JSON fixtures versioned under specs/003.5-c-algo-parity/corpus/, covering baseline palettes, boundary values, seeded random cases, and web-demo samples; track corpus version in reports.
   Rationale: JSON is language-agnostic and reviewable; supports deterministic snapshots.
   Alternatives considered: Binary fixtures (harder to diff); dynamic generation only (hurts reproducibility).
 

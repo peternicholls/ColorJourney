@@ -205,10 +205,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build parity runner
-        run: make -C specs/005-c-algo-parity/tools/parity-runner all
+        run: make -C specs/003.5-c-algo-parity/tools/parity-runner all
       - name: Run default corpus
         run: |
-          cd specs/005-c-algo-parity/tools/parity-runner
+          cd specs/003.5-c-algo-parity/tools/parity-runner
           ./parity-runner \
             --corpus ../../corpus/default.json \
             --tolerances ../../config/tolerances.example.json \
@@ -218,7 +218,7 @@ jobs:
             --platform "GitHub Actions Ubuntu"
       - name: Run edge cases
         run: |
-          cd specs/005-c-algo-parity/tools/parity-runner
+          cd specs/003.5-c-algo-parity/tools/parity-runner
           ./parity-runner \
             --corpus ../../corpus/edge-cases.json \
             --tolerances ../../config/tolerances.example.json \
@@ -230,7 +230,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: parity-artifacts
-          path: specs/005-c-algo-parity/artifacts/
+          path: specs/003.5-c-algo-parity/artifacts/
 ```
 
 **Benefits**:

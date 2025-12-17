@@ -43,7 +43,7 @@ Source of truth for ColorJourney contributors. Use this folder for accurate cont
   - `ARTIFACTS_SPECIFICATION.md`, `ARTIFACT_AUDIT_PROCEDURES.md`, `VERSION_MAPPING.md`, `BADGES.md`.
 - **Stress, Parity, and Testing**
   - `stress-test/` — performance, stability, and coverage investigations.
-  - `specs/005-c-algo-parity/` (see `specs` dir) — C/WASM parity runners; reports live in `specs/005-c-algo-parity/tools/parity-runner/src/report.c` and `DevDocs/ALGORITHM_COMPARISON_ANALYSIS.md`.
+  - `specs/003.5-c-algo-parity/` (see `specs` dir) — C/WASM parity runners; reports live in `specs/003.5-c-algo-parity/tools/parity-runner/src/report.c` and `DevDocs/ALGORITHM_COMPARISON_ANALYSIS.md`.
   - `SWATCH_DEMO_README.md`, `PALETTE_ENGINE_QUICKSTART.md` — demo and integration references.
 
 ## Maintenance Rules

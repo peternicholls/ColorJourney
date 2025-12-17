@@ -18,7 +18,7 @@ Use this index to locate the documents that explain *why* the system is shaped t
 ## Algorithm and Parity Investigations
 - `ALGORITHM_COMPARISON_ANALYSIS.md` — differences between the C core and the WASM implementation (cube root precision, chroma modulation, hue discretization, contrast handling).
 - `stress-test/` — deep dives on performance, numerical stability, edge cases, portability, and extensibility.
-- `specs/005-c-algo-parity/` (see `specs` directory) — parity runner code and reports used to validate behavior across implementations.
+- `specs/003.5-c-algo-parity/` (see `specs` directory) — parity runner code and reports used to validate behavior across implementations.
 
 ## Release, Branching, and Compliance
 - `BRANCHING_STRATEGY.md`, `BRANCH_PROTECTION_GUIDE.md`, `BRANCH_STRATEGY_IMPLEMENTATION.md` — how we manage code flow.
@@ -32,5 +32,5 @@ Use this index to locate the documents that explain *why* the system is shaped t
 
 ## How to Use This Index
 - Need rationale for a change? Start with `PRD.md` and `UNIVERSAL_PORTABILITY.md`, then open the relevant analysis file above.
-- Need evidence for behavior? Pair the analysis doc with the corresponding tests in `Tests/` or parity reports in `specs/005-c-algo-parity/`.
+- Need evidence for behavior? Pair the analysis doc with the corresponding tests in `Tests/` or parity reports in `specs/003.5-c-algo-parity/`.
 - Adding new investigative docs? Link them in the relevant section here and in `README.md` to keep navigation consistent.

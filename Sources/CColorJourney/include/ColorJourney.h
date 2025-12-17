@@ -586,9 +586,9 @@ void cj_journey_discrete(CJ_Journey journey, int count, CJ_RGB* out_colors);
  * - Priority: Minimum constraint always enforced; maximum is best-effort
  *
  * **Supported Index Range:**
- * - **0 to 1,000,000**: Precision guaranteed (<0.02 ΔE error, imperceptible)
- * - **1M to 10M**: Reduced precision (0.02-0.10 ΔE error, use with caution)
- * - **Beyond 10M**: Not recommended (>0.10 ΔE error, undefined precision)
+ * - **[0, 1,000,000)**: Precision guaranteed (<0.02 ΔE error, imperceptible)
+ * - **[1,000,000, 10,000,000)**: Reduced precision (0.02-0.10 ΔE error, use with caution)
+ * - **[10,000,000, ∞)**: Not recommended (>0.10 ΔE error, undefined precision)
  *
  * **Performance:** O(n) where n is @p index, as all prior colors are recomputed
  * on each call. For efficient access to multiple colors, use

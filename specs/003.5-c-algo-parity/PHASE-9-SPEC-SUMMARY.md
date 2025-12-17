@@ -2,7 +2,7 @@
 
 **Date**: 2025-12-12  
 **Status**: ✅ Specification Complete - Ready for Implementation  
-**Branch**: 005-c-algo-parity  
+**Branch**: 004-incremental-creation  
 
 ---
 
@@ -31,7 +31,7 @@ A comprehensive specification for validating that the Swift wrapper layer accura
 - ✅ Compare against C reference outputs from Phase 1-8
 - ✅ Match C parity output format for easy statistical comparison
 - ✅ Same tolerances (abs L/a/b=1e-4, ΔE=0.5, rel L/a/b=1e-3)
-- ✅ Phase 9 of 005-c-algo-parity (sequential, not parallel spec)
+- ✅ Phase 9 of 003.5-c-algo-parity (sequential, not parallel spec)
 
 ### 2. **Detailed Task List**
 📄 [phase-9-tasks.md](phase-9-tasks.md)
@@ -171,7 +171,7 @@ Report (same schema as C parity)
 - Supports unified dashboarding/visualization
 
 ### 5. Phase 9 Sequential Placement
-**Decision**: Phase 9 of 005-c-algo-parity, not separate spec  
+**Decision**: Phase 9 of 003.5-c-algo-parity, not separate spec  
 **Rationale**:
 - Builds on C parity infrastructure
 - Reuses corpus, tolerances, comparison logic
@@ -207,7 +207,7 @@ All tests generate reproducible artifacts:
 ## CI/CD Strategy
 
 ### Workflow: `swift-parity.yml`
-**Trigger**: Pushes/PRs to `005-c-algo-parity` branch only
+**Trigger**: Pushes/PRs to `004-incremental-creation` branch only
 
 **Steps**:
 1. Checkout code

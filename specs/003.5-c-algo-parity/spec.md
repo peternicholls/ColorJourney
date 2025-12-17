@@ -1,6 +1,6 @@
 # Feature Specification: C Algorithm Parity Testing
 
-**Feature Branch**: `005-c-algo-parity`  
+**Feature Branch**: `004-incremental-creation`  
 **Created**: 2025-12-12  
 **Status**: Draft  
 **Input**: User description: "we have two version of the C algorythm and calculations. 1. Sources/wasm/ 2. Sources/CColorJourney/ (recursive directories)
@@ -140,7 +140,7 @@ CI maintainers run the suite on demand or per change to prevent regressions; any
 ## Phase 9: Swift Wrapper Parity Testing
 
 **Status**: ✅ Phases 1-8 Complete → Phase 9 Specification Ready  
-**Branch**: `005-c-algo-parity`  
+**Branch**: `004-incremental-creation`  
 **Next**: See [phase-9-swift-parity.md](phase-9-swift-parity.md) for full Phase 9 specification
 
 After Phase 1-8 validates C algorithm parity (canonical vs wasm-derived C), Phase 9 extends validation to the Swift wrapper layer. This ensures the public Swift API (`Sources/ColorJourney/*`) accurately bridges to the C core without introducing deviations.

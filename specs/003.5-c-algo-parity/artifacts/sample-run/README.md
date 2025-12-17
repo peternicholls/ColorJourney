@@ -12,7 +12,7 @@ This is an end-to-end dry run of the C Algorithm Parity Testing framework, demon
 ## Execution Command
 
 ```bash
-cd specs/005-c-algo-parity/tools/parity-runner
+cd specs/003.5-c-algo-parity/tools/parity-runner
 ./parity-runner \
   --corpus ../../corpus/default.json \
   --tolerances ../../config/tolerances.example.json \

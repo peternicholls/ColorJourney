@@ -1,7 +1,7 @@
 # Implementation Plan: C Algorithm Parity Testing
 
-**Branch**: `005-c-algo-parity` | **Date**: 2025-12-12 | **Spec**: [specs/005-c-algo-parity/spec.md](specs/005-c-algo-parity/spec.md)
-**Input**: Feature specification from `/specs/005-c-algo-parity/spec.md`
+**Branch**: `004-incremental-creation` | **Date**: 2025-12-12 | **Spec**: [specs/003.5-c-algo-parity/spec.md](spec.md)
+**Input**: Feature specification from `/specs/003.5-c-algo-parity/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 
@@ -25,7 +25,7 @@ Parity harness to feed a shared corpus into two C builds—the canonical C core 
 **Project Type**: Library (C core + Swift wrapper) with C parity test harness and reporting pipeline.  
 **Performance Goals**: Default corpus completes in ≤10 minutes (SC-001); per-case comparison tolerances align with perceptual fidelity while avoiding false positives; parity harness overhead does not regress core performance benchmarks  
 **Constraints**: Deterministic outputs (seeded runs), OKLab/double-precision normalization, identical build flags captured in provenance, minimal external dependencies for C99 portability  
-**Scale/Scope**: Corpus breadth to cover typical palettes + boundary values; versioned JSON fixtures under `specs/005-c-algo-parity/corpus` with growth over time
+**Scale/Scope**: Corpus breadth to cover typical palettes + boundary values; versioned JSON fixtures under `specs/003.5-c-algo-parity/corpus` with growth over time
 
 ## Constitution Check
 
@@ -43,7 +43,7 @@ Post-Phase 1 check: All gates remain satisfied; OKLab normalization, provenance 
 ### Documentation (this feature)
 
 ```text
-specs/005-c-algo-parity/
+specs/003.5-c-algo-parity/
 ├── plan.md              # This file (/speckit.plan command output)
 ├── research.md          # Phase 0 output (/speckit.plan command)
 ├── data-model.md        # Phase 1 output (/speckit.plan command)
@@ -66,7 +66,7 @@ Docs/, DevDocs/           # Generated docs and development guides
 scripts/                  # release/build helpers
 ```
 
-**Structure Decision**: Single library codebase (C core + Swift wrapper) with wasm build path; parity harness will live under `specs/005-c-algo-parity` docs plus test/CLI assets co-located with existing test tooling (XCTest + C harness) to preserve portability.
+**Structure Decision**: Single library codebase (C core + Swift wrapper) with wasm build path; parity harness will live under `specs/003.5-c-algo-parity` docs plus test/CLI assets co-located with existing test tooling (XCTest + C harness) to preserve portability.
 
 ## Complexity Tracking
 
@@ -82,7 +82,7 @@ scripts/                  # release/build helpers
 ## Phase 9: Swift Wrapper Parity Testing Plan
 
 **Status**: ✅ Phases 1-8 Complete → Phase 9 Specification Ready  
-**Branch**: `005-c-algo-parity`  
+**Branch**: `004-incremental-creation`  
 **Documentation**: [phase-9-swift-parity.md](phase-9-swift-parity.md)
 
 Phase 9 validates that the Swift wrapper (`Sources/ColorJourney/*`) accurately bridges to the C core without introducing deviations. The plan replicates the C parity methodology but focuses on the Swift API boundary.

@@ -14,13 +14,13 @@
    - See `corpus/schema.json` for the complete format specification.
 
 4. **Run parity suite**
-   - Build the C parity runner: `make -C specs/005-c-algo-parity/tools/parity-runner parity-runner`.
+   - Build the C parity runner: `make -C specs/003.5-c-algo-parity/tools/parity-runner parity-runner`.
    - Execute the binary against the corpus:
      ```bash
-     ./specs/005-c-algo-parity/tools/parity-runner/parity-runner \
-       --corpus specs/005-c-algo-parity/corpus/default.json \
-       --tolerances specs/005-c-algo-parity/config/tolerances.example.json \
-       --artifacts specs/005-c-algo-parity/artifacts/<runId>/
+     ./specs/003.5-c-algo-parity/tools/parity-runner/parity-runner \
+       --corpus specs/003.5-c-algo-parity/corpus/default.json \
+       --tolerances specs/003.5-c-algo-parity/config/tolerances.example.json \
+       --artifacts specs/003.5-c-algo-parity/artifacts/<runId>/
      ```
 
 5. **CLI Options**

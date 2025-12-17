@@ -159,7 +159,7 @@ Test with orange anchor `(0.95, 0.55, 0.2)`:
 
 ## Files Modified
 
-1. `/Users/peternicholls/code/ColourJourney/Sources/CColorJourney/ColorJourney.c`
+1. `Sources/CColorJourney/ColorJourney.c`
    - Lines 47-56: Constants documentation
    - Lines 330-345: Removed envelope modulation
    - Lines 670-720: Simplified contrast function

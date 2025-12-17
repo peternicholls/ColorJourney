@@ -1,6 +1,6 @@
-# 005-c-algo-parity: Complete Specification & Implementation Guide
+# 003.5-c-algo-parity: Complete Specification & Implementation Guide
 
-**Branch**: 005-c-algo-parity  
+**Branch**: 004-incremental-creation  
 **Status**: ✅ Phases 1-8 COMPLETE + Phase 9 SPECIFICATION COMPLETE  
 **Last Updated**: 2025-12-12
 
@@ -95,7 +95,7 @@
 ✅ Compare against C reference outputs (validation)
 ✅ Identical tolerances across metrics (bug detection)
 ✅ Report format matches C parity (statistical alignment)
-✅ Phase 9 sequential in 005-c-algo-parity (dependency)
+✅ Phase 9 sequential in 003.5-c-algo-parity (dependency)
 ```
 
 **Architecture**:
@@ -284,7 +284,7 @@ Build:        Swift Package Manager + Makefile
 Testing:      XCTest (unit) + custom integration tests
 Runner:       Swift binary (specs/tools/swift-parity-runner/)
 Output:       JSON reports (same schema as C parity)
-CI:           GitHub Actions (005-c-algo-parity branch)
+CI:           GitHub Actions (004-incremental-creation branch)
 ```
 
 ---
@@ -292,7 +292,7 @@ CI:           GitHub Actions (005-c-algo-parity branch)
 ## Quick Reference: File Structure
 
 ```
-specs/005-c-algo-parity/
+specs/003.5-c-algo-parity/
 ├── README.md                              ← You are here
 ├── INDEX.md                               ← This file
 │
@@ -413,7 +413,7 @@ specs/005-c-algo-parity/
 ## Project Links
 
 - **Main Repo**: [github.com/peternicholls/ColorJourney](https://github.com/peternicholls/ColorJourney)
-- **Branch**: `005-c-algo-parity`
+- **Branch**: `004-incremental-creation`
 - **Team DevDocs**: [DevDocs/](../../DevDocs/)
 
 ---

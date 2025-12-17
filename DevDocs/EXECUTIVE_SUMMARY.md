@@ -20,7 +20,7 @@ This summary captures the current state of the project, the design rationale, an
 
 ## Alignment with the PRD
 - PRD dimensions (route/journey, dynamics, granularity, looping, variation) are implemented in the current API surface. Trace each requirement in `IMPLEMENTATION_CHECKLIST.md` and `USAGE_AND_FULFILLMENT_ANALYSIS.md`.
-- Known implementation differences (e.g., cube root precision, chroma modulation, hue discretization, contrast handling) between the C core and WASM are documented in `ALGORITHM_COMPARISON_ANALYSIS.md` and parity runner reports under `specs/005-c-algo-parity/`.
+- Known implementation differences (e.g., cube root precision, chroma modulation, hue discretization, contrast handling) between the C core and WASM are documented in `ALGORITHM_COMPARISON_ANALYSIS.md` and parity runner reports under `specs/003.5-c-algo-parity/`.
 
 ## What Exists Today
 - **C library:** OKLab conversions, waypoint interpolation, discrete palette generation, contrast enforcement, deterministic variation.

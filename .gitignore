@@ -82,7 +82,7 @@ out/
 .env
 .env.*
 coverage/
-specs/005-c-algo-parity/tools/parity-runner/tests/output/
+specs/003.5-c-algo-parity/tools/parity-runner/tests/output/
 
 # Documentation build
 docs/_build/
