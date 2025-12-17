@@ -99,6 +99,7 @@ C99 core works everywhere (iOS, macOS, Linux, Windows, embedded). Swift wrapper 
 | **[Examples/](Examples/)** | Working code samples | Everyone |
 | **[Quick Start](#quick-start)** | Getting started guide | New Users |
 | **[CONTRIBUTING.md](CONTRIBUTING.md)** | Contributing process | Contributors |
+| **[RELEASENOTES.md](RELEASENOTES.md)** | Detailed release notes & known issues | Everyone |
 
 ---
 
@@ -188,6 +189,8 @@ The Swift wrapper provides ergonomics and type safety, while the C core ensures 
 
 - **High-Level Controls** - Lightness, chroma, contrast, temperature, vibrancy biases
 
+- **Incremental Generation** - Access infinite color sequences with guaranteed perceptual distinctness via delta range enforcement
+
 - **Variation Layer** - Optional subtle, structured micro-variation
 
 - **Deterministic** - Repeatable output with optional seeded variation
@@ -276,6 +279,25 @@ let config = ColorJourneyConfig(
     )
 )
 ```
+
+### Incremental Access
+
+Access colors incrementally with guaranteed perceptual distinctness:
+
+```swift
+// Get color at specific index (infinite sequence)
+let color = journey.discrete(at: 42)
+
+// Efficient batch access for ranges
+let colors = journey.discrete(range: 0..<100)
+
+// Lazy streaming access
+for (index, color) in journey.discreteColors.prefix(50).enumerated() {
+    print("Color \(index): \(color)")
+}
+```
+
+All incremental APIs enforce delta range constraints to ensure adjacent colors are always perceptually distinct.
 
 ## SwiftUI Integration
 
