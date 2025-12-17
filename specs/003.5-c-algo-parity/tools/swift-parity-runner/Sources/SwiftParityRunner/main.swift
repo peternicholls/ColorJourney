@@ -63,76 +63,93 @@ enum CLIError: Error {
 
 struct CLIParser {
     func parse() throws -> CLIOptions {
-        var corpusPath: String?
-        var referencePath: String?
-        var artifactsPath = "specs/005-c-algo-parity/artifacts/swift-parity"
-        var caseFilter: Set<String>?
-        var tagFilter: Set<String>?
-        var passGate = 0.95
-        var runId: String?
-        var swiftVersion: String?
-        var targetSDK: String?
+        var options = CLIOptions(
+            corpusPath: "",
+            referencePath: "",
+            artifactsPath: "specs/005-c-algo-parity/artifacts/swift-parity",
+            caseFilter: nil,
+            tagFilter: nil,
+            passGate: 0.95,
+            runId: "",
+            swiftVersion: "",
+            targetSDK: nil
+        )
 
         var iterator = CommandLine.arguments.dropFirst().makeIterator()
         while let arg = iterator.next() {
-            switch arg {
-            case "--corpus":
-                guard let value = iterator.next() else { throw CLIError.missingValue(arg) }
-                corpusPath = value
-            case "--c-reference":
-                guard let value = iterator.next() else { throw CLIError.missingValue(arg) }
-                referencePath = value
-            case "--artifacts":
-                guard let value = iterator.next() else { throw CLIError.missingValue(arg) }
-                artifactsPath = value
-            case "--cases":
-                guard let value = iterator.next() else { throw CLIError.missingValue(arg) }
-                let ids = value.split(separator: ",").map { String($0) }
-                caseFilter = Set(ids)
-            case "--tags":
-                guard let value = iterator.next() else { throw CLIError.missingValue(arg) }
-                let tags = value.split(separator: ",").map { String($0) }
-                tagFilter = Set(tags)
-            case "--pass-gate":
-                guard let value = iterator.next(), let threshold = Double(value) else { throw CLIError.missingValue(arg) }
-                passGate = threshold
-            case "--run-id":
-                guard let value = iterator.next() else { throw CLIError.missingValue(arg) }
-                runId = value
-            case "--swift-version":
-                guard let value = iterator.next() else { throw CLIError.missingValue(arg) }
-                swiftVersion = value
-            case "--target-sdk":
-                guard let value = iterator.next() else { throw CLIError.missingValue(arg) }
-                targetSDK = value
-            case "--help", "-h":
-                CLIParser.printUsage()
-                exit(0)
-            default:
-                if arg.hasPrefix("--") {
-                    throw CLIError.unknownFlag(arg)
-                }
-            }
+            try parseArgument(arg, iterator: &iterator, options: &options)
         }
 
-        guard let corpus = corpusPath else { throw CLIError.missingRequired("--corpus") }
-        guard let reference = referencePath else { throw CLIError.missingRequired("--c-reference") }
-        guard passGate >= 0 && passGate <= 1 else { throw CLIError.missingRequired("--pass-gate must be between 0 and 1") }
+        try validateOptions(&options)
+        return options
+    }
 
-        let resolvedRunId = runId ?? Self.defaultRunId()
-        let resolvedSwiftVersion = swiftVersion ?? SwiftVersionDetector.detect()
+    private func parseArgument(_ arg: String, iterator: inout IndexingIterator<[String]>, options: inout CLIOptions) throws {
+        switch arg {
+        case "--corpus":
+            guard let value = iterator.next() else { throw CLIError.missingValue(arg) }
+            options.corpusPath = value
+        case "--c-reference":
+            guard let value = iterator.next() else { throw CLIError.missingValue(arg) }
+            options.referencePath = value
+        case "--artifacts":
+            guard let value = iterator.next() else { throw CLIError.missingValue(arg) }
+            options.artifactsPath = value
+        case "--cases":
+            try parseCasesFilter(iterator: &iterator, options: &options)
+        case "--tags":
+            try parseTagsFilter(iterator: &iterator, options: &options)
+        case "--pass-gate":
+            try parsePassGate(iterator: &iterator, options: &options)
+        case "--run-id":
+            guard let value = iterator.next() else { throw CLIError.missingValue(arg) }
+            options.runId = value
+        case "--swift-version":
+            guard let value = iterator.next() else { throw CLIError.missingValue(arg) }
+            options.swiftVersion = value
+        case "--target-sdk":
+            guard let value = iterator.next() else { throw CLIError.missingValue(arg) }
+            options.targetSDK = value
+        case "--help", "-h":
+            CLIParser.printUsage()
+            exit(0)
+        default:
+            if arg.hasPrefix("--") {
+                throw CLIError.unknownFlag(arg)
+            }
+        }
+    }
 
-        return CLIOptions(
-            corpusPath: corpus,
-            referencePath: reference,
-            artifactsPath: artifactsPath,
-            caseFilter: caseFilter,
-            tagFilter: tagFilter,
-            passGate: passGate,
-            runId: resolvedRunId,
-            swiftVersion: resolvedSwiftVersion,
-            targetSDK: targetSDK
-        )
+    private func parseCasesFilter(iterator: inout IndexingIterator<[String]>, options: inout CLIOptions) throws {
+        guard let value = iterator.next() else { throw CLIError.missingValue("--cases") }
+        let ids = value.split(separator: ",").map { String($0) }
+        options.caseFilter = Set(ids)
+    }
+
+    private func parseTagsFilter(iterator: inout IndexingIterator<[String]>, options: inout CLIOptions) throws {
+        guard let value = iterator.next() else { throw CLIError.missingValue("--tags") }
+        let tags = value.split(separator: ",").map { String($0) }
+        options.tagFilter = Set(tags)
+    }
+
+    private func parsePassGate(iterator: inout IndexingIterator<[String]>, options: inout CLIOptions) throws {
+        guard let value = iterator.next(), let threshold = Double(value) else {
+            throw CLIError.missingValue("--pass-gate")
+        }
+        options.passGate = threshold
+    }
+
+    private func validateOptions(_ options: inout CLIOptions) throws {
+        guard !options.corpusPath.isEmpty else { throw CLIError.missingRequired("--corpus") }
+        guard !options.referencePath.isEmpty else { throw CLIError.missingRequired("--c-reference") }
+        guard options.passGate >= 0 && options.passGate <= 1 else { throw CLIError.missingRequired("--pass-gate must be between 0 and 1") }
+
+        if options.runId.isEmpty {
+            options.runId = Self.defaultRunId()
+        }
+        if options.swiftVersion.isEmpty {
+            options.swiftVersion = SwiftVersionDetector.detect()
+        }
     }
 
     static func printUsage() {
