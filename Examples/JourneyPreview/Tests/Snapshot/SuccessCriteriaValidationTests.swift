@@ -234,9 +234,9 @@ final class SuccessCriteriaValidationTests: XCTestCase {
         XCTAssertEqual(SwatchSizePreference.extraLarge.cornerRadius, 20)
         
         // Dimensions should increase
-        XCTAssertLessThan(SwatchSizePreference.small.dimension, SwatchSizePreference.medium.dimension)
-        XCTAssertLessThan(SwatchSizePreference.medium.dimension, SwatchSizePreference.large.dimension)
-        XCTAssertLessThan(SwatchSizePreference.large.dimension, SwatchSizePreference.extraLarge.dimension)
+        XCTAssertLessThan(SwatchSizePreference.small.pointSize, SwatchSizePreference.medium.pointSize)
+        XCTAssertLessThan(SwatchSizePreference.medium.pointSize, SwatchSizePreference.large.pointSize)
+        XCTAssertLessThan(SwatchSizePreference.large.pointSize, SwatchSizePreference.extraLarge.pointSize)
     }
     
     // MARK: - SC-005: Input Validation Tests
