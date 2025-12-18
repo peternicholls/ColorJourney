@@ -1,114 +1,104 @@
-# Implementation Plan: Comprehensive Code Documentation
+# Implementation Plan: [FEATURE]
 
-**Branch**: `001-comprehensive-documentation` | **Date**: 2025-12-07 | **Spec**: [specs/001-comprehensive-documentation/spec.md](specs/001-comprehensive-documentation/spec.md)
-**Input**: Feature specification from `/specs/001-comprehensive-documentation/spec.md`
+**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
+**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 
 ## Summary
 
-The ColorJourney codebase requires comprehensive documentation using modern standards and best practices. This involves:
-
-1. **C Core Documentation** – Doxygen-compatible comments for all public APIs, structs, and complex algorithms in `Sources/CColorJourney/ColorJourney.c` and `ColorJourney.h`
-2. **Swift API Documentation** – DocC-style comments (`///`) for the wrapper API in `Sources/ColorJourney/ColorJourney.swift`
-3. **Architecture & Design** – Top-level comments and references explaining the two-layer design, constraints, and rationale
-4. **Examples & Tests** – Annotated examples in `Examples/` and test code with clear intent
-5. **Developer Guides** – `DOCUMENTATION.md` establishing standards, conventions, and maintenance procedures
-
-Technical approach: Documentation lives in code comments (ensuring sync with implementation), follows tool-compatible formats (Doxygen for C, DocC for Swift), and references the ColorJourney Constitution as the source of truth.
+[Extract from feature spec: primary requirement + technical approach from research]
 
 ## Technical Context
 
-**Language/Version**: C99 (core) + Swift 5.9 (wrapper)  
-**Primary Dependencies**: None for C core; Foundation, SwiftUI for Swift wrapper  
-**Storage**: N/A (in-memory computation, no persistence)  
-**Testing**: XCTest (Swift) + custom C test framework (`Tests/CColorJourneyTests/test_c_core.c`)  
-**Target Platform**: macOS, iOS, Linux, Windows, WebAssembly (C core portability)  
-**Project Type**: Cross-platform library (C + Swift wrapper)  
-**Performance Goals**: Documentation must not impact runtime; generation tools must complete <5s  
-**Constraints**: Documentation must compile with library (no external dependencies), must be maintainable by hand  
-**Scale/Scope**: ~1,500 lines C code + ~500 lines Swift code; all public APIs must be documented
+<!--
+  ACTION REQUIRED: Replace the content in this section with the technical details
+  for the project. The structure here is presented in advisory capacity to guide
+  the iteration process.
+-->
+
+**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
+**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
+**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
+**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
+**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
+**Project Type**: [single/web/mobile - determines source structure]  
+**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
+**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
+**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-**Principle I: Universal Portability** ✓ PASS  
-- Documentation must not introduce dependencies; all changes are code comments and guides
-- C core documentation emphasizes C99 compatibility and zero external dependencies
-- No new platform-specific code introduced
-
-**Principle II: Perceptual Integrity via OKLab** ✓ PASS  
-- Documentation of algorithms (e.g., journey interpolation, contrast enforcement) must explain OKLab as the canonical color space
-- Swift API docs must express perceptual intent, not internal math
-- No changes to algorithm behavior; only documentation of existing behavior
-
-**Principle III: Designer-Centric Configuration** ✓ PASS  
-- Swift API documentation must explain high-level controls (lightness, chroma, contrast, temperature, vibrancy) in perceptual terms
-- Configuration documentation must avoid low-level parameter tuning
-- Examples show real use cases (multi-anchor journeys, perceptual biases, variation)
-
-**Principle IV: Deterministic Output** ✓ PASS  
-- Documentation must clarify determinism guarantees and seeded variation behavior
-- Examples must produce reproducible output
-- No changes to determinism behavior; only clear documentation
-
-**Principle V: Comprehensive Testing** ✓ PASS  
-- Test code must include comments explaining intent, not just assertions
-- Documentation generation is not a substitute for existing test coverage
-- All example code must be verified to compile and run
-
-**Overall Gate Status**: ✓ PASS – Documentation work aligns with all constitutional principles. No violations or trade-offs required.
+[Gates determined based on constitution file]
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```text
-specs/001-comprehensive-documentation/
+specs/[###-feature]/
 ├── plan.md              # This file (/speckit.plan command output)
-├── research.md          # Phase 0 output (/speckit.plan command) - PENDING
-├── data-model.md        # Phase 1 output (/speckit.plan command) - PENDING
-├── quickstart.md        # Phase 1 output (/speckit.plan command) - PENDING
-├── contracts/           # Phase 1 output (/speckit.plan command) - PENDING
+├── research.md          # Phase 0 output (/speckit.plan command)
+├── data-model.md        # Phase 1 output (/speckit.plan command)
+├── quickstart.md        # Phase 1 output (/speckit.plan command)
+├── contracts/           # Phase 1 output (/speckit.plan command)
 └── tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)
 ```
 
-### Source Code (existing repository structure)
+### Source Code (repository root)
+<!--
+  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
+  for this feature. Delete unused options and expand the chosen structure with
+  real paths (e.g., apps/admin, packages/something). The delivered plan must
+  not include Option labels.
+-->
 
 ```text
-Sources/
-├── CColorJourney/                    # C core (documentation target)
-│   ├── ColorJourney.c                # Implementation + inline comments
-│   ├── ColorJourney.h                # Public API + Doxygen comments
-│   └── include/
-│       └── ColorJourney.h            # (same as above)
-└── ColorJourney/                     # Swift wrapper (documentation target)
-    └── ColorJourney.swift            # Public API + DocC comments
+# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
+src/
+├── models/
+├── services/
+├── cli/
+└── lib/
 
-Tests/
-├── CColorJourneyTests/               # C core tests (add comments)
-│   └── test_c_core.c
-└── ColorJourneyTests/                # Swift tests (add comments)
-    └── ColorJourneyTests.swift
+tests/
+├── contract/
+├── integration/
+└── unit/
 
-Examples/                             # Example code (verify & annotate)
-├── CExample.c
-├── SwiftExample.swift
-└── ExampleUsage.swift
+# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
+backend/
+├── src/
+│   ├── models/
+│   ├── services/
+│   └── api/
+└── tests/
 
-Documentation/
-├── README.md                         # Main entry point (update links)
-├── CONTRIBUTING.md                   # Contribution guidelines
-└── [NEW] DOCUMENTATION.md            # Documentation standards & conventions
+frontend/
+├── src/
+│   ├── components/
+│   ├── pages/
+│   └── services/
+└── tests/
+
+# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
+api/
+└── [same as backend above]
+
+ios/ or android/
+└── [platform-specific structure: feature modules, UI flows, platform tests]
 ```
 
-**Structure Decision**: The documentation work targets existing code in a two-layer architecture:
-1. **C Core** (`Sources/CColorJourney/`) – Low-level implementation with Doxygen-compatible comments
-2. **Swift Wrapper** (`Sources/ColorJourney/`) – High-level API with DocC comments
+**Structure Decision**: [Document the selected structure and reference the real
+directories captured above]
 
-No new directories or files need to be created for source code. Documentation additions include:
-- Inline comments in `.c` and `.swift` files
-- A new `DOCUMENTATION.md` file establishing standards
-- Updates to `README.md` linking to documentation resources
-- Verified, annotated examples in `Examples/`
+## Complexity Tracking
+
+> **Fill ONLY if Constitution Check has violations that must be justified**
+
+| Violation | Why Needed | Simpler Alternative Rejected Because |
+|-----------|------------|-------------------------------------|
+| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
+| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |

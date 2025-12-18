@@ -1,40 +1,177 @@
 import SwiftUI
 import ColorJourney
 
+/// Main content view with tabbed navigation between demo pages.
 struct ContentView: View {
-    let journeys: [(String, [ColorJourneyRGB])] = [
-        ("Sunset to Ocean", generateJourney(
-            anchor: ColorJourneyRGB(red: 0.95, green: 0.45, blue: 0.3),
-            style: .vividLoop,
-            count: 12
-        )),
-        ("Cool Breeze", generateJourney(
-            anchor: ColorJourneyRGB(red: 0.2, green: 0.7, blue: 0.85),
-            style: .coolSky,
-            count: 12
-        )),
-        ("Warm Glow", generateJourney(
-            anchor: ColorJourneyRGB(red: 0.95, green: 0.55, blue: 0.4),
-            style: .pastelDrift,
-            count: 8
-        ))
-    ]
+    @State private var selectedTab: DemoTab = .paletteExplorer
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 40) {
-                ForEach(journeys, id: \.0) { journey in
-                    JourneySwatchView(title: journey.0, colors: journey.1)
+        NavigationSplitView {
+            sidebarContent
+        } detail: {
+            detailContent
+        }
+        .frame(minWidth: 900, minHeight: 700)
+    }
+    
+    // MARK: - Sidebar
+    
+    private var sidebarContent: some View {
+        List(selection: $selectedTab) {
+            Section("Explore") {
+                NavigationLink(value: DemoTab.paletteExplorer) {
+                    Label("Palette Explorer", systemImage: "paintpalette.fill")
+                }
+                
+                NavigationLink(value: DemoTab.usageExamples) {
+                    Label("Usage Examples", systemImage: "doc.text.fill")
+                }
+                
+                NavigationLink(value: DemoTab.largePalettes) {
+                    Label("Large Palettes", systemImage: "square.grid.3x3.fill")
                 }
             }
-            .padding(40)
+            
+            Section("About") {
+                NavigationLink(value: DemoTab.about) {
+                    Label("About ColorJourney", systemImage: "info.circle.fill")
+                }
+            }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(white: 0.1))
+        .listStyle(.sidebar)
+        .navigationTitle("JourneyPreview")
+    }
+    
+    // MARK: - Detail Content
+    
+    @ViewBuilder
+    private var detailContent: some View {
+        switch selectedTab {
+        case .paletteExplorer:
+            PaletteExplorerView()
+        case .usageExamples:
+            UsageExamplesView()
+        case .largePalettes:
+            LargePaletteView()
+        case .about:
+            AboutView()
+        }
     }
 }
 
-struct JourneySwatchView: View {
+// MARK: - Demo Tabs
+
+enum DemoTab: String, CaseIterable, Identifiable {
+    case paletteExplorer = "palette_explorer"
+    case usageExamples = "usage_examples"
+    case largePalettes = "large_palettes"
+    case about = "about"
+    
+    var id: String { rawValue }
+    
+    var title: String {
+        switch self {
+        case .paletteExplorer: return "Palette Explorer"
+        case .usageExamples: return "Usage Examples"
+        case .largePalettes: return "Large Palettes"
+        case .about: return "About"
+        }
+    }
+}
+
+// MARK: - About View
+
+struct AboutView: View {
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 32) {
+                // Logo/Title
+                VStack(spacing: 16) {
+                    Image(systemName: "paintpalette.fill")
+                        .font(.system(size: 64))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.purple, .blue, .cyan],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                    
+                    Text("ColorJourney")
+                        .font(.largeTitle.weight(.bold))
+                    
+                    Text("Perceptually Uniform Color Palette Generator")
+                        .font(.title3)
+                        .foregroundColor(.secondary)
+                }
+                .padding(.top, 40)
+                
+                // Features
+                VStack(alignment: .leading, spacing: 24) {
+                    featureRow(
+                        icon: "waveform.path",
+                        title: "Perceptual Uniformity",
+                        description: "Colors are spaced using OKLab perceptual distance, ensuring consistent visual differences."
+                    )
+                    
+                    featureRow(
+                        icon: "bolt.fill",
+                        title: "High Performance",
+                        description: "Generate millions of colors per second. ~0.6μs per color on modern hardware."
+                    )
+                    
+                    featureRow(
+                        icon: "arrow.triangle.branch",
+                        title: "Deterministic Output",
+                        description: "Same configuration always produces identical results. Perfect for reproducible designs."
+                    )
+                    
+                    featureRow(
+                        icon: "c.square.fill",
+                        title: "C-First Architecture",
+                        description: "High-performance C99 core with Swift, Python, and other language bindings."
+                    )
+                }
+                .padding(.horizontal, 40)
+                
+                // Links
+                VStack(spacing: 12) {
+                    Link("GitHub Repository", destination: URL(string: "https://github.com/peternicholls/ColorJourney")!)
+                        .buttonStyle(.bordered)
+                    
+                    Link("Documentation", destination: URL(string: "https://github.com/peternicholls/ColorJourney#readme")!)
+                        .buttonStyle(.bordered)
+                }
+                .padding(.bottom, 40)
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .background(Color(white: 0.1))
+    }
+    
+    private func featureRow(icon: String, title: String, description: String) -> some View {
+        HStack(alignment: .top, spacing: 16) {
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundColor(.blue)
+                .frame(width: 32)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.headline)
+                
+                Text(description)
+                    .font(.body)
+                    .foregroundColor(.secondary)
+            }
+        }
+    }
+}
+
+// MARK: - Legacy Support
+
+/// Legacy journey swatch view (kept for reference)
+struct LegacyJourneySwatchView: View {
     let title: String
     let colors: [ColorJourneyRGB]
     
@@ -75,7 +212,7 @@ struct JourneySwatchView: View {
     }
 }
 
-// Helper function to generate a journey
+// Helper function to generate a journey (legacy support)
 func generateJourney(anchor: ColorJourneyRGB, style: JourneyStyle, count: Int) -> [ColorJourneyRGB] {
     let config = ColorJourneyConfig.singleAnchor(anchor, style: style)
     let journey = ColorJourney(config: config)
@@ -84,5 +221,5 @@ func generateJourney(anchor: ColorJourneyRGB, style: JourneyStyle, count: Int) -
 
 #Preview {
     ContentView()
-        .frame(width: 1400, height: 900)
+        .frame(width: 1200, height: 800)
 }
